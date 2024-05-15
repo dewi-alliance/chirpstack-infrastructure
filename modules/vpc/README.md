@@ -1,3 +1,4 @@
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Resources
 
 | Name | Type |
@@ -49,3 +50,4 @@
 | <a name="output_database_subnet_ids"></a> [database\_subnet\_ids](#output\_database_subnet_ids) | List of IDs of database subnets |
 | <a name="output_igw_id"></a> [igw\_id](#output\_igw_id) | The ID of the Internet Gateway |
 | <a name="output_database_subnet_group_name"></a> [database\_subnet\_group\_name](#output\_database_subnet_group_name) | Name of database subnet group |
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
