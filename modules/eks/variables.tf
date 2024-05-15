@@ -43,7 +43,7 @@ variable "eks_authentication_mode" {
 variable "eks_bootstrap_cluster_creator_admin_permissions" {
   description = "Whether or not to bootstrap the access config values to the cluster. For more information, see Amazon EKS Access Entries (https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html)"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "eks_endpoint_private_access" {
@@ -101,6 +101,24 @@ variable "eks_addon_resolve_conflicts_on_update" {
   description = "How to resolve field value conflicts for an Amazon EKS add-on if you've changed a value from the Amazon EKS default value. Valid values are NONE, OVERWRITE, and PRESERVE. For more information, see the UpdateAddon API Docs (https://docs.aws.amazon.com/eks/latest/APIReference/API_UpdateAddon.html)"
   type        = string
   default     = "OVERWRITE"
+}
+
+variable "eks_vpc_cni_addon" {
+  description = "Version of the VPC CNI cluster addon"
+  type        = string
+  default     = "v1.9.3-eksbuild.7"
+}
+
+variable "eks_coredns_version" {
+  description = "Version of the Coredns cluster addon"
+  type        = string
+  default     = "v1.26.9-eksbuild.2"
+}
+
+variable "eks_kube_proxy_version" {
+  description = "Version of the Kube-Proxy cluster addon"
+  type        = string
+  default     = "v1.15.1-eksbuild.1"
 }
 
 # ***************************************

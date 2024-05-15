@@ -46,7 +46,6 @@ resource "aws_eks_cluster" "this" {
     aws_security_group_rule.cluster,
     aws_security_group_rule.node,
     aws_cloudwatch_log_group.this,
-    aws_iam_policy.cni_ipv6_policy,
   ]
 }
 
@@ -131,7 +130,7 @@ resource "aws_iam_policy" "cluster_encryption" {
 # KMS Key for EKS Secret Encryption
 # ***************************************
 resource "aws_kms_key" "this" {
-  description = "${var.cluster_name} cluster encryption key"
+  description = "${var.eks_cluster_name} cluster encryption key"
 
   enable_key_rotation = var.kms_enable_key_rotation
   key_usage           = var.kms_key_usage
@@ -177,7 +176,7 @@ data "aws_iam_policy_document" "this" {
 
     principals {
       type        = "AWS"
-      identifiers = data.aws_iam_session_context.current.issuer_arn
+      identifiers = [data.aws_iam_session_context.current.issuer_arn]
     }
   }
 
@@ -194,7 +193,7 @@ data "aws_iam_policy_document" "this" {
 
     principals {
       type        = "AWS"
-      identifiers = aws_iam_role.this.arn
+      identifiers = [aws_iam_role.this.arn]
     }
   }
 }
@@ -285,17 +284,51 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 # ***************************************
 #  EKS Addons
 # ***************************************
+locals {
+    pre_compute_cluster_addons = {
+    vpc-cni = {
+      addon_version     = var.eks_vpc_cni_addon
+      resolve_conflicts = "OVERWRITE"
+      configuration_values = jsonencode({
+        init = {
+          env = {
+            DISABLE_TCP_EARLY_DEMUX = "true"
+          }
+        }
+        env = {
+          ENABLE_POD_ENI = "true"
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET       = "1"
+        }
+      })
+    }
+  }
+
+  post_compute_cluster_addons = {
+    coredns = {
+      addon_version     = var.eks_coredns_version
+      resolve_conflicts = "OVERWRITE"
+    }
+    # aws eks describe-addon-versions --addon-name kube-proxy
+    kube-proxy = {
+      addon_version     = var.eks_kube_proxy_version
+      resolve_conflicts = "OVERWRITE"
+    }
+  }
+}
+
 resource "aws_eks_addon" "pre_compute_cluster_addons" {
   for_each = tomap(local.pre_compute_cluster_addons)
 
   cluster_name = aws_eks_cluster.this.name
 
-  addon_name           = each.key
-  addon_version        = each.value.addon_version
-  configuration_values = each.value.configuration_values
+  addon_name           = try(each.value.name, each.key)
+  addon_version        = try(each.value.addon_version, null)
+  configuration_values = try(each.value.configuration_values, null)
 
-  preserve                    = var.eks_addon_preserve
-  resolve_conflicts_on_update = var.eks_addon_resolve_conflicts_on_update
+  preserve                    = try(each.value.preserve, true)
+  resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
+
 
   tags = var.eks_tags
 }
@@ -305,12 +338,12 @@ resource "aws_eks_addon" "post_compute_cluster_addons" {
 
   cluster_name = aws_eks_cluster.this.name
 
-  addon_name           = each.key
-  addon_version        = each.value.addon_version
-  configuration_values = each.value.configuration_values
+  addon_name           = try(each.value.name, each.key)
+  addon_version        = try(each.value.addon_version, null)
+  configuration_values = try(each.value.configuration_values, null)
 
-  preserve                    = var.eks_addon_preserve
-  resolve_conflicts_on_update = var.eks_addon_resolve_conflicts_on_update
+  preserve                    = try(each.value.preserve, true)
+  resolve_conflicts_on_update = try(each.value.resolve_conflicts_on_update, "OVERWRITE")
 
   depends_on = [
     aws_eks_node_group.this,
@@ -339,4 +372,9 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
   }
 
   data = local.aws_auth_configmap_data
+
+  depends_on = [ 
+    aws_eks_cluster.this, 
+    aws_eks_node_group.this 
+  ]
 }

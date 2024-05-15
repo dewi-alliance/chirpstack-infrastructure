@@ -20,8 +20,8 @@ resource "time_sleep" "this" {
 }
 
 resource "aws_eks_node_group" "this" {
-  cluster_name  = var.eks_cluster_name
-  subnet_ids    = var.vpc_private_subnet_ids
+  cluster_name = var.eks_cluster_name
+  subnet_ids   = var.vpc_private_subnet_ids
 
   node_role_arn = aws_iam_role.node_group_role.arn
 
@@ -56,8 +56,12 @@ resource "aws_eks_node_group" "this" {
 
   tags = merge(
     var.eks_tags,
-    { Name = "eks-node-group"}
+    { Name = "eks-node-group" }
   )
+
+  depends_on = [ 
+    aws_eks_cluster.this
+  ]
 }
 
 # ***************************************
@@ -76,7 +80,7 @@ data "aws_iam_policy_document" "node_group_assume_role_policy" {
 }
 
 resource "aws_iam_role" "node_group_role" {
-  name_prefix = "eks-node-group"
+  name_prefix = "eks-node-group-"
   description = "EKS managed node group IAM role"
 
   assume_role_policy    = data.aws_iam_policy_document.node_group_assume_role_policy.json
@@ -91,7 +95,7 @@ resource "aws_iam_role_policy_attachment" "node_group_role_attachment" {
     AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
     AmazonEC2ContainerRegistryReadOnly = "${local.iam_role_policy_prefix}/AmazonEC2ContainerRegistryReadOnly"
     AmazonEKS_CNI_Policy               = "${local.iam_role_policy_prefix}/AmazonEKS_CNI_Policy"
-    AmazonEBSCSIDriverPolicy           = "${local.iam_role_policy_prefix}/AmazonEBSCSIDriverPolicy"
+    AmazonEBSCSIDriverPolicy           = "${local.iam_role_policy_prefix}/service-role/AmazonEBSCSIDriverPolicy"
   })
 
   policy_arn = each.value
@@ -104,7 +108,7 @@ resource "aws_iam_role_policy_attachment" "node_group_role_attachment" {
 resource "aws_launch_template" "this" {
   name_prefix            = "eks-node-group-"
   update_default_version = true
-  vpc_security_group_ids = aws_security_group.node.id
+  vpc_security_group_ids = [aws_security_group.node.id]
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -135,7 +139,7 @@ resource "aws_launch_template" "this" {
 # Plus NTP/HTTPS (otherwise nodes fail to launch)
 # ***************************************
 locals {
-  node_sg_name   = "${var.eks_cluster_name}-node"
+  node_sg_name = "${var.eks_cluster_name}-node"
 
   node_security_group_rules = {
     ingress_cluster_443 = {
@@ -218,12 +222,12 @@ locals {
       source_cluster_security_group = true
     }
     egress_all = {
-      description      = "Allow all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
+      description = "Allow all egress"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
     }
   }
 }
@@ -236,10 +240,9 @@ resource "aws_security_group" "node" {
   tags = merge(
     var.eks_tags,
     {
-      "Name"                                      = local.node_sg_name
-      "kubernetes.io/cluster/${var.cluster_name}" = "owned"
+      "Name"                                          = local.node_sg_name
+      "kubernetes.io/cluster/${var.eks_cluster_name}" = "owned"
     },
-    var.node_security_group_tags
   )
 
   lifecycle {
@@ -249,7 +252,6 @@ resource "aws_security_group" "node" {
 
 resource "aws_security_group_rule" "node" {
   for_each = { for k, v in merge(
-    local.efa_security_group_rules,
     local.node_security_group_rules,
     local.node_security_group_recommended_rules,
   ) : k => v }
@@ -265,7 +267,7 @@ resource "aws_security_group_rule" "node" {
   description              = lookup(each.value, "description", null)
   cidr_blocks              = lookup(each.value, "cidr_blocks", null)
   ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", [])
+  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
   self                     = lookup(each.value, "self", null)
-  source_security_group_id = try(each.value.source_cluster_security_group, false) ? local.cluster_security_group_id : lookup(each.value, "source_security_group_id", null)
+  source_security_group_id = try(each.value.source_cluster_security_group, false) ? aws_security_group.cluster.id: lookup(each.value, "source_security_group_id", null)
 }

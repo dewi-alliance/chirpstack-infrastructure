@@ -1,4 +1,14 @@
 # ***************************************
+# Module-wide locals
+# ***************************************
+locals {
+  availability_zones = [var.availability_zone_1, var.availability_zone_2]
+  public_subnets     = [var.public_subnet_1, var.public_subnet_2]
+  private_subnets    = [var.private_subnet_1, var.private_subnet_2]
+  database_subnets   = [var.database_subnet_1, var.database_subnet_2]
+}
+
+# ***************************************
 # VPC
 # ***************************************
 resource "aws_vpc" "this" {
@@ -26,7 +36,7 @@ resource "aws_subnet" "public" {
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-public-subnet-%s", element(var.availability_zones, count.index))
+      Name = format("${var.vpc_name}-public-subnet-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
   )
@@ -72,7 +82,7 @@ resource "aws_subnet" "private" {
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-private-subnet-%s", element(var.availability_zones, count.index))
+      Name = format("${var.vpc_name}-private-subnet-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
   )
@@ -81,11 +91,11 @@ resource "aws_subnet" "private" {
 resource "aws_route_table" "private" {
   count = length(local.private_subnets)
 
-  vpc_id = local.vpc_id
+  vpc_id = aws_vpc.this.id
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-private-rt-%s", element(var.availability_zones, count.index))
+      Name = format("${var.vpc_name}-private-rt-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
   )
@@ -125,7 +135,7 @@ resource "aws_subnet" "database" {
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-database-subnet-%s", element(var.availability_zones, count.index))
+      Name = format("${var.vpc_name}-database-subnet-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
   )
@@ -134,11 +144,11 @@ resource "aws_subnet" "database" {
 resource "aws_route_table" "database" {
   count = length(local.database_subnets)
 
-  vpc_id = local.vpc_id
+  vpc_id = aws_vpc.this.id
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-database-rt-%s", element(var.availability_zones, count.index))
+      Name = format("${var.vpc_name}-database-rt-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
   )
@@ -191,7 +201,7 @@ resource "aws_eip" "nat" {
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-ngw-eip-%s", element(var.availability_zones, count.index))
+      Name = format("${var.vpc_name}-ngw-eip-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
   )
@@ -203,19 +213,19 @@ resource "aws_nat_gateway" "this" {
   count = length(local.database_subnets)
 
   allocation_id = element(
-    local.nat_gateway_ips,
-    var.single_nat_gateway ? 0 : count.index,
+    aws_eip.nat[*].id,
+    count.index,
   )
   subnet_id = element(
     aws_subnet.public[*].id,
-    var.single_nat_gateway ? 0 : count.index,
+    count.index,
   )
 
   tags = merge(
     {
       "Name" = format(
-        "${var.name}-%s",
-        element(var.azs, var.single_nat_gateway ? 0 : count.index),
+        "${var.vpc_name}-%s",
+        element(aws_subnet.public[*].id, count.index),
       )
     },
     var.vpc_tags,

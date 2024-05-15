@@ -2,7 +2,7 @@
 # General
 # ***************************************
 variable "vpc_tags" {
-  description = "Additional tags for all resources in the VPC."
+  description = "Tags to be applied to all resources in the VPC."
   type        = map(string)
   default     = {}
 }
@@ -61,6 +61,12 @@ variable "public_subnet_2" {
   default     = ""
 }
 
+variable "vpc_public_subnet_tags" {
+  description = "Tags for public subnets."
+  type        = map(string)
+  default     = {}
+}
+
 # ***************************************
 # Private Subnets
 # ***************************************
@@ -74,6 +80,12 @@ variable "private_subnet_2" {
   description = "The IPv4 CIDR block for the second private subnet."
   type        = string
   default     = ""
+}
+
+variable "vpc_private_subnet_tags" {
+  description = "Tags for private subnets."
+  type        = map(string)
+  default     = {}
 }
 
 # ***************************************
