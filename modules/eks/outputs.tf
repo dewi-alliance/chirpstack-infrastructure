@@ -29,5 +29,6 @@ output "cluster_certificate_authority_data" {
 }
 
 output "aws_eks_cluster_auth" {
-  value = try(data.aws_eks_cluster_auth.eks.token, null)
+  description = "EKS cluster auth token for instantiating Kubernetes provider"
+  value       = try(data.aws_eks_cluster_auth.eks.token, null)
 }

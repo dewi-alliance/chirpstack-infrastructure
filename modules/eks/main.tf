@@ -257,7 +257,7 @@ resource "aws_security_group_rule" "cluster" {
   to_port                  = 443
   type                     = "ingress"
   description              = "Node groups to cluster API"
-  source_security_group_id = aws_security_group.node.id // From node_group.tf
+  source_security_group_id = aws_security_group.node.id # From node_group.tf
 }
 
 
@@ -285,10 +285,11 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 #  EKS Addons
 # ***************************************
 locals {
-    pre_compute_cluster_addons = {
+  pre_compute_cluster_addons = {
     vpc-cni = {
       addon_version     = var.eks_vpc_cni_addon
-      resolve_conflicts = "OVERWRITE"
+      resolve_conflicts = var.eks_addon_resolve_conflicts_on_update
+      preserve          = var.eks_addon_preserve
       configuration_values = jsonencode({
         init = {
           env = {
@@ -296,7 +297,7 @@ locals {
           }
         }
         env = {
-          ENABLE_POD_ENI = "true"
+          ENABLE_POD_ENI           = "true"
           ENABLE_PREFIX_DELEGATION = "true"
           WARM_PREFIX_TARGET       = "1"
         }
@@ -307,12 +308,14 @@ locals {
   post_compute_cluster_addons = {
     coredns = {
       addon_version     = var.eks_coredns_version
-      resolve_conflicts = "OVERWRITE"
+      resolve_conflicts = var.eks_addon_resolve_conflicts_on_update
+      preserve          = var.eks_addon_preserve
     }
     # aws eks describe-addon-versions --addon-name kube-proxy
     kube-proxy = {
       addon_version     = var.eks_kube_proxy_version
       resolve_conflicts = "OVERWRITE"
+      preserve          = var.eks_addon_preserve
     }
   }
 }
@@ -373,8 +376,8 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
 
   data = local.aws_auth_configmap_data
 
-  depends_on = [ 
-    aws_eks_cluster.this, 
-    aws_eks_node_group.this 
+  depends_on = [
+    aws_eks_cluster.this,
+    aws_eks_node_group.this
   ]
 }

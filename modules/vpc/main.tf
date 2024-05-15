@@ -39,6 +39,7 @@ resource "aws_subnet" "public" {
       Name = format("${var.vpc_name}-public-subnet-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
+    var.vpc_public_subnet_tags
   )
 }
 
@@ -85,6 +86,7 @@ resource "aws_subnet" "private" {
       Name = format("${var.vpc_name}-private-subnet-%s", element(local.availability_zones, count.index))
     },
     var.vpc_tags,
+    var.vpc_private_subnet_tags
   )
 }
 
@@ -233,4 +235,3 @@ resource "aws_nat_gateway" "this" {
 
   depends_on = [aws_internet_gateway.this]
 }
-

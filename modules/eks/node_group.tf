@@ -59,7 +59,7 @@ resource "aws_eks_node_group" "this" {
     { Name = "eks-node-group" }
   )
 
-  depends_on = [ 
+  depends_on = [
     aws_eks_cluster.this
   ]
 }
@@ -269,5 +269,5 @@ resource "aws_security_group_rule" "node" {
   ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
   prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
   self                     = lookup(each.value, "self", null)
-  source_security_group_id = try(each.value.source_cluster_security_group, false) ? aws_security_group.cluster.id: lookup(each.value, "source_security_group_id", null)
+  source_security_group_id = try(each.value.source_cluster_security_group, false) ? aws_security_group.cluster.id : lookup(each.value, "source_security_group_id", null)
 }
