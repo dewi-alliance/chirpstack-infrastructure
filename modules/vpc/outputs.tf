@@ -5,17 +5,17 @@ output "vpc_id" {
 
 output "public_subnets_ids" {
   description = "List of IDs of public subnets"
-  value       = aws_subnet.public[*].id
+  value       = try(aws_subnet.public[*].id, null)
 }
 
 output "private_subnets_ids" {
   description = "List of IDs of private subnets"
-  value       = aws_subnet.private[*].id
+  value       = try(aws_subnet.private[*].id, null)
 }
 
 output "database_subnet_ids" {
   description = "List of IDs of database subnets"
-  value       = aws_subnet.database[*].id
+  value       = try(aws_subnet.database[*].id, null)
 }
 
 output "igw_id" {

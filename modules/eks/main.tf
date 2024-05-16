@@ -287,7 +287,7 @@ resource "aws_iam_openid_connect_provider" "oidc_provider" {
 locals {
   pre_compute_cluster_addons = {
     vpc-cni = {
-      addon_version     = var.eks_vpc_cni_addon
+      addon_version     = var.eks_vpc_cni_version
       resolve_conflicts = var.eks_addon_resolve_conflicts_on_update
       preserve          = var.eks_addon_preserve
       configuration_values = jsonencode({
@@ -359,6 +359,11 @@ resource "aws_eks_addon" "post_compute_cluster_addons" {
 #  aws-auth configmap
 # ***************************************
 locals {
+  manage_aws_auth_configmap = (
+    length(var.eks_aws_auth_roles) > 0 ||
+    length(var.eks_aws_auth_users) > 0 ||
+    length(var.eks_aws_auth_accounts) > 0
+  )
   aws_auth_configmap_data = {
     mapRoles    = yamlencode(var.eks_aws_auth_roles)
     mapUsers    = yamlencode(var.eks_aws_auth_users)
@@ -367,6 +372,8 @@ locals {
 }
 
 resource "kubernetes_config_map_v1_data" "aws_auth" {
+  count = local.manage_aws_auth_configmap ? 1 : 0
+
   force = true
 
   metadata {

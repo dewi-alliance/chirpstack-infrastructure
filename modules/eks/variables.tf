@@ -103,7 +103,7 @@ variable "eks_addon_resolve_conflicts_on_update" {
   default     = "OVERWRITE"
 }
 
-variable "eks_vpc_cni_addon" {
+variable "eks_vpc_cni_version" {
   description = "Version of the VPC CNI cluster addon"
   type        = string
   default     = "v1.9.3-eksbuild.7"

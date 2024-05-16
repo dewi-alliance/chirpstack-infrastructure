@@ -1,11 +1,8 @@
 # ***************************************
-# Module-wide locals
+# VPC
 # ***************************************
 locals {
-  availability_zones = [var.availability_zone_1, var.availability_zone_2]
-  public_subnets     = [var.public_subnet_1, var.public_subnet_2]
-  private_subnets    = [var.private_subnet_1, var.private_subnet_2]
-  database_subnets   = [var.database_subnet_1, var.database_subnet_2]
+  number_of_ngws = min(length(var.availability_zones), length(var.private_subnets))
 }
 
 # ***************************************
@@ -28,18 +25,18 @@ resource "aws_vpc" "this" {
 # Public Subnets
 # ***************************************
 resource "aws_subnet" "public" {
-  count = length(local.public_subnets)
+  count = length(var.public_subnets)
 
   vpc_id            = aws_vpc.this.id
-  cidr_block        = element(local.public_subnets, count.index)
-  availability_zone = element(local.availability_zones, count.index)
+  cidr_block        = element(var.public_subnets, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-public-subnet-%s", element(local.availability_zones, count.index))
+      Name = format("${var.vpc_name}-public-subnet-%s", element(var.availability_zones, count.index))
     },
     var.vpc_tags,
-    var.vpc_public_subnet_tags
+    var.public_subnet_tags
   )
 }
 
@@ -55,7 +52,7 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  count = length(local.public_subnets)
+  count = length(var.public_subnets)
 
   subnet_id      = element(aws_subnet.public[*].id, count.index)
   route_table_id = aws_route_table.public.id
@@ -75,46 +72,49 @@ resource "aws_route" "public_internet_gateway" {
 # Private Subnets
 # ***************************************
 resource "aws_subnet" "private" {
-  count = length(local.private_subnets)
+  count = length(var.private_subnets)
 
   vpc_id            = aws_vpc.this.id
-  cidr_block        = element(local.private_subnets, count.index)
-  availability_zone = element(local.availability_zones, count.index)
+  cidr_block        = element(var.private_subnets, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-private-subnet-%s", element(local.availability_zones, count.index))
+      Name = format("${var.vpc_name}-private-subnet-%s", element(var.availability_zones, count.index))
     },
     var.vpc_tags,
-    var.vpc_private_subnet_tags
+    var.private_subnet_tags
   )
 }
 
+# There are as many routing tables as the number of NAT gateways.
+# Unless 1 NAT Gateway is requested, there will a number of NAT
+# gateways corresponding to the lesser of private subnets and AZs.
 resource "aws_route_table" "private" {
-  count = length(local.private_subnets)
+  count = var.single_nat_gateway ? 1 : local.number_of_ngws
 
   vpc_id = aws_vpc.this.id
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-private-rt-%s", element(local.availability_zones, count.index))
+      Name = format("${var.vpc_name}-private-rt-%s", element(var.availability_zones, count.index))
     },
     var.vpc_tags,
   )
 }
 
 resource "aws_route_table_association" "private" {
-  count = length(local.private_subnets)
+  count = length(var.private_subnets)
 
   subnet_id = element(aws_subnet.private[*].id, count.index)
   route_table_id = element(
     aws_route_table.private[*].id,
-    count.index,
+    var.single_nat_gateway ? 0 : count.index,
   )
 }
 
 resource "aws_route" "private_nat_gateway" {
-  count = length(local.private_subnets)
+  count = var.single_nat_gateway ? 1 : local.number_of_ngws
 
   route_table_id         = element(aws_route_table.private[*].id, count.index)
   nat_gateway_id         = element(aws_nat_gateway.this[*].id, count.index)
@@ -129,35 +129,35 @@ resource "aws_route" "private_nat_gateway" {
 # Database Subnets
 # ***************************************
 resource "aws_subnet" "database" {
-  count = length(local.database_subnets)
+  count = length(var.database_subnets)
 
   vpc_id            = aws_vpc.this.id
-  cidr_block        = element(local.database_subnets, count.index)
-  availability_zone = element(local.availability_zones, count.index)
+  cidr_block        = element(var.database_subnets, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-database-subnet-%s", element(local.availability_zones, count.index))
+      Name = format("${var.vpc_name}-database-subnet-%s", element(var.availability_zones, count.index))
     },
     var.vpc_tags,
   )
 }
 
 resource "aws_route_table" "database" {
-  count = length(local.database_subnets)
+  count = length(var.database_subnets)
 
   vpc_id = aws_vpc.this.id
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-database-rt-%s", element(local.availability_zones, count.index))
+      Name = format("${var.vpc_name}-database-rt-%s", element(var.availability_zones, count.index))
     },
     var.vpc_tags,
   )
 }
 
 resource "aws_route_table_association" "database" {
-  count = length(local.database_subnets)
+  count = length(var.database_subnets)
 
   subnet_id = element(aws_subnet.database[*].id, count.index)
   route_table_id = element(
@@ -197,13 +197,15 @@ resource "aws_internet_gateway" "this" {
 # NAT Gateway
 ################################################################################
 resource "aws_eip" "nat" {
-  count = length(local.database_subnets)
+  count = var.single_nat_gateway ? 1 : local.number_of_ngws
 
   domain = "vpc"
 
   tags = merge(
     {
-      Name = format("${var.vpc_name}-ngw-eip-%s", element(local.availability_zones, count.index))
+      Name = format(
+        "${var.vpc_name}-ngw-eip-%s",
+      element(var.availability_zones, var.single_nat_gateway ? 0 : count.index))
     },
     var.vpc_tags,
   )
@@ -212,11 +214,11 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "this" {
-  count = length(local.database_subnets)
+  count = var.single_nat_gateway ? 1 : length(var.availability_zones)
 
   allocation_id = element(
     aws_eip.nat[*].id,
-    count.index,
+    var.single_nat_gateway ? 0 : count.index,
   )
   subnet_id = element(
     aws_subnet.public[*].id,
@@ -225,9 +227,9 @@ resource "aws_nat_gateway" "this" {
 
   tags = merge(
     {
-      "Name" = format(
-        "${var.vpc_name}-%s",
-        element(aws_subnet.public[*].id, count.index),
+      Name = format(
+        "${var.vpc_name}-ngw-%s",
+        element(aws_subnet.public[*].id, var.single_nat_gateway ? 0 : count.index),
       )
     },
     var.vpc_tags,

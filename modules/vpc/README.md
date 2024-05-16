@@ -41,20 +41,17 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_availability_zone_1"></a> [availability\_zone\_1](#input\_availability\_zone\_1) | First AWS availability zone. | `string` | `""` | no |
-| <a name="input_availability_zone_2"></a> [availability\_zone\_2](#input\_availability\_zone\_2) | Second AWS availability zone. | `string` | `""` | no |
-| <a name="input_database_subnet_1"></a> [database\_subnet\_1](#input\_database\_subnet\_1) | The IPv4 CIDR block for the first database subnet. | `string` | `""` | no |
-| <a name="input_database_subnet_2"></a> [database\_subnet\_2](#input\_database\_subnet\_2) | The IPv4 CIDR block for the second database subnet. | `string` | `""` | no |
-| <a name="input_private_subnet_1"></a> [private\_subnet\_1](#input\_private\_subnet\_1) | The IPv4 CIDR block for the first private subnet. | `string` | `""` | no |
-| <a name="input_private_subnet_2"></a> [private\_subnet\_2](#input\_private\_subnet\_2) | The IPv4 CIDR block for the second private subnet. | `string` | `""` | no |
-| <a name="input_public_subnet_1"></a> [public\_subnet\_1](#input\_public\_subnet\_1) | The IPv4 CIDR block for the first public subnet. | `string` | `""` | no |
-| <a name="input_public_subnet_2"></a> [public\_subnet\_2](#input\_public\_subnet\_2) | The IPv4 CIDR block for the second public subnet. | `string` | `""` | no |
+| <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | A list AWS availability zones for the VPC. | `list(string)` | `[]` | no |
+| <a name="input_database_subnets"></a> [database\_subnets](#input\_database\_subnets) | A list of IPv4 CIDR blocks for database subnets inside the VPC. | `list(string)` | `[]` | no |
+| <a name="input_private_subnet_tags"></a> [private\_subnet\_tags](#input\_private\_subnet\_tags) | Tags for private subnets. | `map(string)` | `{}` | no |
+| <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | A list of IPv4 CIDR blocks for private subnets inside the VPC. | `list(string)` | `[]` | no |
+| <a name="input_public_subnet_tags"></a> [public\_subnet\_tags](#input\_public\_subnet\_tags) | Tags for public subnets. | `map(string)` | `{}` | no |
+| <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | A list of IPv4 CIDR blocks for public subnets inside the VPC. | `list(string)` | `[]` | no |
+| <a name="input_single_nat_gateway"></a> [single\_nat\_gateway](#input\_single\_nat\_gateway) | A boolean flag to use single NAT gateway for cost savings, otherwise NAT gateways will be created per AZ. Defaults to false. | `bool` | `false` | no |
 | <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | The IPv4 CIDR block for the VPC. | `string` | `""` | no |
 | <a name="input_vpc_enable_dns_hostnames"></a> [vpc\_enable\_dns\_hostnames](#input\_vpc\_enable\_dns\_hostnames) | A boolean flag to enable/disable DNS hostnames in the VPC. Defaults true. | `bool` | `true` | no |
 | <a name="input_vpc_enable_dns_support"></a> [vpc\_enable\_dns\_support](#input\_vpc\_enable\_dns\_support) | A boolean flag to enable/disable DNS support in the VPC. Defaults to true. | `bool` | `true` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC. Defaults to chirpstack-vpc. | `string` | `"chirpstack-vpc"` | no |
-| <a name="input_vpc_private_subnet_tags"></a> [vpc\_private\_subnet\_tags](#input\_vpc\_private\_subnet\_tags) | Tags for private subnets. | `map(string)` | `{}` | no |
-| <a name="input_vpc_public_subnet_tags"></a> [vpc\_public\_subnet\_tags](#input\_vpc\_public\_subnet\_tags) | Tags for public subnets. | `map(string)` | `{}` | no |
 | <a name="input_vpc_tags"></a> [vpc\_tags](#input\_vpc\_tags) | Tags to be applied to all resources in the VPC. | `map(string)` | `{}` | no |
 
 ## Outputs

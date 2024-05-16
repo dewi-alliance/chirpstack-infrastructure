@@ -7,16 +7,10 @@ variable "vpc_tags" {
   default     = {}
 }
 
-variable "availability_zone_1" {
-  description = "First AWS availability zone."
-  type        = string
-  default     = ""
-}
-
-variable "availability_zone_2" {
-  description = "Second AWS availability zone."
-  type        = string
-  default     = ""
+variable "availability_zones" {
+  description = "A list AWS availability zones for the VPC."
+  type        = list(string)
+  default     = []
 }
 
 # ***************************************
@@ -49,19 +43,13 @@ variable "vpc_enable_dns_hostnames" {
 # ***************************************
 # Public Subnets
 # ***************************************
-variable "public_subnet_1" {
-  description = "The IPv4 CIDR block for the first public subnet."
-  type        = string
-  default     = ""
+variable "public_subnets" {
+  description = "A list of IPv4 CIDR blocks for public subnets inside the VPC."
+  type        = list(string)
+  default     = []
 }
 
-variable "public_subnet_2" {
-  description = "The IPv4 CIDR block for the second public subnet."
-  type        = string
-  default     = ""
-}
-
-variable "vpc_public_subnet_tags" {
+variable "public_subnet_tags" {
   description = "Tags for public subnets."
   type        = map(string)
   default     = {}
@@ -70,19 +58,14 @@ variable "vpc_public_subnet_tags" {
 # ***************************************
 # Private Subnets
 # ***************************************
-variable "private_subnet_1" {
-  description = "The IPv4 CIDR block for the first private subnet."
-  type        = string
-  default     = ""
+variable "private_subnets" {
+  description = "A list of IPv4 CIDR blocks for private subnets inside the VPC."
+  type        = list(string)
+  default     = []
+
 }
 
-variable "private_subnet_2" {
-  description = "The IPv4 CIDR block for the second private subnet."
-  type        = string
-  default     = ""
-}
-
-variable "vpc_private_subnet_tags" {
+variable "private_subnet_tags" {
   description = "Tags for private subnets."
   type        = map(string)
   default     = {}
@@ -91,14 +74,17 @@ variable "vpc_private_subnet_tags" {
 # ***************************************
 # Database Subnets
 # ***************************************
-variable "database_subnet_1" {
-  description = "The IPv4 CIDR block for the first database subnet."
-  type        = string
-  default     = ""
+variable "database_subnets" {
+  description = "A list of IPv4 CIDR blocks for database subnets inside the VPC."
+  type        = list(string)
+  default     = []
 }
 
-variable "database_subnet_2" {
-  description = "The IPv4 CIDR block for the second database subnet."
-  type        = string
-  default     = ""
+# ***************************************
+# NAT Gateway
+# ***************************************
+variable "single_nat_gateway" {
+  description = "A boolean flag to use single NAT gateway for cost savings, otherwise NAT gateways will be created per AZ. Defaults to false."
+  type        = bool
+  default     = false
 }
