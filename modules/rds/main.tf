@@ -13,7 +13,7 @@ resource "aws_db_instance" "rds" {
 
   port                   = var.rds_db_port
   db_subnet_group_name   = var.rds_db_subnet_group_name
-  vpc_security_group_ids = concat([aws_security_group.rds_security_group.id], var.vpc_security_group_ids)
+  vpc_security_group_ids = [aws_security_group.rds_security_group.id]
 
   skip_final_snapshot       = var.rds_skip_final_snapshot
   final_snapshot_identifier = !var.rds_skip_final_snapshot ? "${var.rds_name}-final-snap" : null
@@ -41,7 +41,7 @@ resource "aws_db_instance" "rds_read_replica" {
   enabled_cloudwatch_logs_exports = var.pg_log_exports
 
   port                                = var.rds_db_port
-  vpc_security_group_ids              = concat([aws_security_group.rds_security_group.id], var.vpc_security_group_ids)
+  vpc_security_group_ids              = [aws_security_group.rds_security_group.id]
   iam_database_authentication_enabled = var.rds_iam_database_authentication_enabled
 
   storage_type            = var.rds_storage_type

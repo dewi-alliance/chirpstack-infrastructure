@@ -79,7 +79,7 @@ variable "private_subnet_tags" {
 }
 
 # ***************************************
-# Database Subnets
+# VPC - Database Subnets
 # ***************************************
 variable "database_subnets" {
   description = "A list of IPv4 CIDR blocks for database subnets inside the VPC."
@@ -88,7 +88,7 @@ variable "database_subnets" {
 }
 
 # ***************************************
-# NAT Gateway
+# VPC - NAT Gateway
 # ***************************************
 variable "single_nat_gateway" {
   description = "A boolean flag to use single NAT gateway for cost savings, otherwise NAT gateways will be created per AZ. Defaults to false."
@@ -148,7 +148,7 @@ variable "eks_tags" {
 }
 
 # ***************************************
-# KMS Key for EKS Secret Encryption
+# EKS - KMS Key for EKS Secret Encryption
 # ***************************************
 variable "kms_key_usage" {
   description = "Specifies the intended use of the key. Valid values: ENCRYPT_DECRYPT, SIGN_VERIFY, or GENERATE_VERIFY_MAC"
@@ -163,7 +163,7 @@ variable "kms_enable_key_rotation" {
 }
 
 # ***************************************
-# CloudWatch Log Group for EKS Control Plane logging
+# EKS - CloudWatch Log Group for EKS Control Plane logging
 # ***************************************
 variable "cloudwatch_retention_in_days" {
   description = "Duration to retain EKS control plane logs"
@@ -172,7 +172,7 @@ variable "cloudwatch_retention_in_days" {
 }
 
 # ***************************************
-#  EKS Addons
+#  EKS - EKS Addons
 # ***************************************
 variable "eks_addon_preserve" {
   description = "Indicates if you want to preserve the created resources when deleting the EKS add-on"
@@ -205,7 +205,7 @@ variable "eks_kube_proxy_version" {
 }
 
 # ***************************************
-#  aws-auth configmap
+#  EKS - aws-auth configmap
 # ***************************************
 variable "eks_aws_auth_roles" {
   description = "List of role maps to add to the aws-auth configmap"
@@ -226,7 +226,7 @@ variable "eks_aws_auth_accounts" {
 }
 
 # ***************************************
-# Node Group
+# EKS - Node Group
 # ***************************************
 variable "node_group_min_size" {
   description = "Minimum number of nodes in EKS cluster"
@@ -274,4 +274,134 @@ variable "node_group_max_unavailable_percentage" {
   description = " Desired max percentage of unavailable worker nodes during node group update."
   type        = number
   default     = 33
+}
+
+# ***************************************
+# RDS
+# ***************************************
+variable "rds_name" {
+  description = "The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier."
+  type        = string
+  default     = ""
+}
+
+variable "rds_storage_type" {
+  description = "EBS storage type for RDS e.g., gp3"
+  type        = string
+  default     = "gp3"
+}
+
+variable "rds_storage_size" {
+  description = "EBS storage size for RDS"
+  type        = number
+  default     = 100
+}
+
+variable "rds_max_storage_size" {
+  description = "Maximum EBS storage size for RDS"
+  type        = number
+  default     = 1000
+}
+
+variable "rds_instance_type" {
+  description = "Instance type for RDS"
+  type        = string
+  default     = "db.m6i.large"
+}
+
+variable "rds_storage_encrypted" {
+  description = "Whether the DB instance is encrypted."
+  type        = bool
+  default     = true
+}
+
+variable "rds_skip_final_snapshot" {
+  description = "Determines whether a final DB snapshot is created before the DB instance is deleted. If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
+  type        = bool
+  default     = false
+}
+
+variable "rds_backup_retention_period" {
+  description = "The days to retain backups for. Must be between 0 and 35. Default is 0. Must be greater than 0 if the database is used as a source for a Read Replica. Default is 30."
+  type        = number
+  default     = 30
+}
+
+variable "rds_db_port" {
+  description = "Database port"
+  type        = number
+  default     = 5432
+}
+
+variable "rds_iam_database_authentication_enabled" {
+  description = "Enable IAM database authentication"
+  type        = bool
+  default     = true
+}
+
+variable "rds_deploy_from_snapshot" {
+  description = "Deploy RDS from snapshot"
+  type        = bool
+  default     = false
+}
+
+variable "rds_snapshot_identifier" {
+  description = "Snapshot identifier for restoration from snapshot. Requires rds_deploy_from_snapshot to be true."
+  type        = string
+  default     = ""
+}
+
+variable "rds_multi_az" {
+  description = "Multi-az deployment"
+  type        = bool
+  default     = false
+}
+
+variable "rds_read_replica" {
+  description = "Create read replica of primary DB."
+  type        = bool
+  default     = false
+}
+
+# ***************************************
+# RDS - Postgres
+# ***************************************
+variable "pg_name" {
+  description = "Postgres database name"
+  type        = string
+  default     = ""
+}
+
+variable "pg_engine_version" {
+  description = "Postgres database engine version"
+  type        = string
+  default     = ""
+}
+
+variable "pg_ssl_required" {
+  description = "Require SSL to connect to database."
+  type        = bool
+  default     = true
+}
+
+variable "pg_username" {
+  description = "Postgres admin username"
+  type        = string
+  default     = ""
+}
+
+variable "pg_log_exports" {
+  description = "Enable CloudWatch log exports"
+  type        = list(string)
+  default     = ["postgresql"]
+}
+
+
+# ***************************************
+# Cloudwatch Alerting
+# ***************************************
+variable "cloudwatch_alarm_action_arns" {
+  description = "CloudWatch Alarm Action ARNs to report CloudWatch Alarms"
+  type        = list(string)
+  default     = []
 }

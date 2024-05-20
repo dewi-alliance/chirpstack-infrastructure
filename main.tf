@@ -28,7 +28,7 @@ module "vpc" {
 }
 
 # ***************************************
-# VPC
+# EKS
 # ***************************************
 module "eks" {
   source = "./modules/eks"
@@ -77,4 +77,52 @@ module "eks" {
 
   # Tags
   eks_tags = var.eks_tags
+}
+
+# ***************************************
+# RDS
+# ***************************************
+module "rds" {
+  source = "./modules/rds"
+
+  # AWS
+  aws_region = var.aws_region
+
+  # VPC
+  vpc_id                   = module.vpc.vpc_id
+  database_subnet_ids      = module.vpc.database_subnet_ids
+  rds_db_subnet_group_name = module.vpc.database_subnet_group_name
+
+
+  # RDS
+  rds_name                                = var.rds_name
+  rds_storage_type                        = var.rds_storage_type
+  rds_storage_size                        = var.rds_storage_size
+  rds_max_storage_size                    = var.rds_max_storage_size
+  rds_instance_type                       = var.rds_instance_type
+  rds_storage_encrypted                   = var.rds_storage_encrypted
+  rds_skip_final_snapshot                 = var.rds_skip_final_snapshot
+  rds_backup_retention_period             = var.rds_backup_retention_period
+  rds_db_port                             = var.rds_db_port
+  rds_iam_database_authentication_enabled = var.rds_iam_database_authentication_enabled
+  rds_multi_az                            = var.rds_multi_az
+  rds_read_replica                        = var.rds_read_replica
+
+  # DB
+  pg_name           = var.pg_name
+  pg_engine_version = var.pg_engine_version
+  pg_ssl_required   = var.pg_ssl_required
+  pg_username       = var.pg_username
+  pg_log_exports    = var.pg_log_exports
+
+  # IAM
+  oidc_provider     = module.eks.oidc_provider
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  # Snapshot restore
+  rds_deploy_from_snapshot = var.rds_deploy_from_snapshot
+  rds_snapshot_identifier  = var.rds_snapshot_identifier
+
+  # Monitoring
+  cloudwatch_alarm_action_arns = var.cloudwatch_alarm_action_arns
 }

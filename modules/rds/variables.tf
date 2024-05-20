@@ -13,12 +13,6 @@ variable "vpc_id" {
   default     = ""
 }
 
-variable "vpc_security_group_ids" {
-  description = "List of security group ids to apply to RDS"
-  type        = list(string)
-  default     = []
-}
-
 variable "database_subnet_ids" {
   description = "List of database subnet IDs"
   type        = list(string)
@@ -151,7 +145,6 @@ variable "pg_log_exports" {
   default     = ["postgresql"]
 }
 
-
 # ***************************************
 # IAM Role
 # ***************************************
@@ -167,6 +160,9 @@ variable "oidc_provider_arn" {
   default     = ""
 }
 
+# ***************************************
+# Cloudwatch Alerting
+# ***************************************
 variable "cloudwatch_alarm_action_arns" {
   description = "CloudWatch Alarm Action ARNs to report CloudWatch Alarms"
   type        = list(string)
