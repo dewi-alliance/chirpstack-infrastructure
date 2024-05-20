@@ -210,7 +210,9 @@ resource "aws_eip" "nat" {
     var.vpc_tags,
   )
 
-  depends_on = [aws_internet_gateway.this]
+  depends_on = [
+    aws_internet_gateway.this,
+  ]
 }
 
 resource "aws_nat_gateway" "this" {
@@ -235,5 +237,9 @@ resource "aws_nat_gateway" "this" {
     var.vpc_tags,
   )
 
-  depends_on = [aws_internet_gateway.this]
+  depends_on = [
+    aws_eip.nat,
+    aws_internet_gateway.this,
+    aws_subnet.public
+  ]
 }
