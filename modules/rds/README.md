@@ -4,14 +4,14 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.46.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.50.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.6.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.46.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.1 |
 
 ## Modules
@@ -22,26 +22,26 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_cloudwatch_metric_alarm.rds](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/cloudwatch_metric_alarm) | resource |
-| [aws_cloudwatch_metric_alarm.rds_read_replica](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/cloudwatch_metric_alarm) | resource |
-| [aws_db_instance.rds](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/db_instance) | resource |
-| [aws_db_instance.rds_read_replica](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/db_instance) | resource |
-| [aws_db_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/db_parameter_group) | resource |
-| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_role) | resource |
-| [aws_secretsmanager_secret.pg_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/secretsmanager_secret) | resource |
-| [aws_secretsmanager_secret_rotation.rotation](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/secretsmanager_secret_rotation) | resource |
-| [aws_secretsmanager_secret_version.pg_credentials_vals](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/secretsmanager_secret_version) | resource |
-| [aws_security_group.rds_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group) | resource |
-| [aws_security_group.rds_secrets_manager_rotator_lambda_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group) | resource |
-| [aws_security_group.rds_secrets_manager_vpc_endpoint_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group) | resource |
-| [aws_security_group.rds_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group) | resource |
-| [aws_security_group_rule.rds_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group_rule) | resource |
-| [aws_serverlessapplicationrepository_cloudformation_stack.rotator_cf_stack](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/serverlessapplicationrepository_cloudformation_stack) | resource |
-| [aws_vpc_endpoint.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/vpc_endpoint) | resource |
+| [aws_cloudwatch_metric_alarm.rds](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_cloudwatch_metric_alarm.rds_read_replica](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/cloudwatch_metric_alarm) | resource |
+| [aws_db_instance.rds](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_instance) | resource |
+| [aws_db_instance.rds_read_replica](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_instance) | resource |
+| [aws_db_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_parameter_group) | resource |
+| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role) | resource |
+| [aws_secretsmanager_secret.pg_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret_rotation.rotation](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_rotation) | resource |
+| [aws_secretsmanager_secret_version.pg_credentials_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_security_group.rds_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.rds_secrets_manager_rotator_lambda_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.rds_secrets_manager_vpc_endpoint_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.rds_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group_rule.rds_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
+| [aws_serverlessapplicationrepository_cloudformation_stack.rotator_cf_stack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/serverlessapplicationrepository_cloudformation_stack) | resource |
+| [aws_vpc_endpoint.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/vpc_endpoint) | resource |
 | [random_password.pg_admin_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/caller_identity) | data source |
-| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/partition) | data source |
-| [aws_serverlessapplicationrepository_application.rotator](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/serverlessapplicationrepository_application) | data source |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/partition) | data source |
+| [aws_serverlessapplicationrepository_application.rotator](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/serverlessapplicationrepository_application) | data source |
 
 ## Inputs
 

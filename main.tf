@@ -93,7 +93,6 @@ module "rds" {
   database_subnet_ids      = module.vpc.database_subnet_ids
   rds_db_subnet_group_name = module.vpc.database_subnet_group_name
 
-
   # RDS
   rds_name                                = var.rds_name
   rds_storage_type                        = var.rds_storage_type

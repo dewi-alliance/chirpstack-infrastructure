@@ -387,7 +387,7 @@ variable "pg_ssl_required" {
 variable "pg_username" {
   description = "Postgres admin username"
   type        = string
-  default     = ""
+  default     = "chirpstack_admin"
 }
 
 variable "pg_log_exports" {

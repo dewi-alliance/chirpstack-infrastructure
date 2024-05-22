@@ -152,7 +152,6 @@ resource "aws_security_group" "rds_access_security_group" {
   }
 }
 
-
 # ***************************************
 # IAM Role
 #

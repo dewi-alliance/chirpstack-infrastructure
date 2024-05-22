@@ -4,7 +4,7 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.46.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.50.0 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.29.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.9 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.0 |
@@ -13,7 +13,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.46.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.29.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.9 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | >= 3.0 |
@@ -26,35 +26,35 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/cloudwatch_log_group) | resource |
-| [aws_ec2_tag.cluster_primary_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/ec2_tag) | resource |
-| [aws_eks_addon.post_compute_cluster_addons](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/eks_addon) | resource |
-| [aws_eks_addon.pre_compute_cluster_addons](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/eks_addon) | resource |
-| [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/eks_cluster) | resource |
-| [aws_eks_node_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/eks_node_group) | resource |
-| [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_openid_connect_provider) | resource |
-| [aws_iam_policy.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_policy) | resource |
-| [aws_iam_role.node_group_role](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_role) | resource |
-| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy_attachment.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.node_group_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_kms_alias.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/kms_alias) | resource |
-| [aws_kms_key.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/kms_key) | resource |
-| [aws_launch_template.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/launch_template) | resource |
-| [aws_security_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group) | resource |
-| [aws_security_group.node](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group) | resource |
-| [aws_security_group_rule.cluster](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group_rule) | resource |
-| [aws_security_group_rule.node](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/resources/security_group_rule) | resource |
+| [aws_cloudwatch_log_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/cloudwatch_log_group) | resource |
+| [aws_ec2_tag.cluster_primary_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/ec2_tag) | resource |
+| [aws_eks_addon.post_compute_cluster_addons](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/eks_addon) | resource |
+| [aws_eks_addon.pre_compute_cluster_addons](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/eks_addon) | resource |
+| [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/eks_cluster) | resource |
+| [aws_eks_node_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/eks_node_group) | resource |
+| [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_openid_connect_provider) | resource |
+| [aws_iam_policy.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_policy) | resource |
+| [aws_iam_role.node_group_role](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role) | resource |
+| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.node_group_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_kms_alias.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/kms_alias) | resource |
+| [aws_kms_key.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/kms_key) | resource |
+| [aws_launch_template.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/launch_template) | resource |
+| [aws_security_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.node](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group_rule.cluster](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.node](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
 | [kubernetes_config_map_v1_data.aws_auth](https://registry.terraform.io/providers/hashicorp/kubernetes/2.29.0/docs/resources/config_map_v1_data) | resource |
 | [time_sleep.this](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/caller_identity) | data source |
-| [aws_eks_cluster_auth.eks](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/eks_cluster_auth) | data source |
-| [aws_iam_policy_document.assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.node_group_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.this](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/iam_session_context) | data source |
-| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.46.0/docs/data-sources/partition) | data source |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
+| [aws_eks_cluster_auth.eks](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/eks_cluster_auth) | data source |
+| [aws_iam_policy_document.assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.node_group_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_session_context.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/iam_session_context) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/partition) | data source |
 | [tls_certificate.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate) | data source |
 
 ## Inputs
