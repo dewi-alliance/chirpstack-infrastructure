@@ -16,7 +16,7 @@ variable "vpc_id" {
   default     = ""
 }
 
-variable "vpc_database_subnet_ids" {
+variable "database_subnet_ids" {
   description = "Subnet IDs of the database subnet for creating Redis subnet group"
   type        = list(string)
   default     = []
@@ -57,12 +57,6 @@ variable "redis_cluster_id" {
 
 variable "redis_engine_version" {
   description = "Version number of the Redis cache engine to be used. If not set, defaults to the latest version"
-  type        = string
-  default     = null
-}
-
-variable "redis_final_snapshot_identifier" {
-  description = "(Redis only) Name of your final cluster snapshot. If omitted, no final snapshot will be made"
   type        = string
   default     = null
 }
@@ -187,12 +181,6 @@ variable "redis_num_cache_clusters" {
   default     = null
 }
 
-variable "redis_num_node_groups" {
-  description = "Number of node groups (shards) for this Redis replication group. Changing this number will trigger a resizing operation before other settings modifications"
-  type        = number
-  default     = null
-}
-
 variable "redis_preferred_cache_cluster_azs" {
   description = "List of EC2 availability zones in which the replication group's cache clusters will be created. The order of the availability zones in the list is considered. The first item in the list will be the primary node. Ignored when updating"
   type        = list(string)
@@ -215,13 +203,13 @@ variable "redis_user_group_ids" {
 # ***************************************
 # Parameter Group
 # ***************************************
-variable "redis_parameter_group_family" {
+variable "parameter_group_family" {
   description = "The family of the ElastiCache parameter group"
   type        = string
   default     = ""
 }
 
-variable "redis_parameter_group_parameters" {
+variable "parameter_group_parameters" {
   description = "List of ElastiCache parameters to apply"
   type        = list(map(string))
   default     = []

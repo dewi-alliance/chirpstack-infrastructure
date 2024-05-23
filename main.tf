@@ -125,3 +125,52 @@ module "rds" {
   # Monitoring
   cloudwatch_alarm_action_arns = var.cloudwatch_alarm_action_arns
 }
+
+# ***************************************
+# Elasticache - Redis
+# ***************************************
+module "elasticache" {
+  source = "./modules/elasticache"
+
+  # VPC
+  vpc_id              = module.vpc.vpc_id
+  database_subnet_ids = module.vpc.database_subnet_ids
+
+  # Redis
+  redis_cluster_id                  = var.redis_cluster_id
+  redis_single_node_cluster         = var.redis_single_node_cluster
+  redis_availability_zone           = var.redis_availability_zone
+  redis_engine_version              = var.redis_engine_version
+  redis_ip_discovery                = var.redis_ip_discovery
+  redis_log_delivery_configuration  = var.redis_log_delivery_configuration
+  redis_network_type                = var.redis_network_type
+  redis_node_type                   = var.redis_node_type
+  redis_notification_topic_arn      = var.redis_notification_topic_arn
+  redis_multi_az_enabled            = var.redis_multi_az_enabled
+  redis_num_cache_clusters          = var.redis_num_cache_clusters
+  redis_preferred_cache_cluster_azs = var.redis_preferred_cache_cluster_azs
+  redis_replicas_per_node_group     = var.redis_replicas_per_node_group
+  redis_user_group_ids              = var.redis_user_group_ids
+
+  redis_apply_immediately          = var.redis_apply_immediately
+  redis_auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
+  redis_maintenance_window         = var.redis_maintenance_window
+
+  redis_snapshot_arns            = var.redis_snapshot_arns
+  redis_snapshot_name            = var.redis_snapshot_name
+  redis_snapshot_retention_limit = var.redis_snapshot_retention_limit
+  redis_snapshot_window          = var.redis_snapshot_window
+
+  redis_transit_encryption_enabled = var.redis_transit_encryption_enabled
+  redis_transit_encryption_mode    = var.redis_transit_encryption_mode
+  redis_auth_token                 = var.redis_auth_token
+  redis_at_rest_encryption_enabled = var.redis_at_rest_encryption_enabled
+  redis_kms_key_arn                = var.redis_kms_key_arn
+  redis_auth_token_update_strategy = var.redis_auth_token_update_strategy
+
+  # Parameter group
+  parameter_group_family     = var.parameter_group_family
+  parameter_group_parameters = var.parameter_group_parameters
+
+  redis_tags = var.redis_tags
+}

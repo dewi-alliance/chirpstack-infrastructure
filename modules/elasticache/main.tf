@@ -23,20 +23,20 @@ resource "aws_elasticache_cluster" "single_node_cluster" {
   ip_discovery       = var.redis_ip_discovery
   port               = 6379
 
-  final_snapshot_identifier = var.redis_final_snapshot_identifier
+  final_snapshot_identifier = "chirpstack-redis-final-snapshot"
   snapshot_arns             = var.redis_snapshot_arns
   snapshot_name             = var.redis_snapshot_name
   snapshot_retention_limit  = var.redis_snapshot_retention_limit
   snapshot_window           = var.redis_snapshot_window
 
   dynamic "log_delivery_configuration" {
-    for_each = tomap(var.redis_log_delivery_configuration)
+    for_each = var.redis_log_delivery_configuration
 
     content {
-      destination      = each.value.destination_type == "cloudwatch-logs" ? aws_cloudwatch_log_group.this[each.key].name : each.value.destination
-      destination_type = each.value.destination_type
-      log_format       = each.value.log_format
-      log_type         = try(each.value.log_type, each.key)
+      destination      = log_delivery_configuration.value.destination_type == "cloudwatch-logs" ? aws_cloudwatch_log_group.this[log_delivery_configuration.key].name : log_delivery_configuration.value.destination
+      destination_type = log_delivery_configuration.value.destination_type
+      log_format       = log_delivery_configuration.value.log_format
+      log_type         = try(log_delivery_configuration.value.log_type, log_delivery_configuration.key)
     }
   }
 
@@ -73,7 +73,7 @@ resource "aws_elasticache_replication_group" "this" {
   transit_encryption_enabled = var.redis_transit_encryption_enabled
   transit_encryption_mode    = var.redis_transit_encryption_mode
 
-  final_snapshot_identifier = var.redis_final_snapshot_identifier
+  final_snapshot_identifier = "chirpstack-redis-final-snapshot"
   snapshot_arns             = var.redis_snapshot_arns
   snapshot_name             = var.redis_snapshot_name
   snapshot_retention_limit  = var.redis_snapshot_retention_limit
@@ -82,7 +82,6 @@ resource "aws_elasticache_replication_group" "this" {
   automatic_failover_enabled  = var.redis_multi_az_enabled
   multi_az_enabled            = var.redis_multi_az_enabled
   num_cache_clusters          = var.redis_num_cache_clusters
-  num_node_groups             = var.redis_num_node_groups
   preferred_cache_cluster_azs = var.redis_preferred_cache_cluster_azs
   replicas_per_node_group     = var.redis_replicas_per_node_group
   replication_group_id        = var.redis_cluster_id
@@ -90,13 +89,13 @@ resource "aws_elasticache_replication_group" "this" {
   user_group_ids = var.redis_user_group_ids
 
   dynamic "log_delivery_configuration" {
-    for_each = tomap(var.redis_log_delivery_configuration)
+    for_each = var.redis_log_delivery_configuration
 
     content {
-      destination      = each.value.destination_type == "cloudwatch-logs" ? aws_cloudwatch_log_group.this[each.key].name : each.value.destination
-      destination_type = each.value.destination_type
-      log_format       = each.value.log_format
-      log_type         = try(each.value.log_type, each.key)
+      destination      = log_delivery_configuration.value.destination_type == "cloudwatch-logs" ? aws_cloudwatch_log_group.this[log_delivery_configuration.key].name : log_delivery_configuration.value.destination
+      destination_type = log_delivery_configuration.value.destination_type
+      log_format       = log_delivery_configuration.value.log_format
+      log_type         = try(log_delivery_configuration.value.log_type, log_delivery_configuration.key)
     }
   }
 
@@ -109,7 +108,7 @@ resource "aws_elasticache_replication_group" "this" {
 resource "aws_elasticache_subnet_group" "this" {
   name        = "${var.redis_cluster_id}-subnet-group"
   description = "Chirpstack Redis subnet group"
-  subnet_ids  = var.vpc_database_subnet_ids
+  subnet_ids  = var.database_subnet_ids
 
   tags = var.redis_tags
 }
@@ -120,14 +119,14 @@ resource "aws_elasticache_subnet_group" "this" {
 resource "aws_elasticache_parameter_group" "this" {
   name        = "${var.redis_cluster_id}-parameter-group"
   description = "Chirpstack Redis parameter group"
-  family      = var.redis_parameter_group_family
+  family      = var.parameter_group_family
 
   dynamic "parameter" {
-    for_each = toset(var.redis_parameter_group_parameters)
+    for_each = var.parameter_group_parameters
 
     content {
-      name  = each.value.name
-      value = each.value.value
+      name  = parameter.value.name
+      value = parameter.value.value
     }
   }
 
@@ -144,7 +143,7 @@ resource "aws_elasticache_parameter_group" "this" {
 resource "aws_cloudwatch_log_group" "this" {
   for_each = { for k, v in var.redis_log_delivery_configuration : k => v if try(v.destination_type, "") == "cloudwatch-logs" }
 
-  name              = "/aws/elasticache/${each.value.key}"
+  name              = "/aws/elasticache/${each.key}"
   retention_in_days = 90
 
   tags = var.redis_tags

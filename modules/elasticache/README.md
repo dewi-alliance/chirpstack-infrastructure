@@ -33,6 +33,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_database_subnet_ids"></a> [database\_subnet\_ids](#input\_database\_subnet\_ids) | Subnet IDs of the database subnet for creating Redis subnet group | `list(string)` | `[]` | no |
+| <a name="input_parameter_group_family"></a> [parameter\_group\_family](#input\_parameter\_group\_family) | The family of the ElastiCache parameter group | `string` | `""` | no |
+| <a name="input_parameter_group_parameters"></a> [parameter\_group\_parameters](#input\_parameter\_group\_parameters) | List of ElastiCache parameters to apply | `list(map(string))` | `[]` | no |
 | <a name="input_redis_apply_immediately"></a> [redis\_apply\_immediately](#input\_redis\_apply\_immediately) | Whether any database modifications are applied immediately, or during the next maintenance window. Default is `false` | `bool` | `null` | no |
 | <a name="input_redis_at_rest_encryption_enabled"></a> [redis\_at\_rest\_encryption\_enabled](#input\_redis\_at\_rest\_encryption\_enabled) | Whether to enable encryption at rest | `bool` | `true` | no |
 | <a name="input_redis_auth_token"></a> [redis\_auth\_token](#input\_redis\_auth\_token) | The password used to access a password protected server. Can be specified only if `transit_encryption_enabled = true` | `string` | `null` | no |
@@ -41,7 +44,6 @@ No modules.
 | <a name="input_redis_availability_zone"></a> [redis\_availability\_zone](#input\_redis\_availability\_zone) | Availability Zone for the cache cluster. | `string` | `null` | no |
 | <a name="input_redis_cluster_id"></a> [redis\_cluster\_id](#input\_redis\_cluster\_id) | Group identifier. ElastiCache converts this name to lowercase. Changing this value will re-create the resource | `string` | `""` | no |
 | <a name="input_redis_engine_version"></a> [redis\_engine\_version](#input\_redis\_engine\_version) | Version number of the Redis cache engine to be used. If not set, defaults to the latest version | `string` | `null` | no |
-| <a name="input_redis_final_snapshot_identifier"></a> [redis\_final\_snapshot\_identifier](#input\_redis\_final\_snapshot\_identifier) | (Redis only) Name of your final cluster snapshot. If omitted, no final snapshot will be made | `string` | `null` | no |
 | <a name="input_redis_ip_discovery"></a> [redis\_ip\_discovery](#input\_redis\_ip\_discovery) | The IP version to advertise in the discovery protocol. Valid values are `ipv4` or `ipv6` | `string` | `null` | no |
 | <a name="input_redis_kms_key_arn"></a> [redis\_kms\_key\_arn](#input\_redis\_kms\_key\_arn) | The ARN of the key that you wish to use if encrypting at rest. If not supplied, uses service managed encryption. Can be specified only if `at_rest_encryption_enabled = true` | `string` | `null` | no |
 | <a name="input_redis_log_delivery_configuration"></a> [redis\_log\_delivery\_configuration](#input\_redis\_log\_delivery\_configuration) | Specifies the destination and format of Redis SLOWLOG or Redis Engine Log | `any` | <pre>{<br>  "engine-log": {<br>    "destination_type": "cloudwatch-logs",<br>    "log_format": "json"<br>  },<br>  "slow-log": {<br>    "destination_type": "cloudwatch-logs",<br>    "log_format": "json"<br>  }<br>}</pre> | no |
@@ -51,9 +53,6 @@ No modules.
 | <a name="input_redis_node_type"></a> [redis\_node\_type](#input\_redis\_node\_type) | The instance class used. For Memcached, changing this value will re-create the resource | `string` | `null` | no |
 | <a name="input_redis_notification_topic_arn"></a> [redis\_notification\_topic\_arn](#input\_redis\_notification\_topic\_arn) | ARN of an SNS topic to send ElastiCache notifications to | `string` | `null` | no |
 | <a name="input_redis_num_cache_clusters"></a> [redis\_num\_cache\_clusters](#input\_redis\_num\_cache\_clusters) | Number of cache clusters (primary and replicas) this replication group will have. If Multi-AZ is enabled, the value of this parameter must be at least 2. Updates will occur before other modifications. Conflicts with `num_node_groups`. Defaults to `1` | `number` | `null` | no |
-| <a name="input_redis_num_node_groups"></a> [redis\_num\_node\_groups](#input\_redis\_num\_node\_groups) | Number of node groups (shards) for this Redis replication group. Changing this number will trigger a resizing operation before other settings modifications | `number` | `null` | no |
-| <a name="input_redis_parameter_group_family"></a> [redis\_parameter\_group\_family](#input\_redis\_parameter\_group\_family) | The family of the ElastiCache parameter group | `string` | `""` | no |
-| <a name="input_redis_parameter_group_parameters"></a> [redis\_parameter\_group\_parameters](#input\_redis\_parameter\_group\_parameters) | List of ElastiCache parameters to apply | `list(map(string))` | `[]` | no |
 | <a name="input_redis_preferred_cache_cluster_azs"></a> [redis\_preferred\_cache\_cluster\_azs](#input\_redis\_preferred\_cache\_cluster\_azs) | List of EC2 availability zones in which the replication group's cache clusters will be created. The order of the availability zones in the list is considered. The first item in the list will be the primary node. Ignored when updating | `list(string)` | `[]` | no |
 | <a name="input_redis_replicas_per_node_group"></a> [redis\_replicas\_per\_node\_group](#input\_redis\_replicas\_per\_node\_group) | Number of replica nodes in each node group. Changing this number will trigger a resizing operation before other settings modifications. Valid values are 0 to 5 | `number` | `null` | no |
 | <a name="input_redis_single_node_cluster"></a> [redis\_single\_node\_cluster](#input\_redis\_single\_node\_cluster) | Whether to deploy a single cluster with a single node, or a multi-cluster with multiple nodes. | `bool` | `null` | no |
@@ -65,7 +64,6 @@ No modules.
 | <a name="input_redis_transit_encryption_enabled"></a> [redis\_transit\_encryption\_enabled](#input\_redis\_transit\_encryption\_enabled) | Enable encryption in-transit. Supported only with Memcached versions `1.6.12` and later, running in a VPC | `bool` | `true` | no |
 | <a name="input_redis_transit_encryption_mode"></a> [redis\_transit\_encryption\_mode](#input\_redis\_transit\_encryption\_mode) | A setting that enables clients to migrate to in-transit encryption with no downtime. Valid values are preferred and required | `string` | `null` | no |
 | <a name="input_redis_user_group_ids"></a> [redis\_user\_group\_ids](#input\_redis\_user\_group\_ids) | User Group ID to associate with the replication group. Only a maximum of one (1) user group ID is valid | `list(string)` | `null` | no |
-| <a name="input_vpc_database_subnet_ids"></a> [vpc\_database\_subnet\_ids](#input\_vpc\_database\_subnet\_ids) | Subnet IDs of the database subnet for creating Redis subnet group | `list(string)` | `[]` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
 
 ## Outputs
