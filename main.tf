@@ -54,9 +54,9 @@ module "eks" {
   eks_kube_proxy_version                = var.eks_kube_proxy_version
 
   # EKS Cluster auth
-  eks_aws_auth_roles    = var.eks_aws_auth_roles
-  eks_aws_auth_users    = var.eks_aws_auth_users
-  eks_aws_auth_accounts = var.eks_aws_auth_accounts
+  # eks_aws_auth_roles    = var.eks_aws_auth_roles
+  # eks_aws_auth_users    = var.eks_aws_auth_users
+  # eks_aws_auth_accounts = var.eks_aws_auth_accounts
 
   # EKS KMS encryption
   kms_key_usage           = var.kms_key_usage
@@ -139,7 +139,6 @@ module "elasticache" {
   # Redis
   redis_cluster_id                  = var.redis_cluster_id
   redis_single_node_cluster         = var.redis_single_node_cluster
-  redis_availability_zone           = var.redis_availability_zone
   redis_engine_version              = var.redis_engine_version
   redis_ip_discovery                = var.redis_ip_discovery
   redis_log_delivery_configuration  = var.redis_log_delivery_configuration
@@ -147,7 +146,6 @@ module "elasticache" {
   redis_node_type                   = var.redis_node_type
   redis_notification_topic_arn      = var.redis_notification_topic_arn
   redis_multi_az_enabled            = var.redis_multi_az_enabled
-  redis_num_cache_clusters          = var.redis_num_cache_clusters
   redis_preferred_cache_cluster_azs = var.redis_preferred_cache_cluster_azs
   redis_replicas_per_node_group     = var.redis_replicas_per_node_group
   redis_user_group_ids              = var.redis_user_group_ids

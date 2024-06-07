@@ -1,8 +1,9 @@
 # ***************************************
 # RDS
 # ***************************************
-resource "random_id" "rds" {
-  byte_length = 8
+resource "random_string" "rds" {
+  length  = 8
+  special = false
 }
 
 resource "aws_db_instance" "rds" {
@@ -20,7 +21,7 @@ resource "aws_db_instance" "rds" {
   vpc_security_group_ids = [aws_security_group.rds_security_group.id]
 
   skip_final_snapshot       = var.rds_skip_final_snapshot
-  final_snapshot_identifier = !var.rds_skip_final_snapshot ? "${var.rds_name}-final-snap-${random_id.rds.id}" : null
+  final_snapshot_identifier = !var.rds_skip_final_snapshot ? "${var.rds_name}-final-snap-${random_string.rds.result}" : null
   backup_retention_period   = var.rds_backup_retention_period
   snapshot_identifier       = var.rds_deploy_from_snapshot ? var.rds_snapshot_identifier : null
 

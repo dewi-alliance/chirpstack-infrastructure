@@ -1,54 +1,12 @@
 # ***************************************
-# Redis - Single Node Cluster
+# Redis
 # ***************************************
-resource "aws_elasticache_cluster" "single_node_cluster" {
-  count = var.redis_single_node_cluster ? 1 : 0
-
-  engine                 = "redis"
-  num_cache_nodes        = 1
-  cluster_id             = var.redis_cluster_id
-  node_type              = var.redis_node_type
-  availability_zone      = var.redis_availability_zone
-  engine_version         = var.redis_engine_version
-  notification_topic_arn = var.redis_notification_topic_arn
-  parameter_group_name   = aws_elasticache_parameter_group.this.name
-
-  apply_immediately          = var.redis_apply_immediately
-  auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
-  maintenance_window         = var.redis_maintenance_window
-
-  network_type       = var.redis_network_type
-  security_group_ids = [aws_security_group.redis_security_group.id]
-  subnet_group_name  = aws_elasticache_subnet_group.this.name
-  ip_discovery       = var.redis_ip_discovery
-  port               = 6379
-
-  final_snapshot_identifier = "chirpstack-redis-final-snapshot"
-  snapshot_arns             = var.redis_snapshot_arns
-  snapshot_name             = var.redis_snapshot_name
-  snapshot_retention_limit  = var.redis_snapshot_retention_limit
-  snapshot_window           = var.redis_snapshot_window
-
-  dynamic "log_delivery_configuration" {
-    for_each = var.redis_log_delivery_configuration
-
-    content {
-      destination      = log_delivery_configuration.value.destination_type == "cloudwatch-logs" ? aws_cloudwatch_log_group.this[log_delivery_configuration.key].name : log_delivery_configuration.value.destination
-      destination_type = log_delivery_configuration.value.destination_type
-      log_format       = log_delivery_configuration.value.log_format
-      log_type         = try(log_delivery_configuration.value.log_type, log_delivery_configuration.key)
-    }
-  }
-
-  tags = var.redis_tags
+resource "random_string" "redis" {
+  length  = 8
+  special = false
 }
 
-# ***************************************
-# Redis - Multi Node Cluster
-# ***************************************
 resource "aws_elasticache_replication_group" "this" {
-  count = !var.redis_single_node_cluster ? 1 : 0
-
   engine                 = "redis"
   description            = "Chirpstack Redis Replication group"
   node_type              = var.redis_node_type
@@ -73,7 +31,7 @@ resource "aws_elasticache_replication_group" "this" {
   transit_encryption_enabled = var.redis_transit_encryption_enabled
   transit_encryption_mode    = var.redis_transit_encryption_mode
 
-  final_snapshot_identifier = "chirpstack-redis-final-snapshot"
+  final_snapshot_identifier = "chirpstack-redis-final-snapshot-${random_string.redis.result}"
   snapshot_arns             = var.redis_snapshot_arns
   snapshot_name             = var.redis_snapshot_name
   snapshot_retention_limit  = var.redis_snapshot_retention_limit
@@ -81,9 +39,8 @@ resource "aws_elasticache_replication_group" "this" {
 
   automatic_failover_enabled  = var.redis_multi_az_enabled
   multi_az_enabled            = var.redis_multi_az_enabled
-  num_cache_clusters          = var.redis_num_cache_clusters
   preferred_cache_cluster_azs = var.redis_preferred_cache_cluster_azs
-  replicas_per_node_group     = var.redis_replicas_per_node_group
+  replicas_per_node_group     = var.redis_single_node_cluster ? 0 : var.redis_replicas_per_node_group
   replication_group_id        = var.redis_cluster_id
 
   user_group_ids = var.redis_user_group_ids
@@ -176,7 +133,7 @@ locals {
 
 resource "aws_security_group" "redis_security_group" {
   name        = "redis-security-group"
-  description = "Security group for Chirpstack Redis resource"
+  description = "Security group for Chirpstack Redis cluster"
   vpc_id      = var.vpc_id
 
   tags = merge(

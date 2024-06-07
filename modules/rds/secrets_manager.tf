@@ -1,8 +1,9 @@
 # ***************************************
 # Secrets Manager - RDS Credential Storage
 # ***************************************
-resource "random_id" "secretsmanager" {
-  byte_length = 8
+resource "random_string" "secretsmanager" {
+  length  = 8
+  special = false
 }
 
 # Generate initial random password for Chirpstack RDS postgres admin user
@@ -15,7 +16,7 @@ resource "random_password" "pg_admin_password" {
 
 # Initialize AWS Secret Manager entry for the Chirpstack RDS postgres admin credentials
 resource "aws_secretsmanager_secret" "pg_credentials" {
-  name        = "chirpstack-rds-pg-credentials-${random_id.secretsmanager.id}"
+  name        = "chirpstack-rds-pg-credentials-${random_string.secretsmanager.result}"
   description = "Admin credentials for Chirpstack PostgreSQL database"
 }
 

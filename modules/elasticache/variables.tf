@@ -43,12 +43,6 @@ variable "redis_auto_minor_version_upgrade" {
   default     = null
 }
 
-variable "redis_availability_zone" {
-  description = "Availability Zone for the cache cluster."
-  type        = string
-  default     = null
-}
-
 variable "redis_cluster_id" {
   description = "Group identifier. ElastiCache converts this name to lowercase. Changing this value will re-create the resource"
   type        = string
@@ -173,12 +167,6 @@ variable "redis_multi_az_enabled" {
   description = "Specifies whether to enable Multi-AZ Support for the replication group. If true, `automatic_failover_enabled` must also be enabled. Defaults to `false`"
   type        = bool
   default     = false
-}
-
-variable "redis_num_cache_clusters" {
-  description = "Number of cache clusters (primary and replicas) this replication group will have. If Multi-AZ is enabled, the value of this parameter must be at least 2. Updates will occur before other modifications. Conflicts with `num_node_groups`. Defaults to `1`"
-  type        = number
-  default     = null
 }
 
 variable "redis_preferred_cache_cluster_azs" {

@@ -207,23 +207,23 @@ variable "eks_kube_proxy_version" {
 # ***************************************
 #  EKS - aws-auth configmap
 # ***************************************
-variable "eks_aws_auth_roles" {
-  description = "List of role maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
-}
+# variable "eks_aws_auth_roles" {
+#   description = "List of role maps to add to the aws-auth configmap"
+#   type        = list(any)
+#   default     = []
+# }
 
-variable "eks_aws_auth_users" {
-  description = "List of user maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
-}
+# variable "eks_aws_auth_users" {
+#   description = "List of user maps to add to the aws-auth configmap"
+#   type        = list(any)
+#   default     = []
+# }
 
-variable "eks_aws_auth_accounts" {
-  description = "List of account maps to add to the aws-auth configmap"
-  type        = list(any)
-  default     = []
-}
+# variable "eks_aws_auth_accounts" {
+#   description = "List of account maps to add to the aws-auth configmap"
+#   type        = list(any)
+#   default     = []
+# }
 
 # ***************************************
 # EKS - Node Group
@@ -418,12 +418,6 @@ variable "redis_auto_minor_version_upgrade" {
   default     = true
 }
 
-variable "redis_availability_zone" {
-  description = "In single node clusters, the availability Zone for the cache cluster."
-  type        = string
-  default     = null
-}
-
 variable "redis_cluster_id" {
   description = "Cluster name. ElastiCache converts this name to lowercase. Changing this value will re-create the resource"
   type        = string
@@ -548,12 +542,6 @@ variable "redis_multi_az_enabled" {
   description = "In multi-node clusters, specifies whether to enable Multi-AZ Support for the replication group. If true, `automatic_failover_enabled` must also be enabled. Defaults to `false`"
   type        = bool
   default     = false
-}
-
-variable "redis_num_cache_clusters" {
-  description = "In multi-node clusters, number of cache clusters (primary and replicas) this replication group will have. If Multi-AZ is enabled, the value of this parameter must be at least 2. Updates will occur before other modifications. Conflicts with `num_node_groups`. Defaults to `1`"
-  type        = number
-  default     = null
 }
 
 variable "redis_preferred_cache_cluster_azs" {

@@ -38,9 +38,9 @@ No modules.
 | [aws_security_group_rule.rds_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
 | [aws_serverlessapplicationrepository_cloudformation_stack.rotator_cf_stack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/serverlessapplicationrepository_cloudformation_stack) | resource |
 | [aws_vpc_endpoint.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/vpc_endpoint) | resource |
-| [random_id.rds](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/id) | resource |
-| [random_id.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/id) | resource |
 | [random_password.pg_admin_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
+| [random_string.rds](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
+| [random_string.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/partition) | data source |
 | [aws_serverlessapplicationrepository_application.rotator](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/serverlessapplicationrepository_application) | data source |
