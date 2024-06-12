@@ -32,9 +32,9 @@ No modules.
 | [aws_secretsmanager_secret_rotation.rotation](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_rotation) | resource |
 | [aws_secretsmanager_secret_version.pg_credentials_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.rds_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
-| [aws_security_group.rds_secrets_manager_rotator_lambda_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
-| [aws_security_group.rds_secrets_manager_vpc_endpoint_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group.rds_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.secrets_manager_rotator_lambda_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.secrets_manager_vpc_endpoint_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group_rule.rds_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
 | [aws_serverlessapplicationrepository_cloudformation_stack.rotator_cf_stack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/serverlessapplicationrepository_cloudformation_stack) | resource |
 | [aws_vpc_endpoint.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/vpc_endpoint) | resource |
@@ -82,4 +82,5 @@ No modules.
 |------|-------------|
 | <a name="output_rds_access_security_group_id"></a> [rds\_access\_security\_group\_id](#output\_rds\_access\_security\_group\_id) | The ID of the security group required to access the Chirpstack RDS instance |
 | <a name="output_rds_id"></a> [rds\_id](#output\_rds\_id) | The ID of the Chirpstack RDS instance |
+| <a name="output_secrets_manager_rotator_lambda_security_group_id"></a> [secrets\_manager\_rotator\_lambda\_security\_group\_id](#output\_secrets\_manager\_rotator\_lambda\_security\_group\_id) | Security group required for rotator Lambda to access Secrets Manager VPC endpoint |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

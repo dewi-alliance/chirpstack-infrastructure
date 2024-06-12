@@ -112,7 +112,7 @@ resource "aws_cloudwatch_log_group" "this" {
 # ***************************************
 locals {
   chirpstack_redis_security_group_rules = {
-    ingress_rds_access_sg_5432 = {
+    ingress_redis_access_sg_6379 = {
       type                     = "ingress"
       description              = "Allow access from redis-access-security-group"
       from_port                = 6379
@@ -185,4 +185,45 @@ resource "aws_security_group" "redis_access_security_group" {
   tags = {
     Name = "redis-access-security-group"
   }
+}
+
+# ***************************************
+# Redis Users
+# ***************************************
+
+resource "aws_elasticache_user_group" "this" {
+  engine        = "REDIS"
+  user_group_id = "chirpstack-users"
+  user_ids      = [aws_elasticache_user.default.user_id]
+
+  lifecycle {
+    ignore_changes = [user_ids]
+  }
+
+  tags = var.redis_tags
+}
+
+resource "aws_elasticache_user" "default" {
+  engine        = "REDIS"
+  access_string = "on ~* +@all"
+  passwords     = [random_password.redis_default_password.result]
+  user_id       = "default-user-id"
+  user_name     = "default"
+
+  tags = var.redis_tags
+}
+
+resource "aws_elasticache_user" "this" {
+  engine        = "REDIS"
+  access_string = "on ~* +@all -@dangerous -@admin"
+  passwords     = [random_password.redis_chirpstack_password.result]
+  user_id       = "chirpstack-user-id"
+  user_name     = "chirpstack"
+
+  tags = var.redis_tags
+}
+
+resource "aws_elasticache_user_group_association" "this" {
+  user_group_id = aws_elasticache_user_group.this.user_group_id
+  user_id       = aws_elasticache_user.this.user_id
 }

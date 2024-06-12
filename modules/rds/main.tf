@@ -91,11 +91,11 @@ locals {
     }
     ingress_lamba_sg_5432 = {
       type                     = "ingress"
-      description              = "Allow access from rds-secrets-manager-rotator-lambda-security-group"
+      description              = "Allow access from secrets-manager-rotator-lambda-security-group"
       from_port                = 5432
       to_port                  = 5432
       protocol                 = "tcp"
-      source_security_group_id = aws_security_group.rds_secrets_manager_rotator_lambda_security_group.id
+      source_security_group_id = aws_security_group.secrets_manager_rotator_lambda_security_group.id
     }
     egress_all = {
       description = "Allow all egress"

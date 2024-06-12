@@ -132,6 +132,9 @@ module "rds" {
 module "elasticache" {
   source = "./modules/elasticache"
 
+  # AWS
+  aws_region = var.aws_region
+
   # VPC
   vpc_id              = module.vpc.vpc_id
   database_subnet_ids = module.vpc.database_subnet_ids

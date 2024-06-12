@@ -11,7 +11,7 @@ resource "random_password" "pg_admin_password" {
   length           = 40
   special          = true
   min_special      = 5
-  override_special = "!#$%^&*()-_=+[]{}<>:?"
+  override_special = "!#$%?"
 }
 
 # Initialize AWS Secret Manager entry for the Chirpstack RDS postgres admin credentials
@@ -45,7 +45,6 @@ resource "aws_secretsmanager_secret_rotation" "rotation" {
   }
 }
 
-
 # ***************************************
 # Lambda - RDS credential rotator
 # ***************************************
@@ -61,13 +60,13 @@ resource "aws_serverlessapplicationrepository_cloudformation_stack" "rotator_cf_
     endpoint            = "https://secretsmanager.${var.aws_region}.${data.aws_partition.current.dns_suffix}"
     functionName        = "chirpstack-rds-pg-credential-rotator"
     vpcSubnetIds        = join(",", var.database_subnet_ids)
-    vpcSecurityGroupIds = "${aws_security_group.rds_secrets_manager_rotator_lambda_security_group.id},${aws_security_group.rds_access_security_group.id}"
+    vpcSecurityGroupIds = "${aws_security_group.secrets_manager_rotator_lambda_security_group.id},${aws_security_group.rds_access_security_group.id}"
   }
 }
 
 # ***************************************
 # VPC Endpoint
-# VPCE for Secretes Manager to connect to Chirpstack RDS
+# VPCE for rotator Lambda to connect to Secrets Manager
 # ***************************************
 resource "aws_vpc_endpoint" "secretsmanager" {
   vpc_id              = var.vpc_id
@@ -75,23 +74,23 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = var.database_subnet_ids
-  security_group_ids  = [aws_security_group.rds_secrets_manager_vpc_endpoint_security_group.id]
+  security_group_ids  = [aws_security_group.secrets_manager_vpc_endpoint_security_group.id]
 }
 
 # ***************************************
 # Security Group
-# RDS secrets manager VPC endpoint security group
+# Secrets manager VPC endpoint security group
 # ***************************************
-resource "aws_security_group" "rds_secrets_manager_vpc_endpoint_security_group" {
-  name        = "rds-secrets-manager-vpc-endpoint-security-group"
-  description = "Security group required to secrets manager VPC endpoint"
+resource "aws_security_group" "secrets_manager_vpc_endpoint_security_group" {
+  name        = "secrets-manager-vpc-endpoint-security-group"
+  description = "Security group for Secrets Manager VPC endpoint"
   vpc_id      = var.vpc_id
 
   ingress {
     from_port       = 0
     to_port         = 0
     protocol        = "-1"
-    security_groups = [aws_security_group.rds_secrets_manager_rotator_lambda_security_group.id]
+    security_groups = [aws_security_group.secrets_manager_rotator_lambda_security_group.id]
   }
 
   egress {
@@ -102,17 +101,17 @@ resource "aws_security_group" "rds_secrets_manager_vpc_endpoint_security_group" 
   }
 
   tags = {
-    Name = "rds-secrets-manager-vpc-endpoint-security-group"
+    Name = "secrets-manager-vpc-endpoint-security-group"
   }
 }
 
 # ***************************************
 # Security Group
-# RDS secrets manager rotator lambda security group
+# Secrets Manager rotator lambda security group
 # ***************************************
-resource "aws_security_group" "rds_secrets_manager_rotator_lambda_security_group" {
-  name        = "rds-secrets-manager-rotator-lambda-security-group"
-  description = "Security group required for Secrets Manager VPC endpoint"
+resource "aws_security_group" "secrets_manager_rotator_lambda_security_group" {
+  name        = "secrets-manager-rotator-lambda-security-group"
+  description = "Security group required for rotator Lambda to access Secrets Manager VPC endpoint"
   vpc_id      = var.vpc_id
 
   egress {
@@ -123,6 +122,6 @@ resource "aws_security_group" "rds_secrets_manager_rotator_lambda_security_group
   }
 
   tags = {
-    Name = "rds-secrets-manager-rotator-lambda-security-group"
+    Name = "secrets-manager-rotator-lambda-security-group"
   }
 }
