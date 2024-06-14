@@ -17,6 +17,7 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_bastion"></a> [bastion](#module\_bastion) | ./modules/bastion | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ./modules/eks | n/a |
 | <a name="module_elasticache"></a> [elasticache](#module\_elasticache) | ./modules/elasticache | n/a |
 | <a name="module_rds"></a> [rds](#module\_rds) | ./modules/rds | n/a |
@@ -32,6 +33,13 @@ No resources.
 |------|-------------|------|---------|:--------:|
 | <a name="input_aws_availability_zones"></a> [aws\_availability\_zones](#input\_aws\_availability\_zones) | A list AWS availability zones for the VPC. | `list(string)` | `[]` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region for infrastructure. | `string` | `""` | no |
+| <a name="input_bastion_instance_type"></a> [bastion\_instance\_type](#input\_bastion\_instance\_type) | EC2 instance type for Bastion | `string` | `"t3.micro"` | no |
+| <a name="input_bastion_private_ip"></a> [bastion\_private\_ip](#input\_bastion\_private\_ip) | Private IP address to assign to Bastion | `string` | `""` | no |
+| <a name="input_bastion_ssh_key_name"></a> [bastion\_ssh\_key\_name](#input\_bastion\_ssh\_key\_name) | Name of ssh key to use to access Bastion | `string` | `""` | no |
+| <a name="input_bastion_tags"></a> [bastion\_tags](#input\_bastion\_tags) | Tags to be applied to all for Bastion | `map(string)` | `{}` | no |
+| <a name="input_bastion_volume_size"></a> [bastion\_volume\_size](#input\_bastion\_volume\_size) | EBS volume size for Bastion root volume | `string` | `"20"` | no |
+| <a name="input_bastion_volume_type"></a> [bastion\_volume\_type](#input\_bastion\_volume\_type) | EBS volume type for Bastion root volume | `string` | `"gp2"` | no |
+| <a name="input_bastion_whitelisted_access_ips"></a> [bastion\_whitelisted\_access\_ips](#input\_bastion\_whitelisted\_access\_ips) | The IPs, in CIDR block form (x.x.x.x/32), to whitelist access to the Bastion | `list(string)` | `[]` | no |
 | <a name="input_cloudwatch_alarm_action_arns"></a> [cloudwatch\_alarm\_action\_arns](#input\_cloudwatch\_alarm\_action\_arns) | CloudWatch Alarm Action ARNs to report CloudWatch Alarms | `list(string)` | `[]` | no |
 | <a name="input_cloudwatch_retention_in_days"></a> [cloudwatch\_retention\_in\_days](#input\_cloudwatch\_retention\_in\_days) | Duration to retain EKS control plane logs | `number` | `90` | no |
 | <a name="input_database_subnets"></a> [database\_subnets](#input\_database\_subnets) | A list of IPv4 CIDR blocks for database subnets inside the VPC. | `list(string)` | `[]` | no |
@@ -108,13 +116,13 @@ No resources.
 | <a name="input_redis_tags"></a> [redis\_tags](#input\_redis\_tags) | A map of tags to add to all Redis resources | `map(string)` | `{}` | no |
 | <a name="input_redis_transit_encryption_enabled"></a> [redis\_transit\_encryption\_enabled](#input\_redis\_transit\_encryption\_enabled) | Enable encryption in-transit. Supported only with Memcached versions `1.6.12` and later, running in a VPC. Default is `true`. | `bool` | `true` | no |
 | <a name="input_redis_transit_encryption_mode"></a> [redis\_transit\_encryption\_mode](#input\_redis\_transit\_encryption\_mode) | A setting that enables clients to migrate to in-transit encryption with no downtime. Valid values are preferred and required | `string` | `null` | no |
-| <a name="input_redis_user_group_ids"></a> [redis\_user\_group\_ids](#input\_redis\_user\_group\_ids) | In multi-node clusters, User Group ID to associate with the replication group. Only a maximum of one (1) user group ID is valid | `list(string)` | `null` | no |
 | <a name="input_single_nat_gateway"></a> [single\_nat\_gateway](#input\_single\_nat\_gateway) | A boolean flag to use single NAT gateway for cost savings, otherwise NAT gateways will be created per AZ. Defaults to false. | `bool` | `false` | no |
 | <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | The IPv4 CIDR block for the VPC. | `string` | `""` | no |
 | <a name="input_vpc_enable_dns_hostnames"></a> [vpc\_enable\_dns\_hostnames](#input\_vpc\_enable\_dns\_hostnames) | A boolean flag to enable/disable DNS hostnames in the VPC. Defaults true. | `bool` | `true` | no |
 | <a name="input_vpc_enable_dns_support"></a> [vpc\_enable\_dns\_support](#input\_vpc\_enable\_dns\_support) | A boolean flag to enable/disable DNS support in the VPC. Defaults to true. | `bool` | `true` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC. Defaults to chirpstack-vpc. | `string` | `"chirpstack-vpc"` | no |
 | <a name="input_vpc_tags"></a> [vpc\_tags](#input\_vpc\_tags) | Tags to be applied to all resources in the VPC. | `map(string)` | `{}` | no |
+| <a name="input_with_bastion"></a> [with\_bastion](#input\_with\_bastion) | Should Bastion be created? | `bool` | `false` | no |
 
 ## Outputs
 

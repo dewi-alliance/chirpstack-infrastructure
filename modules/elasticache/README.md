@@ -26,10 +26,10 @@ No modules.
 | [aws_elasticache_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_parameter_group) | resource |
 | [aws_elasticache_replication_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_replication_group) | resource |
 | [aws_elasticache_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_subnet_group) | resource |
+| [aws_elasticache_user.chirpstack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user) | resource |
 | [aws_elasticache_user.default](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user) | resource |
-| [aws_elasticache_user.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user) | resource |
 | [aws_elasticache_user_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user_group) | resource |
-| [aws_elasticache_user_group_association.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user_group_association) | resource |
+| [aws_elasticache_user_group_association.chirpstack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user_group_association) | resource |
 | [aws_secretsmanager_secret.redis_chirpstack_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.redis_default_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.redis_chirpstack_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
@@ -76,10 +76,11 @@ No modules.
 | <a name="input_redis_tags"></a> [redis\_tags](#input\_redis\_tags) | A map of tags to add to all Redis resources | `map(string)` | `{}` | no |
 | <a name="input_redis_transit_encryption_enabled"></a> [redis\_transit\_encryption\_enabled](#input\_redis\_transit\_encryption\_enabled) | Enable encryption in-transit. Supported only with Memcached versions `1.6.12` and later, running in a VPC | `bool` | `true` | no |
 | <a name="input_redis_transit_encryption_mode"></a> [redis\_transit\_encryption\_mode](#input\_redis\_transit\_encryption\_mode) | A setting that enables clients to migrate to in-transit encryption with no downtime. Valid values are preferred and required | `string` | `null` | no |
-| <a name="input_redis_user_group_ids"></a> [redis\_user\_group\_ids](#input\_redis\_user\_group\_ids) | User Group ID to associate with the replication group. Only a maximum of one (1) user group ID is valid | `list(string)` | `null` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_redis_access_security_group_id"></a> [redis\_access\_security\_group\_id](#output\_redis\_access\_security\_group\_id) | The ID of the security group required to access Redis |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

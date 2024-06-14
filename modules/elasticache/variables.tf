@@ -187,13 +187,6 @@ variable "redis_replicas_per_node_group" {
   default     = null
 }
 
-
-variable "redis_user_group_ids" {
-  description = "User Group ID to associate with the replication group. Only a maximum of one (1) user group ID is valid"
-  type        = list(string)
-  default     = null
-}
-
 # ***************************************
 # Parameter Group
 # ***************************************

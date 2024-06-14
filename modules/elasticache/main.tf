@@ -1,4 +1,9 @@
 # ***************************************
+# Module Data
+# ***************************************
+data "aws_caller_identity" "current" {}
+
+# ***************************************
 # Redis
 # ***************************************
 resource "random_string" "redis" {
@@ -43,7 +48,7 @@ resource "aws_elasticache_replication_group" "this" {
   replicas_per_node_group     = var.redis_single_node_cluster ? 0 : var.redis_replicas_per_node_group
   replication_group_id        = var.redis_cluster_id
 
-  user_group_ids = var.redis_user_group_ids
+  user_group_ids = [aws_elasticache_user_group.this.user_group_id]
 
   dynamic "log_delivery_configuration" {
     for_each = var.redis_log_delivery_configuration
@@ -193,7 +198,7 @@ resource "aws_security_group" "redis_access_security_group" {
 
 resource "aws_elasticache_user_group" "this" {
   engine        = "REDIS"
-  user_group_id = "chirpstack-users"
+  user_group_id = "chirpstack"
   user_ids      = [aws_elasticache_user.default.user_id]
 
   lifecycle {
@@ -207,23 +212,23 @@ resource "aws_elasticache_user" "default" {
   engine        = "REDIS"
   access_string = "on ~* +@all"
   passwords     = [random_password.redis_default_password.result]
-  user_id       = "default-user-id"
+  user_id       = "defaultuserid"
   user_name     = "default"
 
   tags = var.redis_tags
 }
 
-resource "aws_elasticache_user" "this" {
+resource "aws_elasticache_user" "chirpstack" {
   engine        = "REDIS"
   access_string = "on ~* +@all -@dangerous -@admin"
   passwords     = [random_password.redis_chirpstack_password.result]
-  user_id       = "chirpstack-user-id"
+  user_id       = "chirpstackuserid"
   user_name     = "chirpstack"
 
   tags = var.redis_tags
 }
 
-resource "aws_elasticache_user_group_association" "this" {
+resource "aws_elasticache_user_group_association" "chirpstack" {
   user_group_id = aws_elasticache_user_group.this.user_group_id
-  user_id       = aws_elasticache_user.this.user_id
+  user_id       = aws_elasticache_user.chirpstack.user_id
 }

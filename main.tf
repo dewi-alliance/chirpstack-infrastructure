@@ -151,7 +151,6 @@ module "elasticache" {
   redis_multi_az_enabled            = var.redis_multi_az_enabled
   redis_preferred_cache_cluster_azs = var.redis_preferred_cache_cluster_azs
   redis_replicas_per_node_group     = var.redis_replicas_per_node_group
-  redis_user_group_ids              = var.redis_user_group_ids
 
   redis_apply_immediately          = var.redis_apply_immediately
   redis_auto_minor_version_upgrade = var.redis_auto_minor_version_upgrade
@@ -174,4 +173,33 @@ module "elasticache" {
   parameter_group_parameters = var.parameter_group_parameters
 
   redis_tags = var.redis_tags
+}
+
+# ***************************************
+# Bastion
+# ***************************************
+module "bastion" {
+  count = var.with_bastion ? 1 : 0
+
+  source = "./modules/bastion"
+
+  # AWS
+  availability_zone = var.aws_availability_zones[0]
+
+  # VPC
+  vpc_id               = module.vpc.vpc_id
+  vpc_public_subnet_id = module.vpc.public_subnets_ids[0]
+
+  # Bastion
+  bastion_ssh_key_name           = var.bastion_ssh_key_name
+  bastion_whitelisted_access_ips = var.bastion_whitelisted_access_ips
+  bastion_instance_type          = var.bastion_instance_type
+  bastion_private_ip             = var.bastion_private_ip
+  bastion_volume_type            = var.bastion_volume_type
+  bastion_volume_size            = var.bastion_volume_size
+  bastion_tags                   = var.bastion_tags
+
+  # Security Group Access IDs
+  rds_access_security_group_id   = module.rds.rds_access_security_group_id
+  redis_access_security_group_id = module.elasticache.redis_access_security_group_id
 }

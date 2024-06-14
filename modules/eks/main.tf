@@ -9,6 +9,12 @@ data "aws_iam_session_context" "current" {
   arn = data.aws_caller_identity.current.arn
 }
 
+data "aws_eks_cluster_auth" "eks" {
+  name       = aws_eks_cluster.this.name
+  depends_on = [aws_eks_cluster.this]
+}
+
+
 # ***************************************
 # EKS Cluster
 # ***************************************

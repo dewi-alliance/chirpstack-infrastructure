@@ -81,6 +81,4 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_rds_access_security_group_id"></a> [rds\_access\_security\_group\_id](#output\_rds\_access\_security\_group\_id) | The ID of the security group required to access the Chirpstack RDS instance |
-| <a name="output_rds_id"></a> [rds\_id](#output\_rds\_id) | The ID of the Chirpstack RDS instance |
-| <a name="output_secrets_manager_rotator_lambda_security_group_id"></a> [secrets\_manager\_rotator\_lambda\_security\_group\_id](#output\_secrets\_manager\_rotator\_lambda\_security\_group\_id) | Security group required for rotator Lambda to access Secrets Manager VPC endpoint |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
