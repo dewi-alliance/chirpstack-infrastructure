@@ -1,23 +1,24 @@
 #! /bin/bash
 
-# Update and upgrade the package list
+echo "Update and Upgrade Packages"
 apt-get update -y
 apt-get upgrade -y
 
-# Install deps
-apt-get -y build-essential pkg-config libssl-dev tcl libjemalloc-dev wget
+echo "Install Dependencies"
+apt-get install -y build-essential pkg-config libssl-dev tcl libjemalloc-dev wget
 
-# Install PostgreSQL client
+echo "Install PostgreSQL Client"
 apt-get install -y postgresql-client
 
-# Install Redis CLI
+echo "Install Redis CLI"
+cd /tmp
 wget http://download.redis.io/redis-stable.tar.gz
 tar xvzf redis-stable.tar.gz
 cd redis-stable
 make distclean
 make BUILD_TLS=yes
-cp src/redis-cli /usr/bin/redis-cli
+cp /tmp/redis-stable/src/redis-cli /usr/bin/redis-cli
 
-# Verify installation
+echo "Verify Installation"
 psql --version
 redis-cli --version

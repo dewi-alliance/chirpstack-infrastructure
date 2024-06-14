@@ -52,9 +52,12 @@ resource "aws_instance" "this" {
   user_data                   = file("${path.module}/scripts/user_data.sh")
   user_data_replace_on_change = true
 
-  tags = {
-    Name = "bastion"
-  }
+  tags = merge(
+    {
+      Name = "bastion"
+    },
+    var.bastion_tags
+  )
 }
 
 # ***************************************
@@ -86,9 +89,12 @@ resource "aws_security_group" "this" {
   description = "Security group restricting access to Bastion"
   vpc_id      = var.vpc_id
 
-  tags = {
-    Name = "bastion-security-group"
-  }
+  tags = merge(
+    {
+      Name = "bastion-security-group"
+    },
+    var.bastion_tags
+  )
 }
 
 resource "aws_security_group_rule" "this" {

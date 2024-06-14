@@ -29,13 +29,13 @@ variable "vpc_cidr_block" {
 }
 
 variable "vpc_enable_dns_support" {
-  description = "A boolean flag to enable/disable DNS support in the VPC. Defaults to true."
+  description = "Enable DNS support in the VPC? Defaults to true."
   type        = bool
   default     = true
 }
 
 variable "vpc_enable_dns_hostnames" {
-  description = "A boolean flag to enable/disable DNS hostnames in the VPC. Defaults true."
+  description = "Enable DNS hostnames in the VPC. Defaults true."
   type        = bool
   default     = true
 }
@@ -84,7 +84,7 @@ variable "database_subnets" {
 # NAT Gateway
 # ***************************************
 variable "single_nat_gateway" {
-  description = "A boolean flag to use single NAT gateway for cost savings, otherwise NAT gateways will be created per AZ. Defaults to false."
+  description = "Use single NAT gateway for cost savings (otherwise NAT gateways will be created per AZ)? Defaults to false."
   type        = bool
   default     = false
 }

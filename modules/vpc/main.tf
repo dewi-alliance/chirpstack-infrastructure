@@ -1,5 +1,5 @@
 # ***************************************
-# VPC
+# Module Data
 # ***************************************
 locals {
   number_of_ngws = min(length(var.availability_zones), length(var.private_subnets))
@@ -87,9 +87,8 @@ resource "aws_subnet" "private" {
   )
 }
 
-# There are as many routing tables as the number of NAT gateways.
-# Unless 1 NAT Gateway is requested, there will a number of NAT
-# gateways corresponding to the lesser of private subnets and AZs.
+# Unless 1 NAT Gateway is requested, there will be a number of NAT
+# Gateways corresponding to the lesser of private subnets and AZs.
 resource "aws_route_table" "private" {
   count = var.single_nat_gateway ? 1 : local.number_of_ngws
 

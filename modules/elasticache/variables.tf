@@ -32,21 +32,21 @@ variable "database_subnet_ids" {
 # Redis
 # ***************************************
 variable "redis_single_node_cluster" {
-  description = "Whether to deploy a single cluster with a single node, or a multi-cluster with multiple nodes."
+  description = "Deploy a single cluster with a single node (otherwise a multi-cluster with multiple nodes is created)? Default is `true`"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "redis_apply_immediately" {
-  description = "Whether any database modifications are applied immediately, or during the next maintenance window. Default is `false`"
+  description = "Apply database modifications immediately (or during the next maintenance window)? Default is `false`"
   type        = bool
-  default     = null
+  default     = false
 }
 
 variable "redis_auto_minor_version_upgrade" {
-  description = "Specifies whether minor version engine upgrades will be applied automatically to the underlying Cache Cluster instances during the maintenance window. Only supported for engine type `redis` and if the engine version is 6 or higher. Defaults to `true`"
+  description = "Apply minor version engine upgrades automatically to the underlying Cache Cluster instances during the maintenance window? Only supported for engine type `redis` and if the engine version is 6 or higher. Defaults to `true`"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "redis_cluster_id" {
@@ -131,7 +131,7 @@ variable "redis_snapshot_window" {
 }
 
 variable "redis_transit_encryption_enabled" {
-  description = "Enable encryption in-transit. Supported only with Memcached versions `1.6.12` and later, running in a VPC"
+  description = "Enable encryption in-transit? Default is `true`."
   type        = bool
   default     = true
 }
@@ -158,7 +158,7 @@ variable "redis_auth_token_update_strategy" {
 }
 
 variable "redis_at_rest_encryption_enabled" {
-  description = "Whether to enable encryption at rest"
+  description = "Enable encryption at rest?"
   type        = bool
   default     = true
 }
@@ -170,7 +170,7 @@ variable "redis_kms_key_arn" {
 }
 
 variable "redis_multi_az_enabled" {
-  description = "Specifies whether to enable Multi-AZ Support for the replication group. If true, `automatic_failover_enabled` must also be enabled. Defaults to `false`"
+  description = "In multi-node clusters, enable Multi-AZ Support for the replication group? If true, `automatic_failover_enabled` must also be enabled. Defaults to `false`"
   type        = bool
   default     = false
 }

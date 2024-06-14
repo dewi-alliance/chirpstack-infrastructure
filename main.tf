@@ -105,7 +105,7 @@ module "rds" {
   rds_db_port                             = var.rds_db_port
   rds_iam_database_authentication_enabled = var.rds_iam_database_authentication_enabled
   rds_multi_az                            = var.rds_multi_az
-  rds_read_replica                        = var.rds_read_replica
+  with_rds_read_replica                   = var.with_rds_read_replica
 
   # DB
   pg_name           = var.pg_name
@@ -113,6 +113,7 @@ module "rds" {
   pg_ssl_required   = var.pg_ssl_required
   pg_username       = var.pg_username
   pg_log_exports    = var.pg_log_exports
+  pg_family         = var.pg_family
 
   # IAM
   oidc_provider     = module.eks.oidc_provider
@@ -123,6 +124,7 @@ module "rds" {
   rds_snapshot_identifier  = var.rds_snapshot_identifier
 
   # Monitoring
+  with_rds_cloudwatch_alarms   = var.with_rds_cloudwatch_alarms
   cloudwatch_alarm_action_arns = var.cloudwatch_alarm_action_arns
 }
 
@@ -172,6 +174,7 @@ module "elasticache" {
   parameter_group_family     = var.parameter_group_family
   parameter_group_parameters = var.parameter_group_parameters
 
+  # Tags
   redis_tags = var.redis_tags
 }
 
@@ -197,9 +200,11 @@ module "bastion" {
   bastion_private_ip             = var.bastion_private_ip
   bastion_volume_type            = var.bastion_volume_type
   bastion_volume_size            = var.bastion_volume_size
-  bastion_tags                   = var.bastion_tags
 
-  # Security Group Access IDs
+  # Security Group
   rds_access_security_group_id   = module.rds.rds_access_security_group_id
   redis_access_security_group_id = module.elasticache.redis_access_security_group_id
+
+  # Tags
+  bastion_tags = var.bastion_tags
 }

@@ -140,7 +140,7 @@ locals {
 }
 
 resource "aws_cloudwatch_metric_alarm" "rds" {
-  for_each = tomap(local.cloudwatch_alarms)
+  for_each = var.with_rds_cloudwatch_alarms ? tomap(local.cloudwatch_alarms) : {}
 
   alarm_name          = "Chirpstack RDS - ${each.value.alarm_name}"
   alarm_description   = each.value.alarm_description
@@ -161,7 +161,7 @@ resource "aws_cloudwatch_metric_alarm" "rds" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "rds_read_replica" {
-  for_each = var.rds_read_replica ? tomap(local.cloudwatch_alarms) : {}
+  for_each = var.with_rds_cloudwatch_alarms && var.with_rds_read_replica ? tomap(local.cloudwatch_alarms) : {}
 
   alarm_name          = "Chirpstack RDS Read Replica - ${each.value.alarm_name}"
   alarm_description   = each.value.alarm_description

@@ -41,19 +41,19 @@ variable "eks_authentication_mode" {
 }
 
 variable "eks_bootstrap_cluster_creator_admin_permissions" {
-  description = "Whether or not to bootstrap the access config values to the cluster. For more information, see Amazon EKS Access Entries (https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html)"
+  description = "Bootstrap the access config values to the cluster? For more information, see Amazon EKS Access Entries (https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html)"
   type        = bool
   default     = true
 }
 
 variable "eks_endpoint_private_access" {
-  description = "Whether the Amazon EKS private API server endpoint is enabled"
+  description = "Enable the Amazon EKS private API server endpoint?"
   type        = bool
   default     = false
 }
 
 variable "eks_endpoint_public_access" {
-  description = "Whether the Amazon EKS public API server endpoint is enabled"
+  description = "Enable the Amazon EKS public API server endpoint?"
   type        = bool
   default     = true
 }
@@ -74,7 +74,7 @@ variable "kms_key_usage" {
 }
 
 variable "kms_enable_key_rotation" {
-  description = "Specifies whether key rotation is enabled. For more information, see Rotating KMS Keys (https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)"
+  description = "Enable KMS key rotation?. For more information, see Rotating KMS Keys (https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)"
   type        = bool
   default     = true
 }
@@ -92,7 +92,7 @@ variable "cloudwatch_retention_in_days" {
 #  EKS Addons
 # ***************************************
 variable "eks_addon_preserve" {
-  description = "Indicates if you want to preserve the created resources when deleting the EKS add-on"
+  description = "Preserve the created add-on resources in the cluster when deleting the EKS add-on?"
   type        = bool
   default     = false
 }

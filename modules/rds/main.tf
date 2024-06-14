@@ -49,7 +49,7 @@ resource "aws_db_instance" "rds" {
 # RDS - Read Replica
 # ***************************************
 resource "aws_db_instance" "rds_read_replica" {
-  count = var.rds_read_replica ? 1 : 0
+  count = var.with_rds_read_replica ? 1 : 0
 
   replicate_source_db = aws_db_instance.rds.identifier
 
@@ -78,7 +78,7 @@ resource "aws_db_parameter_group" "this" {
 
   name        = "pg-parameter-group"
   description = "Postgres parameter group forcing SSL"
-  family      = "postgres14"
+  family      = var.pg_family
 
   parameter {
     name  = "rds.force_ssl"

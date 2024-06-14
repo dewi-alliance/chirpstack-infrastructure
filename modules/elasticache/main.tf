@@ -195,7 +195,6 @@ resource "aws_security_group" "redis_access_security_group" {
 # ***************************************
 # Redis Users
 # ***************************************
-
 resource "aws_elasticache_user_group" "this" {
   engine        = "REDIS"
   user_group_id = "chirpstack"

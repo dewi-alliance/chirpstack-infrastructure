@@ -1,5 +1,5 @@
 # ***************************************
-# AWS General
+# AWS
 # ***************************************
 variable "aws_region" {
   description = "AWS region for infrastructure."
@@ -29,13 +29,13 @@ variable "vpc_cidr_block" {
 }
 
 variable "vpc_enable_dns_support" {
-  description = "A boolean flag to enable/disable DNS support in the VPC. Defaults to true."
+  description = "Enable DNS support in the VPC? Defaults to true."
   type        = bool
   default     = true
 }
 
 variable "vpc_enable_dns_hostnames" {
-  description = "A boolean flag to enable/disable DNS hostnames in the VPC. Defaults true."
+  description = "Enable DNS hostnames in the VPC. Defaults true."
   type        = bool
   default     = true
 }
@@ -48,7 +48,7 @@ variable "vpc_tags" {
 
 
 # ***************************************
-# Public Subnets
+# VPC - Public Subnets
 # ***************************************
 variable "public_subnets" {
   description = "A list of IPv4 CIDR blocks for public subnets inside the VPC."
@@ -63,7 +63,7 @@ variable "public_subnet_tags" {
 }
 
 # ***************************************
-# Private Subnets
+# VPC - Private Subnets
 # ***************************************
 variable "private_subnets" {
   description = "A list of IPv4 CIDR blocks for private subnets inside the VPC."
@@ -91,7 +91,7 @@ variable "database_subnets" {
 # VPC - NAT Gateway
 # ***************************************
 variable "single_nat_gateway" {
-  description = "A boolean flag to use single NAT gateway for cost savings, otherwise NAT gateways will be created per AZ. Defaults to false."
+  description = "Use single NAT gateway for cost savings (otherwise NAT gateways will be created per AZ)? Defaults to false."
   type        = bool
   default     = false
 }
@@ -124,19 +124,19 @@ variable "eks_authentication_mode" {
 }
 
 variable "eks_bootstrap_cluster_creator_admin_permissions" {
-  description = "Whether or not to bootstrap the access config values to the cluster. For more information, see Amazon EKS Access Entries (https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html)"
+  description = "Bootstrap the access config values to the cluster? For more information, see Amazon EKS Access Entries (https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html)"
   type        = bool
   default     = true
 }
 
 variable "eks_endpoint_private_access" {
-  description = "Whether the Amazon EKS private API server endpoint is enabled"
+  description = "Enable the Amazon EKS private API server endpoint?"
   type        = bool
   default     = false
 }
 
 variable "eks_endpoint_public_access" {
-  description = "Whether the Amazon EKS public API server endpoint is enabled"
+  description = "Enable the Amazon EKS public API server endpoint?"
   type        = bool
   default     = true
 }
@@ -157,7 +157,7 @@ variable "kms_key_usage" {
 }
 
 variable "kms_enable_key_rotation" {
-  description = "Specifies whether key rotation is enabled. For more information, see Rotating KMS Keys (https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)"
+  description = "Enable KMS key rotation?. For more information, see Rotating KMS Keys (https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html)"
   type        = bool
   default     = true
 }
@@ -175,7 +175,7 @@ variable "cloudwatch_retention_in_days" {
 #  EKS - EKS Addons
 # ***************************************
 variable "eks_addon_preserve" {
-  description = "Indicates if you want to preserve the created resources when deleting the EKS add-on"
+  description = "Preserve the created add-on resources in the cluster when deleting the EKS add-on?"
   type        = bool
   default     = false
 }
@@ -271,7 +271,7 @@ variable "node_group_instance_types" {
 }
 
 variable "node_group_max_unavailable_percentage" {
-  description = " Desired max percentage of unavailable worker nodes during node group update."
+  description = "Desired max percentage of unavailable worker nodes during node group update."
   type        = number
   default     = 33
 }
@@ -310,13 +310,13 @@ variable "rds_instance_type" {
 }
 
 variable "rds_storage_encrypted" {
-  description = "Whether the DB instance is encrypted."
+  description = "Encrypt the DB instance?"
   type        = bool
   default     = true
 }
 
 variable "rds_skip_final_snapshot" {
-  description = "Determines whether a final DB snapshot is created before the DB instance is deleted. If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
+  description = "Create a final DB snapshot before the DB instance is deleted? If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
   type        = bool
   default     = false
 }
@@ -334,13 +334,13 @@ variable "rds_db_port" {
 }
 
 variable "rds_iam_database_authentication_enabled" {
-  description = "Enable IAM database authentication"
+  description = "Enable IAM database authentication?"
   type        = bool
   default     = true
 }
 
 variable "rds_deploy_from_snapshot" {
-  description = "Deploy RDS from snapshot"
+  description = "Deploy RDS from snapshot?"
   type        = bool
   default     = false
 }
@@ -352,13 +352,19 @@ variable "rds_snapshot_identifier" {
 }
 
 variable "rds_multi_az" {
-  description = "Multi-az deployment"
+  description = "Multi-az deployment?"
   type        = bool
   default     = false
 }
 
-variable "rds_read_replica" {
-  description = "Create read replica of primary DB."
+variable "with_rds_read_replica" {
+  description = "Create read replica of primary DB?"
+  type        = bool
+  default     = false
+}
+
+variable "with_rds_cloudwatch_alarms" {
+  description = "Deploy Cloudwatch Alarms for RDS?"
   type        = bool
   default     = false
 }
@@ -373,13 +379,13 @@ variable "pg_name" {
 }
 
 variable "pg_engine_version" {
-  description = "Postgres database engine version"
+  description = "Postgres database engine version. Defaults to 14.10, used by Chirpstack."
   type        = string
-  default     = ""
+  default     = "14.10"
 }
 
 variable "pg_ssl_required" {
-  description = "Require SSL to connect to database."
+  description = "Require SSL to connect to database?"
   type        = bool
   default     = true
 }
@@ -396,24 +402,29 @@ variable "pg_log_exports" {
   default     = ["postgresql"]
 }
 
+variable "pg_family" {
+  description = "Postgres family for parameter group for mandating SSL. Defaults to postgres14 used by Chirpstack."
+  type        = string
+  default     = "postgres14"
+}
+
 # ***************************************
 # Redis
 # ***************************************
-
 variable "redis_single_node_cluster" {
-  description = "Whether to deploy a single cluster with a single node, or a multi-cluster with multiple nodes. Default is `true`"
+  description = "Deploy a single cluster with a single node (otherwise a multi-cluster with multiple nodes is created)? Default is `true`"
   type        = bool
   default     = true
 }
 
 variable "redis_apply_immediately" {
-  description = "Whether any database modifications are applied immediately, or during the next maintenance window. Default is `false`"
+  description = "Apply database modifications immediately (or during the next maintenance window)? Default is `false`"
   type        = bool
   default     = false
 }
 
 variable "redis_auto_minor_version_upgrade" {
-  description = "Specifies whether minor version engine upgrades will be applied automatically to the underlying Cache Cluster instances during the maintenance window. Only supported for engine type `redis` and if the engine version is 6 or higher. Defaults to `true`"
+  description = "Apply minor version engine upgrades automatically to the underlying Cache Cluster instances during the maintenance window? Only supported for engine type `redis` and if the engine version is 6 or higher. Defaults to `true`"
   type        = bool
   default     = true
 }
@@ -500,7 +511,7 @@ variable "redis_snapshot_window" {
 }
 
 variable "redis_transit_encryption_enabled" {
-  description = "Enable encryption in-transit. Supported only with Memcached versions `1.6.12` and later, running in a VPC. Default is `true`."
+  description = "Enable encryption in-transit? Default is `true`."
   type        = bool
   default     = true
 }
@@ -512,7 +523,7 @@ variable "redis_transit_encryption_mode" {
 }
 
 ################################################################################
-# Replication Group
+# Redis - Replication Group
 ################################################################################
 variable "redis_auth_token" {
   description = "The password used to access a password protected server. Can be specified only if `transit_encryption_enabled = true`"
@@ -527,7 +538,7 @@ variable "redis_auth_token_update_strategy" {
 }
 
 variable "redis_at_rest_encryption_enabled" {
-  description = "Whether to enable encryption at rest"
+  description = "Enable encryption at rest?"
   type        = bool
   default     = true
 }
@@ -539,7 +550,7 @@ variable "redis_kms_key_arn" {
 }
 
 variable "redis_multi_az_enabled" {
-  description = "In multi-node clusters, specifies whether to enable Multi-AZ Support for the replication group. If true, `automatic_failover_enabled` must also be enabled. Defaults to `false`"
+  description = "In multi-node clusters, enable Multi-AZ Support for the replication group? If true, `automatic_failover_enabled` must also be enabled. Defaults to `false`"
   type        = bool
   default     = false
 }

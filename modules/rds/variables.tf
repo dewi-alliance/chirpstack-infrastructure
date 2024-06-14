@@ -53,13 +53,13 @@ variable "rds_instance_type" {
 }
 
 variable "rds_storage_encrypted" {
-  description = "Whether the DB instance is encrypted."
+  description = "Encrypt the DB instance?"
   type        = bool
   default     = true
 }
 
 variable "rds_skip_final_snapshot" {
-  description = "Determines whether a final DB snapshot is created before the DB instance is deleted. If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
+  description = "Create a final DB snapshot before the DB instance is deleted? If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
   type        = bool
   default     = false
 }
@@ -83,13 +83,13 @@ variable "rds_db_subnet_group_name" {
 }
 
 variable "rds_iam_database_authentication_enabled" {
-  description = "Enable IAM database authentication"
+  description = "Enable IAM database authentication?"
   type        = bool
   default     = true
 }
 
 variable "rds_deploy_from_snapshot" {
-  description = "Deploy RDS from snapshot"
+  description = "Deploy RDS from snapshot?"
   type        = bool
   default     = false
 }
@@ -101,13 +101,13 @@ variable "rds_snapshot_identifier" {
 }
 
 variable "rds_multi_az" {
-  description = "Multi-az deployment"
+  description = "Multi-az deployment?"
   type        = bool
   default     = false
 }
 
-variable "rds_read_replica" {
-  description = "Create read replica of primary DB."
+variable "with_rds_read_replica" {
+  description = "Create read replica of primary DB?"
   type        = bool
   default     = false
 }
@@ -122,13 +122,13 @@ variable "pg_name" {
 }
 
 variable "pg_engine_version" {
-  description = "Postgres database engine version"
+  description = "Postgres database engine version. Defaults to 14.10, used by Chirpstack."
   type        = string
-  default     = ""
+  default     = "14.10"
 }
 
 variable "pg_ssl_required" {
-  description = "Require SSL to connect to database."
+  description = "Require SSL to connect to database?"
   type        = bool
   default     = true
 }
@@ -143,6 +143,12 @@ variable "pg_log_exports" {
   description = "Enable CloudWatch log exports"
   type        = list(string)
   default     = ["postgresql"]
+}
+
+variable "pg_family" {
+  description = "Postgres family for parameter group for mandating SSL. Defaults to postgres14 used by Chirpstack."
+  type        = string
+  default     = "postgres14"
 }
 
 # ***************************************
@@ -163,6 +169,12 @@ variable "oidc_provider_arn" {
 # ***************************************
 # Cloudwatch Alerting
 # ***************************************
+variable "with_rds_cloudwatch_alarms" {
+  description = "Deploy Cloudwatch Alarms for RDS?"
+  type        = bool
+  default     = false
+}
+
 variable "cloudwatch_alarm_action_arns" {
   description = "CloudWatch Alarm Action ARNs to report CloudWatch Alarms"
   type        = list(string)
