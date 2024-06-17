@@ -115,10 +115,6 @@ module "rds" {
   pg_log_exports    = var.pg_log_exports
   pg_family         = var.pg_family
 
-  # IAM
-  oidc_provider     = module.eks.oidc_provider
-  oidc_provider_arn = module.eks.oidc_provider_arn
-
   # Snapshot restore
   rds_deploy_from_snapshot = var.rds_deploy_from_snapshot
   rds_snapshot_identifier  = var.rds_snapshot_identifier

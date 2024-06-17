@@ -136,7 +136,7 @@ variable "pg_ssl_required" {
 variable "pg_username" {
   description = "Postgres admin username"
   type        = string
-  default     = ""
+  default     = "chirpstack_admin"
 }
 
 variable "pg_log_exports" {
@@ -149,21 +149,6 @@ variable "pg_family" {
   description = "Postgres family for parameter group for mandating SSL. Defaults to postgres14 used by Chirpstack."
   type        = string
   default     = "postgres14"
-}
-
-# ***************************************
-# IAM Role
-# ***************************************
-variable "oidc_provider" {
-  description = "EKS OIDC provider name to enable K8s pods to assume IAM role to access RDS"
-  type        = string
-  default     = ""
-}
-
-variable "oidc_provider_arn" {
-  description = "EKS OIDC provider arn to enable K8s pods to assume IAM role to access RDS"
-  type        = string
-  default     = ""
 }
 
 # ***************************************

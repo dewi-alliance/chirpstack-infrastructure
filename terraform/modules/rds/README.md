@@ -27,7 +27,6 @@ No modules.
 | [aws_db_instance.rds](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_instance) | resource |
 | [aws_db_instance.rds_read_replica](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_instance) | resource |
 | [aws_db_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_parameter_group) | resource |
-| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role) | resource |
 | [aws_secretsmanager_secret.pg_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_rotation.rotation](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_rotation) | resource |
 | [aws_secretsmanager_secret_version.pg_credentials_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
@@ -41,7 +40,6 @@ No modules.
 | [random_password.pg_admin_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_string.rds](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [random_string.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/partition) | data source |
 | [aws_serverlessapplicationrepository_application.rotator](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/serverlessapplicationrepository_application) | data source |
 
@@ -52,14 +50,12 @@ No modules.
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region you're deploying to e.g., us-east-1 | `string` | `""` | no |
 | <a name="input_cloudwatch_alarm_action_arns"></a> [cloudwatch\_alarm\_action\_arns](#input\_cloudwatch\_alarm\_action\_arns) | CloudWatch Alarm Action ARNs to report CloudWatch Alarms | `list(string)` | `[]` | no |
 | <a name="input_database_subnet_ids"></a> [database\_subnet\_ids](#input\_database\_subnet\_ids) | List of database subnet IDs | `list(string)` | `[]` | no |
-| <a name="input_oidc_provider"></a> [oidc\_provider](#input\_oidc\_provider) | EKS OIDC provider name to enable K8s pods to assume IAM role to access RDS | `string` | `""` | no |
-| <a name="input_oidc_provider_arn"></a> [oidc\_provider\_arn](#input\_oidc\_provider\_arn) | EKS OIDC provider arn to enable K8s pods to assume IAM role to access RDS | `string` | `""` | no |
 | <a name="input_pg_engine_version"></a> [pg\_engine\_version](#input\_pg\_engine\_version) | Postgres database engine version. Defaults to 14.10, used by Chirpstack. | `string` | `"14.10"` | no |
 | <a name="input_pg_family"></a> [pg\_family](#input\_pg\_family) | Postgres family for parameter group for mandating SSL. Defaults to postgres14 used by Chirpstack. | `string` | `"postgres14"` | no |
 | <a name="input_pg_log_exports"></a> [pg\_log\_exports](#input\_pg\_log\_exports) | Enable CloudWatch log exports | `list(string)` | <pre>[<br>  "postgresql"<br>]</pre> | no |
 | <a name="input_pg_name"></a> [pg\_name](#input\_pg\_name) | Postgres database name | `string` | `""` | no |
 | <a name="input_pg_ssl_required"></a> [pg\_ssl\_required](#input\_pg\_ssl\_required) | Require SSL to connect to database? | `bool` | `true` | no |
-| <a name="input_pg_username"></a> [pg\_username](#input\_pg\_username) | Postgres admin username | `string` | `""` | no |
+| <a name="input_pg_username"></a> [pg\_username](#input\_pg\_username) | Postgres admin username | `string` | `"chirpstack_admin"` | no |
 | <a name="input_rds_backup_retention_period"></a> [rds\_backup\_retention\_period](#input\_rds\_backup\_retention\_period) | The days to retain backups for. Must be between 0 and 35. Default is 0. Must be greater than 0 if the database is used as a source for a Read Replica. Default is 30. | `number` | `30` | no |
 | <a name="input_rds_db_port"></a> [rds\_db\_port](#input\_rds\_db\_port) | Database port | `number` | `5432` | no |
 | <a name="input_rds_db_subnet_group_name"></a> [rds\_db\_subnet\_group\_name](#input\_rds\_db\_subnet\_group\_name) | Name of database subnet group | `string` | `""` | no |

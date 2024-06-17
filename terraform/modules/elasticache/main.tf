@@ -211,7 +211,7 @@ resource "aws_elasticache_user" "default" {
   engine        = "REDIS"
   access_string = "on ~* +@all"
   passwords     = [random_password.redis_default_password.result]
-  user_id       = "defaultuserid"
+  user_id       = "default-user-id"
   user_name     = "default"
 
   tags = var.redis_tags
@@ -221,7 +221,7 @@ resource "aws_elasticache_user" "chirpstack" {
   engine        = "REDIS"
   access_string = "on ~* +@all -@dangerous -@admin"
   passwords     = [random_password.redis_chirpstack_password.result]
-  user_id       = "chirpstackuserid"
+  user_id       = "chirpstack-user-id"
   user_name     = "chirpstack"
 
   tags = var.redis_tags

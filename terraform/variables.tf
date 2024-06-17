@@ -189,19 +189,19 @@ variable "eks_addon_resolve_conflicts_on_update" {
 variable "eks_vpc_cni_version" {
   description = "Version of the VPC CNI cluster addon"
   type        = string
-  default     = "v1.9.3-eksbuild.7"
+  default     = null
 }
 
 variable "eks_coredns_version" {
   description = "Version of the Coredns cluster addon"
   type        = string
-  default     = "v1.26.9-eksbuild.2"
+  default     = null
 }
 
 variable "eks_kube_proxy_version" {
   description = "Version of the Kube-Proxy cluster addon"
   type        = string
-  default     = "v1.15.1-eksbuild.1"
+  default     = null
 }
 
 # ***************************************
@@ -316,7 +316,7 @@ variable "rds_storage_encrypted" {
 }
 
 variable "rds_skip_final_snapshot" {
-  description = "Create a final DB snapshot before the DB instance is deleted? If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
+  description = "Skip taking a final DB snapshot before the DB instance is deleted? If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from rds_name. Default is false."
   type        = bool
   default     = false
 }

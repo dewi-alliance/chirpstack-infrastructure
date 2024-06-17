@@ -1,8 +1,6 @@
 # ***************************************
 # Module Data
 # ***************************************
-data "aws_caller_identity" "current" {}
-
 data "aws_partition" "current" {}
 
 data "aws_serverlessapplicationrepository_application" "rotator" {
@@ -166,55 +164,4 @@ resource "aws_security_group" "rds_access_security_group" {
   tags = {
     Name = "rds-access-security-group"
   }
-}
-
-# ***************************************
-# IAM Role
-#
-# Helium Foundation IAM policy & role for RDS access
-#
-# This IAM role allows k8s access to the postgres db for a chirpstack user. Any k8s pod
-# (e.g., ideally the Chirpstack pod) with the proper k8s "service account" definition will
-# be able to assume this roles in order to access the postgres db as the db-defined Chirpstack user.
-# ***************************************
-resource "aws_iam_role" "this" {
-  name        = "rds-chirpstack-user-access-role"
-  description = "IAM Role for a K8s pod to assume to access RDS via the Chirpstack user"
-
-  inline_policy {
-    name = "rds-chirpstack-user-access-policy"
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action = [
-            "rds-db:connect"
-          ]
-          Effect = "Allow"
-          Resource = [
-            "arn:aws:rds-db:${var.aws_region}:${data.aws_caller_identity.current.account_id}:dbuser:${aws_db_instance.rds.resource_id}/chirpstack"
-          ]
-        },
-      ]
-    })
-  }
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRoleWithWebIdentity"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Federated = var.oidc_provider_arn
-        }
-        Condition = {
-          StringEquals = {
-            "${var.oidc_provider}:sub" = "system:serviceaccount:chirpstack:rds-chirpstack-user-access"
-          }
-        }
-      },
-    ]
-  })
 }

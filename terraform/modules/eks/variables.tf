@@ -106,19 +106,19 @@ variable "eks_addon_resolve_conflicts_on_update" {
 variable "eks_vpc_cni_version" {
   description = "Version of the VPC CNI cluster addon"
   type        = string
-  default     = "v1.9.3-eksbuild.7"
+  default     = null
 }
 
 variable "eks_coredns_version" {
   description = "Version of the Coredns cluster addon"
   type        = string
-  default     = "v1.26.9-eksbuild.2"
+  default     = null
 }
 
 variable "eks_kube_proxy_version" {
   description = "Version of the Kube-Proxy cluster addon"
   type        = string
-  default     = "v1.15.1-eksbuild.1"
+  default     = null
 }
 
 # ***************************************
