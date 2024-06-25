@@ -360,37 +360,3 @@ resource "aws_eks_addon" "post_compute_cluster_addons" {
 
   tags = var.eks_tags
 }
-
-# ***************************************
-#  aws-auth configmap
-# ***************************************
-# locals {
-#   manage_aws_auth_configmap = (
-#     length(var.eks_aws_auth_roles) > 0 ||
-#     length(var.eks_aws_auth_users) > 0 ||
-#     length(var.eks_aws_auth_accounts) > 0
-#   )
-#   aws_auth_configmap_data = {
-#     mapRoles    = yamlencode(var.eks_aws_auth_roles)
-#     mapUsers    = yamlencode(var.eks_aws_auth_users)
-#     mapAccounts = yamlencode(var.eks_aws_auth_accounts)
-#   }
-# }
-
-# resource "kubernetes_config_map_v1_data" "aws_auth" {
-#   count = local.manage_aws_auth_configmap ? 1 : 0
-
-#   force = true
-
-#   metadata {
-#     name      = "aws-auth"
-#     namespace = "kube-system"
-#   }
-
-#   data = local.aws_auth_configmap_data
-
-#   depends_on = [
-#     aws_eks_cluster.this,
-#     aws_eks_node_group.this
-#   ]
-# }

@@ -1,0 +1,6 @@
+sources: ["service","ingress"]
+provider:
+  name: aws
+registry: txt
+logLevel: debug
+policy: upsert-only

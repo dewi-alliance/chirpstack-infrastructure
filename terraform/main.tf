@@ -204,3 +204,12 @@ module "bastion" {
   # Tags
   bastion_tags = var.bastion_tags
 }
+
+# ***************************************
+# K8s deps
+# ***************************************
+module "k8s_deps" {
+  source = "./modules/k8s_deps"
+
+  eks_cluster_name = var.eks_cluster_name
+}

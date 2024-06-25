@@ -205,27 +205,6 @@ variable "eks_kube_proxy_version" {
 }
 
 # ***************************************
-#  EKS - aws-auth configmap
-# ***************************************
-# variable "eks_aws_auth_roles" {
-#   description = "List of role maps to add to the aws-auth configmap"
-#   type        = list(any)
-#   default     = []
-# }
-
-# variable "eks_aws_auth_users" {
-#   description = "List of user maps to add to the aws-auth configmap"
-#   type        = list(any)
-#   default     = []
-# }
-
-# variable "eks_aws_auth_accounts" {
-#   description = "List of account maps to add to the aws-auth configmap"
-#   type        = list(any)
-#   default     = []
-# }
-
-# ***************************************
 # EKS - Node Group
 # ***************************************
 variable "node_group_min_size" {
