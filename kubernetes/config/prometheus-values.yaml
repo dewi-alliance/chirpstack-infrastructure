@@ -1,0 +1,16 @@
+alertmanager:
+  enabled: false
+
+prometheus-pushgateway:
+  enabled: false
+
+serviceAccounts:
+  server:
+    name: "prometheus"
+
+server:
+  statefulSet:
+    enabled: true
+  persistentVolume:
+    size: 30Gi
+  retentionSize: 25GB

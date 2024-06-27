@@ -9,28 +9,28 @@ resource "time_sleep" "this" {
 # ***************************************
 #  Argo CD
 # ***************************************
-resource "random_string" "this" {
+resource "random_string" "argo" {
   length  = 8
   special = false
 }
 
-resource "random_password" "this" {
+resource "random_password" "argo" {
   length           = 40
   special          = true
   min_special      = 5
   override_special = "!#$%?"
 }
 
-resource "aws_secretsmanager_secret" "this" {
-  name        = "argocd-admin-credentials-${random_string.this.result}"
+resource "aws_secretsmanager_secret" "argo" {
+  name        = "argocd-admin-credentials-${random_string.argo.result}"
   description = "Admin credentials for ArgoCD"
 }
 
-resource "aws_secretsmanager_secret_version" "this" {
-  secret_id = aws_secretsmanager_secret.this.id
+resource "aws_secretsmanager_secret_version" "argo" {
+  secret_id = aws_secretsmanager_secret.argo.id
   secret_string = jsonencode(
     {
-      password = random_password.this.result
+      password = random_password.argo.result
       username = "admin"
     }
   )
@@ -57,7 +57,7 @@ resource "helm_release" "argocd" {
 
   set {
     name  = "configs.secret.argocdServerAdminPassword"
-    value = random_password.this.bcrypt_hash
+    value = random_password.argo.bcrypt_hash
   }
 
   values = [
@@ -219,12 +219,14 @@ resource "helm_release" "cluster_autoscaler" {
 #  Metrics Server
 # ***************************************
 resource "helm_release" "metrics_server" {
-  name = "metrics-server"
-
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "metrics-server"
-  namespace  = "kube-system"
   version    = "7.2.6"
+
+  name             = "metrics-server"
+  namespace        = "kube-system"
+  create_namespace = true
+  cleanup_on_fail  = true
 
   set {
     name  = "replicas"
@@ -233,6 +235,97 @@ resource "helm_release" "metrics_server" {
 
   values = [
     file("${path.module}/config/metrics-server-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this
+  ]
+}
+
+# ***************************************
+#  Prometheus
+# ***************************************
+resource "helm_release" "prometheus" {
+  count = var.with_monitoring ? 1 : 0
+
+
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "prometheus"
+  version    = "25.22.0"
+
+  name             = "prometheus"
+  namespace        = "monitoring"
+  create_namespace = true
+  cleanup_on_fail  = true
+
+  values = [
+    file("${path.module}/config/prometheus-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this
+  ]
+}
+
+# ***************************************
+#  Grafana
+# ***************************************
+resource "random_string" "grafana" {
+  length  = 8
+  special = false
+}
+
+resource "random_password" "grafana" {
+  length           = 40
+  special          = true
+  min_special      = 5
+  override_special = "!#$%?"
+}
+
+resource "aws_secretsmanager_secret" "grafana" {
+  name        = "grafana-admin-credentials-${random_string.grafana.result}"
+  description = "Admin credentials for Grafana"
+}
+
+resource "aws_secretsmanager_secret_version" "grafana" {
+  secret_id = aws_secretsmanager_secret.grafana.id
+  secret_string = jsonencode(
+    {
+      password = random_password.grafana.result
+      username = "admin"
+    }
+  )
+}
+
+resource "helm_release" "grafana" {
+  count = var.with_monitoring ? 1 : 0
+
+
+  repository = "https://grafana.github.io/helm-charts"
+  chart      = "grafana"
+  version    = "8.1.1"
+
+  name             = "grafana"
+  namespace        = "monitoring"
+  create_namespace = true
+  cleanup_on_fail  = true
+  set {
+    name  = "ingress.hosts[0]"
+    value = var.grafana_url
+  }
+
+  set {
+    name  = "service.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname"
+    value = var.grafana_url
+  }
+
+  set {
+    name  = "adminPassword"
+    value = random_password.grafana.bcrypt_hash
+  }
+
+  values = [
+    file("${path.module}/config/grafana-values.yaml")
   ]
 
   depends_on = [

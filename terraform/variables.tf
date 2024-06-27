@@ -204,6 +204,12 @@ variable "eks_kube_proxy_version" {
   default     = null
 }
 
+variable "eks_ebs_csi_version" {
+  description = "Version of the EBS CSI cluster addon"
+  type        = string
+  default     = null
+}
+
 # ***************************************
 # EKS - Node Group
 # ***************************************

@@ -66,6 +66,7 @@ No modules.
 | <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | Name of the EKS Cluster | `string` | `""` | no |
 | <a name="input_eks_cluster_version"></a> [eks\_cluster\_version](#input\_eks\_cluster\_version) | Version of the EKS Cluster | `string` | `""` | no |
 | <a name="input_eks_coredns_version"></a> [eks\_coredns\_version](#input\_eks\_coredns\_version) | Version of the Coredns cluster addon | `string` | `null` | no |
+| <a name="input_eks_ebs_csi_version"></a> [eks\_ebs\_csi\_version](#input\_eks\_ebs\_csi\_version) | Version of the EBS CSI cluster addon | `string` | `null` | no |
 | <a name="input_eks_endpoint_private_access"></a> [eks\_endpoint\_private\_access](#input\_eks\_endpoint\_private\_access) | Enable the Amazon EKS private API server endpoint? | `bool` | `false` | no |
 | <a name="input_eks_endpoint_public_access"></a> [eks\_endpoint\_public\_access](#input\_eks\_endpoint\_public\_access) | Enable the Amazon EKS public API server endpoint? | `bool` | `true` | no |
 | <a name="input_eks_kube_proxy_version"></a> [eks\_kube\_proxy\_version](#input\_eks\_kube\_proxy\_version) | Version of the Kube-Proxy cluster addon | `string` | `null` | no |

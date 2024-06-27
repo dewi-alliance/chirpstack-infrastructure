@@ -317,9 +317,13 @@ locals {
       resolve_conflicts = var.eks_addon_resolve_conflicts_on_update
       preserve          = var.eks_addon_preserve
     }
-    # aws eks describe-addon-versions --addon-name kube-proxy
     kube-proxy = {
       addon_version     = var.eks_kube_proxy_version
+      resolve_conflicts = "OVERWRITE"
+      preserve          = var.eks_addon_preserve
+    }
+    aws-ebs-csi-driver = {
+      addon_version     = var.eks_ebs_csi_version
       resolve_conflicts = "OVERWRITE"
       preserve          = var.eks_addon_preserve
     }

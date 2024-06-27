@@ -51,3 +51,18 @@ variable "eks_aws_auth_accounts" {
   type        = list(any)
   default     = []
 }
+
+# ***************************************
+#  Grafana
+# ***************************************
+variable "grafana_url" {
+  description = "Grafana URL"
+  type        = string
+  default     = ""
+}
+
+variable "with_monitoring" {
+  description = "Deploy monitoring stack (prometheus and grafana)?"
+  type        = bool
+  default     = false
+}

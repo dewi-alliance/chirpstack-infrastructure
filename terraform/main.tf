@@ -52,6 +52,7 @@ module "eks" {
   eks_vpc_cni_version                   = var.eks_vpc_cni_version
   eks_coredns_version                   = var.eks_coredns_version
   eks_kube_proxy_version                = var.eks_kube_proxy_version
+  eks_ebs_csi_version                   = var.eks_ebs_csi_version
 
   # EKS Cluster auth
   # eks_aws_auth_roles    = var.eks_aws_auth_roles
