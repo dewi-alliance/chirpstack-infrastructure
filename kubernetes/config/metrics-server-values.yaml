@@ -1,0 +1,4 @@
+fullnameOverride: metrics-server
+
+apiService:
+  create: true

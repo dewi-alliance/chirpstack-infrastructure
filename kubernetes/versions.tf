@@ -19,5 +19,13 @@ terraform {
       source  = "hashicorp/helm"
       version = "2.14.0"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.11.2"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "4.0.5"
+    }
   }
 }

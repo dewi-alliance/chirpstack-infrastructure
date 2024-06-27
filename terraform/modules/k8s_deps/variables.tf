@@ -1,5 +1,5 @@
-variable "eks_cluster_name" {
-  description = "Name of the EKS Cluster"
+variable "oidc_provider" {
+  description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
   type        = string
   default     = ""
 }

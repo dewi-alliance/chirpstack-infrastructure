@@ -211,5 +211,5 @@ module "bastion" {
 module "k8s_deps" {
   source = "./modules/k8s_deps"
 
-  eks_cluster_name = var.eks_cluster_name
+  oidc_provider = module.eks.oidc_provider
 }

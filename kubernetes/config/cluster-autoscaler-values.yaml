@@ -1,0 +1,5 @@
+fullnameOverride: cluster-autoscaler
+
+rbac:
+  serviceAccount:
+    name: cluster-autoscaler

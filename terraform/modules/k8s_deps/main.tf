@@ -1,13 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_eks_cluster" "eks" {
-  name = var.eks_cluster_name
-}
-
-locals {
-  oidc_url = replace(data.aws_eks_cluster.eks.identity[0].oidc[0].issuer, "https://", "")
-}
-
 # ***************************************
 # AWS Load Balancer Controller
 # ***************************************
@@ -19,14 +11,14 @@ data "aws_iam_policy_document" "lbc_assume_role_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_url}"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${var.oidc_provider}"]
     }
 
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     condition {
       test     = "StringEquals"
-      variable = "${local.oidc_url}:sub"
+      variable = "${var.oidc_provider}:sub"
       values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
     }
   }
@@ -335,14 +327,14 @@ data "aws_iam_policy_document" "external_dns_assume_role_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_url}"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${var.oidc_provider}"]
     }
 
     actions = ["sts:AssumeRoleWithWebIdentity"]
 
     condition {
       test     = "StringEquals"
-      variable = "${local.oidc_url}:sub"
+      variable = "${var.oidc_provider}:sub"
       values   = ["system:serviceaccount:kube-system:external-dns"]
     }
   }
@@ -393,4 +385,77 @@ resource "aws_iam_policy" "external_dns_iam_policy" {
 resource "aws_iam_role_policy_attachment" "external_dns_policy_attatchment" {
   role       = aws_iam_role.external_dns_role.name
   policy_arn = aws_iam_policy.external_dns_iam_policy.arn
+}
+
+# ***************************************
+# Cluster Autoscaler
+# ***************************************
+data "aws_iam_policy_document" "cluster_autoscaler_assume_role_policy" {
+  version = "2012-10-17"
+
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${var.oidc_provider}"]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "${var.oidc_provider}:sub"
+      values   = ["system:serviceaccount:kube-system:cluster-autoscaler"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "cluster_autoscaler_policy" {
+  version = "2012-10-17"
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "autoscaling:DescribeAutoScalingGroups",
+      "autoscaling:DescribeAutoScalingInstances",
+      "autoscaling:DescribeLaunchConfigurations",
+      "autoscaling:DescribeScalingActivities",
+      "autoscaling:DescribeTags",
+      "ec2:DescribeImages",
+      "ec2:DescribeInstanceTypes",
+      "ec2:DescribeLaunchTemplateVersions",
+      "ec2:GetInstanceTypesFromInstanceRequirements",
+      "eks:DescribeNodegroup"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "autoscaling:SetDesiredCapacity",
+      "autoscaling:TerminateInstanceInAutoScalingGroup"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role" "cluster_autoscaler_role" {
+  name        = "cluster-autoscaler-role"
+  description = "IAM Role used by Cluster Autoscaler operating in the EKS cluster"
+
+  assume_role_policy = data.aws_iam_policy_document.cluster_autoscaler_assume_role_policy.json
+}
+
+resource "aws_iam_policy" "cluster_autoscaler_iam_policy" {
+  name        = "cluster-autoscaler-policy"
+  description = "IAM policy used by the cluster-autoscaler-role operating in the EKS cluster"
+
+  policy = data.aws_iam_policy_document.cluster_autoscaler_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_autoscaler_policy_attachement" {
+  role       = aws_iam_role.cluster_autoscaler_role.name
+  policy_arn = aws_iam_policy.cluster_autoscaler_iam_policy.arn
 }

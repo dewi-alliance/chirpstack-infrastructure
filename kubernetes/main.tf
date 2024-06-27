@@ -1,6 +1,41 @@
+resource "time_sleep" "this" {
+  depends_on = [
+    helm_release.lbc
+  ]
+
+  create_duration = "300s" # Adjust the duration as needed (e.g., "5m" for 5 minutes)
+}
+
 # ***************************************
-#  Argo CD Helm Chart
+#  Argo CD
 # ***************************************
+resource "random_string" "this" {
+  length  = 8
+  special = false
+}
+
+resource "random_password" "this" {
+  length           = 40
+  special          = true
+  min_special      = 5
+  override_special = "!#$%?"
+}
+
+resource "aws_secretsmanager_secret" "this" {
+  name        = "argocd-admin-credentials-${random_string.this.result}"
+  description = "Admin credentials for ArgoCD"
+}
+
+resource "aws_secretsmanager_secret_version" "this" {
+  secret_id = aws_secretsmanager_secret.this.id
+  secret_string = jsonencode(
+    {
+      password = random_password.this.result
+      username = "admin"
+    }
+  )
+}
+
 resource "helm_release" "argocd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
@@ -20,13 +55,22 @@ resource "helm_release" "argocd" {
     value = var.argo_url
   }
 
+  set {
+    name  = "configs.secret.argocdServerAdminPassword"
+    value = random_password.this.bcrypt_hash
+  }
+
   values = [
     file("${path.module}/config/argo-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this
   ]
 }
 
 # ***************************************
-#  AWS Load Balancer Controller Helm Chart
+#  AWS Load Balancer Controller
 # ***************************************
 data "aws_iam_role" "lbc_role" {
   name = "aws-load-balancer-controller-role"
@@ -73,7 +117,7 @@ resource "helm_release" "lbc" {
 }
 
 # ***************************************
-#  External DNS Helm Chart
+#  External DNS
 # ***************************************
 data "aws_iam_role" "external_dns_role" {
   name = "external-dns-role"
@@ -84,7 +128,12 @@ resource "kubernetes_service_account" "external_dns" {
     name      = "external-dns"
     namespace = "kube-system"
     annotations = {
-      "eks.amazonaws.com/role-arn" = data.aws_iam_role.external_dns_role.arn
+      "eks.amazonaws.com/role-arn"     = data.aws_iam_role.external_dns_role.arn
+      "meta.helm.sh/release-name"      = "external-dns",
+      "meta.helm.sh/release-namespace" = "kube-system",
+    }
+    labels = {
+      "app.kubernetes.io/managed-by" = "Helm",
     }
   }
   automount_service_account_token = true
@@ -120,7 +169,74 @@ resource "helm_release" "external_dns" {
   ]
 
   depends_on = [
-    kubernetes_service_account.external_dns
+    kubernetes_service_account.external_dns,
+    time_sleep.this
+  ]
+}
+
+# ***************************************
+#  Cluster Autoscaler
+# ***************************************
+data "aws_iam_role" "cluster_autoscaler_role" {
+  name = "cluster-autoscaler-role"
+}
+
+resource "helm_release" "cluster_autoscaler" {
+  repository = "https://kubernetes.github.io/autoscaler"
+  chart      = "cluster-autoscaler"
+  version    = "9.36.0"
+
+  name             = "cluster-autoscaler"
+  namespace        = "kube-system"
+  create_namespace = true
+  cleanup_on_fail  = true
+
+  set {
+    name  = "autoDiscovery.clusterName"
+    value = var.eks_cluster_name
+  }
+
+  set {
+    name  = "awsRegion"
+    value = var.aws_region
+  }
+
+  set {
+    name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = data.aws_iam_role.cluster_autoscaler_role.arn
+  }
+
+  values = [
+    file("${path.module}/config/cluster-autoscaler-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this
+  ]
+}
+
+# ***************************************
+#  Metrics Server
+# ***************************************
+resource "helm_release" "metrics_server" {
+  name = "metrics-server"
+
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "metrics-server"
+  namespace  = "kube-system"
+  version    = "7.2.6"
+
+  set {
+    name  = "replicas"
+    value = 2
+  }
+
+  values = [
+    file("${path.module}/config/metrics-server-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this
   ]
 }
 
