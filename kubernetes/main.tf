@@ -248,7 +248,6 @@ resource "helm_release" "metrics_server" {
 resource "helm_release" "prometheus" {
   count = var.with_monitoring ? 1 : 0
 
-
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus"
   version    = "25.22.0"
@@ -270,12 +269,20 @@ resource "helm_release" "prometheus" {
 # ***************************************
 #  Grafana
 # ***************************************
+data "aws_iam_role" "grafana_role" {
+  name = "grafana-role"
+}
+
 resource "random_string" "grafana" {
+  count = var.with_monitoring ? 1 : 0
+
   length  = 8
   special = false
 }
 
 resource "random_password" "grafana" {
+  count = var.with_monitoring ? 1 : 0
+
   length           = 40
   special          = true
   min_special      = 5
@@ -283,15 +290,19 @@ resource "random_password" "grafana" {
 }
 
 resource "aws_secretsmanager_secret" "grafana" {
-  name        = "grafana-admin-credentials-${random_string.grafana.result}"
+  count = var.with_monitoring ? 1 : 0
+
+  name        = "grafana-admin-credentials-${random_string.grafana[0].result}"
   description = "Admin credentials for Grafana"
 }
 
 resource "aws_secretsmanager_secret_version" "grafana" {
-  secret_id = aws_secretsmanager_secret.grafana.id
+  count = var.with_monitoring ? 1 : 0
+
+  secret_id = aws_secretsmanager_secret.grafana[0].id
   secret_string = jsonencode(
     {
-      password = random_password.grafana.result
+      password = random_password.grafana[0].result
       username = "admin"
     }
   )
@@ -299,7 +310,6 @@ resource "aws_secretsmanager_secret_version" "grafana" {
 
 resource "helm_release" "grafana" {
   count = var.with_monitoring ? 1 : 0
-
 
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
@@ -309,6 +319,7 @@ resource "helm_release" "grafana" {
   namespace        = "monitoring"
   create_namespace = true
   cleanup_on_fail  = true
+
   set {
     name  = "ingress.hosts[0]"
     value = var.grafana_url
@@ -321,7 +332,17 @@ resource "helm_release" "grafana" {
 
   set {
     name  = "adminPassword"
-    value = random_password.grafana.bcrypt_hash
+    value = random_password.grafana[0].result
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = data.aws_iam_role.grafana_role.arn
+  }
+
+  set {
+    name  = "datasources.datasources\\.yaml.datasources[1].jsonData.defaultRegion"
+    value = var.aws_region
   }
 
   values = [

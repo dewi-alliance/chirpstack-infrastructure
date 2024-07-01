@@ -27,3 +27,7 @@ datasources:
         url: http://prometheus-server.monitoring.svc.cluster.local
         access: proxy
         isDefault: true
+      - name: CloudWatch
+        type: cloudwatch
+        jsonData:
+          authType: default
