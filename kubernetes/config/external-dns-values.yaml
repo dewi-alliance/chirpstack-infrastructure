@@ -4,3 +4,6 @@ provider:
 registry: txt
 logLevel: debug
 policy: upsert-only
+env:
+  - name: AWS_DEFAULT_REGION
+    value: <set_in_helm_release>

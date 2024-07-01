@@ -39,7 +39,7 @@ resource "aws_secretsmanager_secret_version" "argo" {
 resource "helm_release" "argocd" {
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
-  version    = "7.1.3"
+  version    = var.argo_chart_version
 
   name             = "argocd"
   namespace        = "argocd"
@@ -95,7 +95,7 @@ resource "kubernetes_service_account" "lbc" {
 resource "helm_release" "lbc" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.8.1"
+  version    = var.aws_lbc_chart_version
 
   name             = "aws-load-balancer-controller"
   namespace        = "kube-system"
@@ -142,7 +142,7 @@ resource "kubernetes_service_account" "external_dns" {
 resource "helm_release" "external_dns" {
   repository = "https://kubernetes-sigs.github.io/external-dns/"
   chart      = "external-dns"
-  version    = "1.14.5"
+  version    = var.external_dns_chart_version
 
   name             = "external-dns"
   namespace        = "kube-system"
@@ -157,11 +157,6 @@ resource "helm_release" "external_dns" {
   set {
     name  = "env[0].value"
     value = var.aws_region
-  }
-
-  set {
-    name  = "env[0].name"
-    value = "AWS_DEFAULT_REGION"
   }
 
   values = [
@@ -184,7 +179,7 @@ data "aws_iam_role" "cluster_autoscaler_role" {
 resource "helm_release" "cluster_autoscaler" {
   repository = "https://kubernetes.github.io/autoscaler"
   chart      = "cluster-autoscaler"
-  version    = "9.36.0"
+  version    = var.cluster_autoscaler_chart_version
 
   name             = "cluster-autoscaler"
   namespace        = "kube-system"
@@ -221,17 +216,12 @@ resource "helm_release" "cluster_autoscaler" {
 resource "helm_release" "metrics_server" {
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "metrics-server"
-  version    = "7.2.6"
+  version    = var.metrics_server_chart_version
 
   name             = "metrics-server"
   namespace        = "kube-system"
   create_namespace = true
   cleanup_on_fail  = true
-
-  set {
-    name  = "replicas"
-    value = 2
-  }
 
   values = [
     file("${path.module}/config/metrics-server-values.yaml")
@@ -250,7 +240,7 @@ resource "helm_release" "prometheus" {
 
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus"
-  version    = "25.22.0"
+  version    = var.prometheus_chart_version
 
   name             = "prometheus"
   namespace        = "monitoring"
@@ -313,7 +303,7 @@ resource "helm_release" "grafana" {
 
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
-  version    = "8.1.1"
+  version    = var.grafana_chart_version
 
   name             = "grafana"
   namespace        = "monitoring"
