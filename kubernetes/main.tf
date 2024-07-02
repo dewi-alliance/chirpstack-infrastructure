@@ -70,6 +70,32 @@ resource "helm_release" "argocd" {
 }
 
 # ***************************************
+#  Argo CD - Applications
+# ***************************************
+resource "helm_release" "argocd_apps" {
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argocd-apps"
+  version    = var.argo_apps_chart_version
+
+  name      = "argocd"
+  namespace = "argocd"
+
+  set {
+    name  = "applications.chirpstack.source.repoURL"
+    value = var.repo_url
+  }
+
+  values = [
+    file("${path.module}/config/argo-app-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this,
+    helm_release.argocd
+  ]
+}
+
+# ***************************************
 #  AWS Load Balancer Controller
 # ***************************************
 data "aws_iam_role" "lbc_role" {

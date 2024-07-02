@@ -20,6 +20,21 @@ variable "argo_chart_version" {
 }
 
 # ***************************************
+#  Argo CD - Applications
+# ***************************************
+variable "repo_url" {
+  description = "Github repo URL"
+  type        = string
+  default     = ""
+}
+
+variable "argo_apps_chart_version" {
+  description = "Version of Argo Apps Helm chart"
+  type        = string
+  default     = ""
+}
+
+# ***************************************
 #  AWS Load Balancer Controller
 # ***************************************
 variable "eks_cluster_name" {

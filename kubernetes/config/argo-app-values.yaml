@@ -1,0 +1,33 @@
+projects:
+  chirpstack:
+    namespace: argocd
+    description: Chirpstack
+    sourceRepos:
+    - '*'
+    destinations:
+    - name: '*'
+      namespace: 'chirpstack'
+      server: '*'
+    clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+applications: {}
+  chirpstack:
+    namespace: argocd
+    project: chirpstack
+    source:
+      repoURL: <add_me_in_helm_release>
+      targetRevision: HEAD
+      path: chirpstack
+      directory:
+        recurse: true
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: chirpstack
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+      - CreateNamespace=true
