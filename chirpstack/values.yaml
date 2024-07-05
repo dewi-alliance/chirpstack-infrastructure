@@ -1,0 +1,37 @@
+global:
+  enabledRegions:
+    - name: us915_1
+      labelName: us915-1
+      file: region_us915_1.toml
+      chirpstack-gateway-bridge:
+        port: 1700
+        targetPort: 1700
+    - name: eu868
+      labelName: eu868
+      file: region_eu868.toml
+      chirpstack-gateway-bridge:
+        port: 1701
+        targetPort: 1700
+
+chirpstack:
+  replicas: 1
+  host: dashboard.chirpstack.test-helium.com
+  image:
+    repository: chirpstack/chirpstack
+    tag: 4.4
+  config:
+    devAddrPrefixes:
+      - prefix: 780000F0/29
+    netId: 00003C
+
+chirpstack-gateway-bridge:
+  host: gwb.chirpstack.test-helium.com
+  image:
+    repository: chirpstack/chirpstack-gateway-bridge
+    tag: 4.4
+
+mosquitto:
+  host: mqtt.chirpstack.test-helium.com
+  image:
+    repository: eclipse-mosquitto
+    tag: 2.0

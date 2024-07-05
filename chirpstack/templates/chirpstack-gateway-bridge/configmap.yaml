@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack-gateway-bridge
+  namespace: {{ .Release.Namespace }}
+data:
+  chirpstack-gateway-bridge.toml: |
+    # See https://www.chirpstack.io/docs/chirpstack-gateway-bridge/configuration.html#configuration-file for a full
+    # configuration example and documentation.
+
+    [general]
+      # debug=5, info=4, warning=3, error=2, fatal=1, panic=0
+      log_level=4
+
+      log_json=true
+
+
+    [integration.mqtt.auth.generic]
+      servers=["tcp://mosquitto-internal:1883"]
+      username=""
+      password=""
+
+    # Metrics configuration.
+    [metrics]
+
+      # Metrics stored in Prometheus.
+      #
+      # These metrics expose information about the state of the ChirpStack Gateway Bridge
+      # instance like number of messages processed, number of function calls, etc.
+      [metrics.prometheus]
+      # Expose Prometheus metrics endpoint.
+      endpoint_enabled=true
+
+      # The ip:port to bind the Prometheus metrics server to for serving the
+      # metrics endpoint.
+      bind="8081"

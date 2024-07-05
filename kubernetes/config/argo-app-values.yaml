@@ -12,7 +12,7 @@ projects:
     - group: '*'
       kind: '*'
 
-applications: {}
+applications:
   chirpstack:
     namespace: argocd
     project: chirpstack

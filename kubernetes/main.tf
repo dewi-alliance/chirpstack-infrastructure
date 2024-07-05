@@ -77,7 +77,7 @@ resource "helm_release" "argocd_apps" {
   chart      = "argocd-apps"
   version    = var.argo_apps_chart_version
 
-  name      = "argocd"
+  name      = "argocd-apps"
   namespace = "argocd"
 
   set {
@@ -257,6 +257,21 @@ resource "helm_release" "metrics_server" {
     time_sleep.this
   ]
 }
+
+# ***************************************
+#  Sealed Secrets
+# ***************************************
+resource "helm_release" "sealed_secrets" {
+  repository = "https://bitnami-labs.github.io/sealed-secrets/"
+  chart      = "sealed-secrets"
+  version    = var.sealed_secrets_chart_version
+
+  name             = "sealed-secrets-controller"
+  namespace        = "kube-system"
+  create_namespace = true
+  cleanup_on_fail  = true
+}
+
 
 # ***************************************
 #  Prometheus

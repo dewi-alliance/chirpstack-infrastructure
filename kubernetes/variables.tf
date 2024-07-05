@@ -89,6 +89,15 @@ variable "metrics_server_chart_version" {
 }
 
 # ***************************************
+#  Sealed Secrets
+# ***************************************
+variable "sealed_secrets_chart_version" {
+  description = "Version of Sealed Secrets Helm chart"
+  type        = string
+  default     = ""
+}
+
+# ***************************************
 #  Prometheus
 # ***************************************
 variable "prometheus_chart_version" {

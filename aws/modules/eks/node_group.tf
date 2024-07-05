@@ -221,6 +221,14 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    ingress_cluster_8080_webhook = {
+      description                   = "Cluster API to node 8080/tcp webhook"
+      protocol                      = "tcp"
+      from_port                     = 8080
+      to_port                       = 8080
+      type                          = "ingress"
+      source_cluster_security_group = true
+    }
     egress_all = {
       description = "Allow all egress"
       protocol    = "-1"

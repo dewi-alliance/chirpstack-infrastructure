@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chirpstack
+  namespace: {{ .Release.Namespace }}
+strategy:
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 25%
+  type: RollingUpdate
+spec:
+  replicas: {{ .Values.chirpstack.replicas }}
+  selector:
+    matchLabels:
+      app: chirpstack
+  template:
+    metadata:
+      labels:
+        app: chirpstack
+    spec:
+      containers:
+        - name: chirpstack
+          image: {{ .Values.chirpstack.image.repository }}:{{ .Values.chirpstack.image.tag }}
+          imagePullPolicy: IfNotPresent
+          command: ["/usr/bin/chirpstack"]
+          args: ["--config", "/chirpstack"]
+          ports:
+            - name: dashboard
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8081
+            timeoutSeconds: 1
+          env:
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chirpstack-secrets
+                  key: POSTGRESQL_PASSWORD
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chirpstack-secrets
+                  key: REDIS_PASSWORD
+            - name: CHIRPSTACK_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: chirpstack-secrets
+                  key: CHIRPSTACK_API_SECRET
+            - name: REDIS_HOST
+              value: "master.chirpstack-redis.sljizd.use1.cache.amazonaws.com:6379"
+            - name: POSTGRESQL_HOST
+              value: "chirpstack-rds.ce647o6j3fka.us-east-1.rds.amazonaws.com"
+          volumeMounts:
+            - name: chirpstack
+              mountPath: /etc/chirpstack/
+            - name: chirpstack-region-config
+              mountPath: /etc/chirpstack/
+      restartPolicy: Always
+      volumes:
+        - name: chirpstack
+          configMap:
+            name: chirpstack
+        - name: chirpstack-region-config
+          configMap:
+            name: chirpstack-region-config

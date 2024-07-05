@@ -1,0 +1,278 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chirpstack
+  namespace: {{ .Release.Namespace }}
+data:
+  chirpstack.toml: |
+    # Partial config provided below.
+    # Full configuration found here - https://www.chirpstack.io/docs/chirpstack/configuration.html#example-chirpstacktoml-configuration
+
+    # Logging configuration
+    [logging]
+
+      # Log level.
+      #
+      # Valid options are:
+      #   * TRACE
+      #   * DEBUG
+      #   * INFO
+      #   * WARN
+      #   * ERROR
+      #   * OFF
+      level="info"
+
+      # Log as JSON.
+      json=false
+
+
+    # PostgreSQL configuration.
+    [postgresql]
+
+      # PostgreSQL DSN.
+      #
+      # Format example: postgres://<USERNAME>:<PASSWORD>@<HOSTNAME>/<DATABASE>?sslmode=<SSLMODE>.
+      #
+      # SSL mode options:
+      #  * disable - no SSL
+      #  * require - Always SSL (skip verification)
+      #  * verify-ca - Always SSL (verify that the certificate presented by the server was signed by a trusted CA)
+      #  * verify-full - Always SSL (verify that the certification presented by the server was signed by a trusted CA and the server host name matches the one in the certificate)
+      dsn="postgres://chirpstack:$POSTGRESQL_PASSWORD@$POSTGRESQL_HOST/chirpstack?sslmode=disable"
+
+      # Max open connections.
+      #
+      # This sets the max. number of open connections that are allowed in the
+      # PostgreSQL connection pool.
+      max_open_connections=10
+
+      # CA certificate (optional).
+      #
+      # Set this to the path of the CA certificate in case you are using TLS and
+      # the server-certificate is not signed by a CA in the platform certificate
+      # store.
+      ca_cert=""
+
+    # Redis configuration.
+    [redis]
+
+      # Server address or addresses.
+      #
+      # Use rediss:// in case of a TLS secured connection.
+      #
+      # Example formats:
+      #   redis://127.0.0.1:6379
+      #   rediss://127.0.0.1:6379
+      #   redis://:password@127.0.0.1:6379
+      #   redis://username:password@127.0.0.1:6379
+      #
+      # Set multiple addresses when connecting to a cluster.
+      servers=[
+        "rediss://chirpstack:REDIS_PASSWORD@$REDIS_HOST:6379",
+      ]
+
+      # Redis Cluster.
+      #
+      # Set this to true when the provided URLs are pointing to a Redis Cluster
+      # instance.
+      cluster=true
+
+      # TLS enabled.
+      tls_enabled=true
+
+      # Key prefix.
+      #
+      # A key prefix can be used to avoid key collisions when multiple deployments
+      # are using the same Redis database and it is not possible to separate
+      # keys by database index (e.g. when using Redis Cluster, which does not
+      # support multiple databases).
+      key_prefix=""
+
+      # Max open connections.
+      #
+      # This sets the max. number of open connections that are allowed in the
+      # Redis connection pool.
+      max_open_connections=100
+
+      # Min idle connections.
+      #
+      # This sets the min. number of idle connections in the Redis connection
+      # pool (0 = equal to max_open_connections).
+      min_idle_connections=0
+
+
+    # Network related configuration.
+    [network]
+
+      # Network identifier (NetID, 3 bytes) encoded as HEX (e.g. 010203).
+      net_id="{{ .Values.chirpstack.config.netId }}"
+
+      # DevAddr prefix(es).
+      #
+      # This makes it possible to configure one or multiple DevAddr (sub)ranges
+      # If left blank, then the complete DevAddr space provided by the configured
+      # net_id value will be used. If multiple prefixes are configured, a random
+      # prefix will be chosen when generating a DevAddr.
+      #
+      # Example configuration:
+      # dev_addr_prefixes=["0000ff00/24"]
+      #
+      # This example configures the DevAddr range to 0000ff00 - 0000ffff.
+      # The /24 means that the 24MSB of the prefix will be used, meaning that the
+      # 8LSB will be used as address space.
+      #
+      # Helium 8 block dev address prefix 29
+      # if you have multiple blocks you can add them as an array
+      dev_addr_prefixes=[
+        {{- range .Values.chirpstack.config.devAddrPrefixes }}
+        "{{ .prefix }}",
+        {{- end }}
+      ]
+
+      # Enabled regions.
+      #
+      # Multiple regions can be enabled simultaneously. Each region must match
+      # the 'name' parameter of the region configuration in '[[regions]]'.
+      enabled_regions=[
+        {{- range .Values.global.enabledRegions }}
+        "{{ .name }}",
+        {{- end }}
+      ]
+
+    # API interface configuration.
+    [api]
+
+      # interface:port to bind the API interface to.
+      bind="0.0.0.0:8080"
+
+      # Secret.
+      #
+      # This secret is used for generating login and API tokens, make sure this
+      # is never exposed. Changing this secret will invalidate all login and API
+      # tokens. The following command can be used to generate a random secret:
+      #   openssl rand -base64 32
+      secret=$CHIRPSTACK_API_SECRET
+
+    # Monitoring related configuration.
+    [monitoring]
+
+      # interface:port to bind the monitoring endpoint to (optional).
+      #
+      # /health  - Returns 200 in case the healthchecks have passed.
+      # /metrics - Returns metrics which can be scraped by Prometheus.
+      #
+      # If not set, this endpoint will be disabled.
+      bind="0.0.0.0:8081"
+
+      # Backend Interfaces log max history.
+      #
+      # This defines the max number of Backend Interface request records that will be persisted
+      # in Redis Streams. Setting this value to 0 disables this features.
+      backend_interfaces_log_max_history=10
+
+      # Meta-log max history.
+      #
+      # This defines the max number of meta records that will be persisted in Redis Streams.
+      # Setting this value to 0 disables this feature.
+      meta_log_max_history=10
+
+      # Gateway frame-log max history.
+      #
+      # This defines the max number of frame-log records that will be persisted in Redis Streams.
+      # This stream contains the uplink and downlink frames of all gateways.
+      # Setting this value to 0 disables this feature.
+      gateway_frame_log_max_history=10
+
+      # Device frame-log max history.
+      #
+      # This defines the max number of frame-log records that will be persisted in Redis Streams.
+      # This stream contains the uplink and downlink frames of all devices.
+      # Setting this value to 0 disables this feature.
+      device_frame_log_max_history=10
+
+      # Device event-log max history.
+      #
+      # This defines the max number of event-log records that will be persisted in Redis Streams.
+      # This stream contains the events of all devices.
+      # Setting this value to 0 disables this feature.
+      device_event_log_max_history=10
+
+      # Per gateway frame-log max history.
+      #
+      # Equal to the gateway_frame_log_max_history, but for each gateway a new Redis Stream
+      # is created.
+      # Setting this value to 0 disables this feature.
+      per_gateway_frame_log_max_history=10
+
+      # Per gateway frame-log TTL.
+      #
+      # This defines the TTL of the Redis Stream key.
+      per_gateway_frame_log_ttl="1month 13h 26m 24s"
+
+      # Per device frame-log max history.
+      #
+      # Equal to the device_frame_log_max_history, but for each device a new Redis Stream
+      # is created.
+      # Setting this value to 0 disables this feature.
+      per_device_frame_log_max_history=10
+
+      # Per device frame-log TTL.
+      #
+      # This defines the TTL of the Redis Stream key.
+      per_device_frame_log_ttl="1month 13h 26m 24s"
+
+      # Per device event-log max history.
+      #
+      # Equal to the device_event_log_max_history, but for each device a new Redis Stream
+      # is created.
+      # Setting this value to 0 disables this feature.
+      per_device_event_log_max_history=10
+
+      # Per device event-log TTL.
+      #
+      # This defines the TTL of the Redis Stream key.
+      per_device_event_log_ttl="1month 13h 26m 24s"
+
+
+    # Global gateway configuration.
+    # Please note that backend configuration can be found in the per-region
+    # configuration.
+    [gateway]
+
+      # CA certificate and key file (optional).
+      #
+      # If setting the CA certificate and key file options, ChirpStack
+      # will generate client certificates which can be used by the gateway for
+      # authentication and authorization. The Common Name of the certificate will
+      # be set to the Gateway ID.
+      #
+      # The ca_key is expected to be in PKCS#8 format (you can use openssl to
+      # convert to PKCS#8).
+      ca_cert=""
+      ca_key=""
+
+      # Certificate lifetime.
+      #
+      # This defines how long (after generating) the certificate remains valid.
+      client_cert_lifetime=""
+
+      # Allow unknown gateways.
+      #
+      # If set to true, then uplinks received from gateways not configured in
+      # ChirpStack will be allowed.
+      allow_unknown_gateways=true
+
+    # Global integration related configuration.
+    [integration]
+
+      # Enabled integrations (global).
+      enabled=["mqtt"]
+
+      # MQTT integration configuration.
+      [integration.mqtt]
+
+        # Use JSON encoding instead of Protobuf (binary).
+        json=true
+
+        # MQTT server (e.g. scheme://host:port where scheme is tcp, ssl or ws)
+        server="tcp://mosquitto-internal:1883"

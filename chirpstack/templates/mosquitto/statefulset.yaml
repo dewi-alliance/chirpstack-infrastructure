@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mosquitto
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: mosquitto
+  serviceName: "mosquitto"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: mosquitto
+        image: {{ .Values.mosquitto.image.repository }}:{{ .Values.mosquitto.image.tag }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 1883
+          name: mosquitto-internal
+        - containerPort: 1884
+          name: mosquitto-external
+        volumeMounts:
+        - name: config
+          mountPath: /mosquitto/config
+      volumes:
+      - name: config
+        configMap:
+          name:  mosquitto

@@ -1,0 +1,63 @@
+{{- range .Values.global.enabledRegions }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .labelName }}-chirpstack-gateway-bridge
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: chirpstack-gateway-bridge
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chirpstack-gateway-bridge
+    spec:
+      terminationGracePeriodSeconds: 30
+      initContainers:
+        - name: wait-mqtt
+          image: busybox:1.31
+          imagePullPolicy: IfNotPresent
+          command: ['sh', '-c', 'until nslookup mosquitto-internal; do echo waiting for mqtt; sleep 2; done;']
+      containers:
+        - name: chirpstack-gateway-bridge
+          image: {{ .Values.chirpstack-gateway-bridge.image.repository }}:{{ .Values.chirpstack-gateway-bridge.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 1700
+              protocol: UDP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8081
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 8081
+            timeoutSeconds: 1
+          env:
+            - name: INTEGRATION__MQTT__EVENT_TOPIC_TEMPLATE
+              value: "{{ .name }}/gateway/{{ `{{ .GatewayID }}` }}/event/{{ `{{ .EventType }}` }}"
+            - name: INTEGRATION__MQTT__STATE_TOPIC_TEMPLATE
+              value: "{{ .name }}/gateway/{{ `{{ .GatewayID }}` }}/state/{{ `{{ .StateType }}` }}"
+            - name: INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE
+              value: "{{ .name }}/gateway/{{ `{{ .GatewayID }}` }}/command/#"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/chirpstack-gateway-bridge
+    restartPolicy: Always
+    volumes:
+      - name: config
+        configMap:
+          name:  chirpstack-gateway-bridge
+{{- end }}

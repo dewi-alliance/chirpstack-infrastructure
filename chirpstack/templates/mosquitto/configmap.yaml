@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquitto
+  namespace: {{ .Release.Namespace }}
+data:
+  mosquitto.conf: |
+    # See https://mosquitto.org/man/mosquitto-conf-5.html for a full
+    # configuration example and documentation.
+
+    # Global
+    per_listener_settings true
+
+    # Local Listener
+    listener 1883
+    allow_anonymous true
+
+    # External Listener
+    listener 1884
+    allow_anonymous true

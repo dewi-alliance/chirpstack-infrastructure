@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-internal
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mosquitto
+spec:
+  ports:
+    - port: 1883
+      targetPort: 1883
+      protocol: TCP
+      name: mosquitto-internal
+  type: ClusterIP
+  selector:
+    app: mosquitto
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mosquitto-external
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mosquitto
+spec:
+  ports:
+    - port: 1884
+      targetPort: 1884
+      protocol: TCP
+      name: mosquitto-external
+  type: ClusterIP
+  selector:
+    app: mosquitto
