@@ -20,8 +20,9 @@ applications:
       repoURL: <add_me_in_helm_release>
       targetRevision: HEAD
       path: chirpstack
-      directory:
-        recurse: true
+      helm:
+        valueFiles:
+          - values.yaml
     destination:
       server: https://kubernetes.default.svc
       namespace: chirpstack

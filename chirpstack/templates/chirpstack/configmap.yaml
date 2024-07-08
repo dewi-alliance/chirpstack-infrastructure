@@ -2,8 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: chirpstack
-  namespace: {{ .Release.Namespace }}
+  namespace: chirpstack
 data:
+{{- range $v := .Values.global.enabledRegions }}
+{{ $v.file | indent 2 }}: |
+{{ $.Files.Get $v.path | indent 4}}
+{{- end }}
   chirpstack.toml: |
     # Partial config provided below.
     # Full configuration found here - https://www.chirpstack.io/docs/chirpstack/configuration.html#example-chirpstacktoml-configuration
@@ -275,4 +279,4 @@ data:
         json=true
 
         # MQTT server (e.g. scheme://host:port where scheme is tcp, ssl or ws)
-        server="tcp://mosquitto-internal:1883"
+        server="tcp://mqtt-internal:1883"

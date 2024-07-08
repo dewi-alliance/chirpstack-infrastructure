@@ -1,8 +1,9 @@
+{{- range .Values.global.enabledRegions }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: chirpstack-gateway-bridge
-  namespace: {{ .Release.Namespace }}
+  name: {{ .labelName }}-chirpstack-gateway-bridge
+  namespace: chirpstack
 data:
   chirpstack-gateway-bridge.toml: |
     # See https://www.chirpstack.io/docs/chirpstack-gateway-bridge/configuration.html#configuration-file for a full
@@ -16,7 +17,7 @@ data:
 
 
     [integration.mqtt.auth.generic]
-      servers=["tcp://mosquitto-internal:1883"]
+      servers=["tcp://mqtt-internal:1883"]
       username=""
       password=""
 
@@ -34,3 +35,5 @@ data:
       # The ip:port to bind the Prometheus metrics server to for serving the
       # metrics endpoint.
       bind="8081"
+
+{{- end }}

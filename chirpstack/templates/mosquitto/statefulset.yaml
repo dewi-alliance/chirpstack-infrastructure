@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mosquitto
-  namespace: {{ .Release.Namespace }}
+  namespace: chirpstack
 spec:
   selector:
     matchLabels:
@@ -21,9 +21,9 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 1883
-          name: mosquitto-internal
+          name: mqtt-internal
         - containerPort: 1884
-          name: mosquitto-external
+          name: mqtt-external
         volumeMounts:
         - name: config
           mountPath: /mosquitto/config

@@ -3,13 +3,15 @@ global:
     - name: us915_1
       labelName: us915-1
       file: region_us915_1.toml
-      chirpstack-gateway-bridge:
+      path: ./chirpstack/files/region_us915_1.toml
+      gateway:
         port: 1700
         targetPort: 1700
     - name: eu868
       labelName: eu868
       file: region_eu868.toml
-      chirpstack-gateway-bridge:
+      path: ./chirpstack/files/region_eu868.toml
+      gateway:
         port: 1701
         targetPort: 1700
 
@@ -24,11 +26,11 @@ chirpstack:
       - prefix: 780000F0/29
     netId: 00003C
 
-chirpstack-gateway-bridge:
+gateway:
   host: gwb.chirpstack.test-helium.com
   image:
     repository: chirpstack/chirpstack-gateway-bridge
-    tag: 4.4
+    tag: 4.0
 
 mosquitto:
   host: mqtt.chirpstack.test-helium.com

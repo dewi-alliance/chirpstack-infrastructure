@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chirpstack
-  namespace: {{ .Release.Namespace }}
+  namespace: chirpstack
 strategy:
   rollingUpdate:
     maxSurge: 25%
@@ -69,13 +69,8 @@ spec:
           volumeMounts:
             - name: chirpstack
               mountPath: /etc/chirpstack/
-            - name: chirpstack-region-config
-              mountPath: /etc/chirpstack/
       restartPolicy: Always
       volumes:
         - name: chirpstack
           configMap:
             name: chirpstack
-        - name: chirpstack-region-config
-          configMap:
-            name: chirpstack-region-config

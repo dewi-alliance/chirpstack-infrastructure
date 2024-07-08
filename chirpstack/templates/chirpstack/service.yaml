@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: chirpstack
-  namespace: {{ .Release.Namespace }}
+  namespace: chirpstack
   annotations:
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.chirpstack.host }}
 spec:

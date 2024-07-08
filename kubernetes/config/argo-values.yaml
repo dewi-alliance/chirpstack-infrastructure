@@ -1,3 +1,7 @@
+global:
+  logging:
+    level: debug
+
 configs:
   params:
     server.insecure: true

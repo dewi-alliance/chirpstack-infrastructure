@@ -2,19 +2,18 @@ apiVersion: v1
 kind: Service
 metadata:
   name: chirpstack-gateway-bridge
-  namespace: {{ .Release.Namespace }}
+  namespace: chirpstack
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
     service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
     service.beta.kubernetes.io/aws-load-balancer-type: external
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.chirpstack-gateway-bridge.host }}
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.gateway.host }}
 spec:
-  type: {{ .Values.service.type }}
   ports:
   {{- range .Values.global.enabledRegions }}
     - name: {{ .labelName }}
-      port: {{ .chirpstack-gateway-bridge.port }}
-      targetPort: {{ .chirpstack-gateway-bridge.targetPort }}
+      port: {{ .gateway.port }}
+      targetPort: {{ .gateway.targetPort }}
       protocol: UDP
   {{- end }}
   selector:

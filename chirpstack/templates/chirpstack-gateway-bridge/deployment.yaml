@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .labelName }}-chirpstack-gateway-bridge
-  namespace: {{ .Release.Namespace }}
+  namespace: chirpstack
 spec:
   selector:
     matchLabels:
@@ -19,10 +19,10 @@ spec:
         - name: wait-mqtt
           image: busybox:1.31
           imagePullPolicy: IfNotPresent
-          command: ['sh', '-c', 'until nslookup mosquitto-internal; do echo waiting for mqtt; sleep 2; done;']
+          command: ['sh', '-c', 'until nslookup mqtt-internal; do echo waiting for mqtt; sleep 2; done;']
       containers:
         - name: chirpstack-gateway-bridge
-          image: {{ .Values.chirpstack-gateway-bridge.image.repository }}:{{ .Values.chirpstack-gateway-bridge.image.tag }}
+          image: {{ $.Values.gateway.image.repository }}:{{ $.Values.gateway.image.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1700
@@ -53,11 +53,12 @@ spec:
             - name: INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE
               value: "{{ .name }}/gateway/{{ `{{ .GatewayID }}` }}/command/#"
           volumeMounts:
-            - name: config
+            - name: {{ .labelName }}-chirpstack-gateway-bridge
               mountPath: /etc/chirpstack-gateway-bridge
-    restartPolicy: Always
-    volumes:
-      - name: config
-        configMap:
-          name:  chirpstack-gateway-bridge
+      restartPolicy: Always
+      volumes:
+        - name: {{ .labelName }}-chirpstack-gateway-bridge
+          configMap:
+            name:  {{ .labelName }}-chirpstack-gateway-bridge
+
 {{- end }}
