@@ -241,7 +241,7 @@ locals {
 }
 
 resource "aws_security_group" "node" {
-  name_prefix = "${local.node_sg_name}-"
+  name        = local.node_sg_name
   description = "EKS node shared security group"
   vpc_id      = var.vpc_id
 

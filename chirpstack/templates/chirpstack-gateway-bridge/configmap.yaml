@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .labelName }}-chirpstack-gateway-bridge
+  name: {{ .labelName }}-gateway-bridge
   namespace: chirpstack
 data:
   chirpstack-gateway-bridge.toml: |
@@ -14,7 +14,6 @@ data:
       log_level=4
 
       log_json=true
-
 
     [integration.mqtt.auth.generic]
       servers=["tcp://mqtt-internal:1883"]
@@ -34,6 +33,6 @@ data:
 
       # The ip:port to bind the Prometheus metrics server to for serving the
       # metrics endpoint.
-      bind="8081"
-
+      bind="0.0.0.0:8081"
+---
 {{- end }}

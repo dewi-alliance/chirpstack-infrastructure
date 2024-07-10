@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .labelName }}-chirpstack-gateway-bridge
+  name: {{ .labelName }}-gateway-bridge
   namespace: chirpstack
 spec:
   selector:
     matchLabels:
-      app: chirpstack-gateway-bridge
+      app: gateway-bridge
   replicas: 1
   template:
     metadata:
       labels:
-        app: chirpstack-gateway-bridge
+        app: gateway-bridge
     spec:
       terminationGracePeriodSeconds: 30
       initContainers:
@@ -21,16 +21,19 @@ spec:
           imagePullPolicy: IfNotPresent
           command: ['sh', '-c', 'until nslookup mqtt-internal; do echo waiting for mqtt; sleep 2; done;']
       containers:
-        - name: chirpstack-gateway-bridge
+        - name: gateway-bridge
           image: {{ $.Values.gateway.image.repository }}:{{ $.Values.gateway.image.tag }}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1700
               protocol: UDP
+            - containerPort: 8081
+              name: prometheus
+              protocol: TCP
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health
+              path: /
               port: 8081
               scheme: HTTP
             initialDelaySeconds: 10
@@ -53,12 +56,12 @@ spec:
             - name: INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE
               value: "{{ .name }}/gateway/{{ `{{ .GatewayID }}` }}/command/#"
           volumeMounts:
-            - name: {{ .labelName }}-chirpstack-gateway-bridge
+            - name: {{ .labelName }}-gateway-bridge
               mountPath: /etc/chirpstack-gateway-bridge
       restartPolicy: Always
       volumes:
-        - name: {{ .labelName }}-chirpstack-gateway-bridge
+        - name: {{ .labelName }}-gateway-bridge
           configMap:
-            name:  {{ .labelName }}-chirpstack-gateway-bridge
-
+            name:  {{ .labelName }}-gateway-bridge
+---
 {{- end }}

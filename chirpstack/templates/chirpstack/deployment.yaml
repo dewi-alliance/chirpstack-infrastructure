@@ -17,16 +17,20 @@ spec:
     metadata:
       labels:
         app: chirpstack
+        security-group: db-access
     spec:
       containers:
         - name: chirpstack
           image: {{ .Values.chirpstack.image.repository }}:{{ .Values.chirpstack.image.tag }}
           imagePullPolicy: IfNotPresent
           command: ["/usr/bin/chirpstack"]
-          args: ["--config", "/chirpstack"]
+          args: ["--config", "/etc/chirpstack"]
           ports:
             - name: dashboard
               containerPort: 8080
+              protocol: TCP
+            - containerPort: 8081
+              name: prometheus
               protocol: TCP
           readinessProbe:
             failureThreshold: 3
@@ -63,9 +67,11 @@ spec:
                   name: chirpstack-secrets
                   key: CHIRPSTACK_API_SECRET
             - name: REDIS_HOST
-              value: "master.chirpstack-redis.sljizd.use1.cache.amazonaws.com:6379"
+              value: master.chirpstack-redis.sljizd.use1.cache.amazonaws.com:6379
             - name: POSTGRESQL_HOST
-              value: "chirpstack-rds.ce647o6j3fka.us-east-1.rds.amazonaws.com"
+              value: chirpstack-rds.ce647o6j3fka.us-east-1.rds.amazonaws.com
+            - name: MQTT_BROKER_HOST
+              value: mqtt-internal
           volumeMounts:
             - name: chirpstack
               mountPath: /etc/chirpstack/

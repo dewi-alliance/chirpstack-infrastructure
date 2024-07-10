@@ -8,17 +8,13 @@ resource "random_string" "secretsmanager" {
 
 # Generate initial random passwords for Chirpstack Redis users
 resource "random_password" "redis_default_password" {
-  length           = 40
-  special          = true
-  min_special      = 5
-  override_special = "!#$?"
+  length  = 40
+  special = false
 }
 
 resource "random_password" "redis_chirpstack_password" {
-  length           = 40
-  special          = true
-  min_special      = 5
-  override_special = "!#$?"
+  length  = 40
+  special = false
 }
 
 # Initialize AWS Secret Manager entry for the Chirpstack Redis user credentials

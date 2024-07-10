@@ -1,16 +1,17 @@
 global:
+  cert: arn:aws:acm:us-east-1:533916786372:certificate/cd721467-8562-4ecf-8cfa-c031df72ff50
   enabledRegions:
     - name: us915_1
       labelName: us915-1
       file: region_us915_1.toml
-      path: ./chirpstack/files/region_us915_1.toml
+      path: files/region_us915_1.toml
       gateway:
         port: 1700
         targetPort: 1700
     - name: eu868
       labelName: eu868
       file: region_eu868.toml
-      path: ./chirpstack/files/region_eu868.toml
+      path: files/region_eu868.toml
       gateway:
         port: 1701
         targetPort: 1700

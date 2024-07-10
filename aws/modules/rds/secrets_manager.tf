@@ -11,12 +11,12 @@ resource "random_password" "pg_admin_password" {
   length           = 40
   special          = true
   min_special      = 5
-  override_special = "!#$%?"
+  override_special = "!#&?"
 }
 
 # Initialize AWS Secret Manager entry for the Chirpstack RDS postgres admin credentials
 resource "aws_secretsmanager_secret" "pg_credentials" {
-  name        = "chirpstack-rds-pg-credentials-${random_string.secretsmanager.result}"
+  name        = "postgres-chirpstack-admin-credentials-${random_string.secretsmanager.result}"
   description = "Admin credentials for Chirpstack PostgreSQL database"
 }
 

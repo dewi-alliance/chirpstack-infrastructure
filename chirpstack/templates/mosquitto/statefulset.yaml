@@ -20,14 +20,24 @@ spec:
         image: {{ .Values.mosquitto.image.repository }}:{{ .Values.mosquitto.image.tag }}
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 1883
-          name: mqtt-internal
-        - containerPort: 1884
-          name: mqtt-external
+          - containerPort: 1883
+            name: mqtt-internal
+          - containerPort: 1884
+            name: mqtt-external
+        livenessProbe:
+          tcpSocket:
+            port: 1883
+          initialDelaySeconds: 5
+          periodSeconds: 15
+        readinessProbe:
+          tcpSocket:
+            port: 1883
+          initialDelaySeconds: 5
+          periodSeconds: 10
         volumeMounts:
-        - name: config
-          mountPath: /mosquitto/config
+          - name: config
+            mountPath: /mosquitto/config
       volumes:
-      - name: config
-        configMap:
-          name:  mosquitto
+        - name: config
+          configMap:
+            name:  mosquitto

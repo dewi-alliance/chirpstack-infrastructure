@@ -386,6 +386,46 @@ resource "helm_release" "grafana" {
 }
 
 # ***************************************
+#  Security Groups
+# ***************************************
+data "aws_security_group" "rds_access_security_group" {
+  name = "rds-access-security-group"
+}
+
+data "aws_security_group" "redis_access_security_group" {
+  name = "redis-access-security-group"
+}
+
+data "aws_security_group" "chirpstack_cluster_node" {
+  name = "chirpstack-cluster-node"
+}
+
+resource "kubernetes_manifest" "this" {
+  manifest = yamldecode(<<-EOF
+    apiVersion: vpcresources.k8s.aws/v1beta1
+    kind: SecurityGroupPolicy
+    metadata:
+      name: db-access-security-group-policy
+      namespace: chirpstack
+    spec:
+      podSelector:
+        matchLabels:
+          security-group: db-access
+      securityGroups:
+        groupIds:
+          - "${data.aws_security_group.rds_access_security_group.id}"
+          - "${data.aws_security_group.redis_access_security_group.id}"
+          - "${data.aws_security_group.chirpstack_cluster_node.id}"
+    EOF
+  )
+
+  depends_on = [
+    time_sleep.this,
+    helm_release.argocd_apps
+  ]
+}
+
+# ***************************************
 #  K8s aws-auth configmap
 # ***************************************
 locals {

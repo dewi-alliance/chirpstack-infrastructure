@@ -4,10 +4,9 @@ metadata:
   name: chirpstack
   namespace: chirpstack
 data:
-{{- range $v := .Values.global.enabledRegions }}
-{{ $v.file | indent 2 }}: |
-{{ $.Files.Get $v.path | indent 4}}
-{{- end }}
+{{- range $v := .Values.global.enabledRegions}}
+{{- tpl (($.Files.Glob $v.path ).AsConfig) .  | nindent 2 }}
+{{ end }}
   chirpstack.toml: |
     # Partial config provided below.
     # Full configuration found here - https://www.chirpstack.io/docs/chirpstack/configuration.html#example-chirpstacktoml-configuration
@@ -42,7 +41,7 @@ data:
       #  * require - Always SSL (skip verification)
       #  * verify-ca - Always SSL (verify that the certificate presented by the server was signed by a trusted CA)
       #  * verify-full - Always SSL (verify that the certification presented by the server was signed by a trusted CA and the server host name matches the one in the certificate)
-      dsn="postgres://chirpstack:$POSTGRESQL_PASSWORD@$POSTGRESQL_HOST/chirpstack?sslmode=disable"
+      dsn="postgres://chirpstack_admin:$POSTGRESQL_PASSWORD@$POSTGRESQL_HOST/chirpstack"
 
       # Max open connections.
       #
@@ -72,14 +71,14 @@ data:
       #
       # Set multiple addresses when connecting to a cluster.
       servers=[
-        "rediss://chirpstack:REDIS_PASSWORD@$REDIS_HOST:6379",
+        "rediss://chirpstack:$REDIS_PASSWORD@$REDIS_HOST"
       ]
 
       # Redis Cluster.
       #
       # Set this to true when the provided URLs are pointing to a Redis Cluster
       # instance.
-      cluster=true
+      # cluster=true
 
       # TLS enabled.
       tls_enabled=true
@@ -155,7 +154,7 @@ data:
       # is never exposed. Changing this secret will invalidate all login and API
       # tokens. The following command can be used to generate a random secret:
       #   openssl rand -base64 32
-      secret=$CHIRPSTACK_API_SECRET
+      secret="$CHIRPSTACK_API_SECRET"
 
     # Monitoring related configuration.
     [monitoring]
@@ -252,13 +251,13 @@ data:
       #
       # The ca_key is expected to be in PKCS#8 format (you can use openssl to
       # convert to PKCS#8).
-      ca_cert=""
-      ca_key=""
+      # ca_cert=""
+      # ca_key=""
 
       # Certificate lifetime.
       #
       # This defines how long (after generating) the certificate remains valid.
-      client_cert_lifetime=""
+      # client_cert_lifetime=""
 
       # Allow unknown gateways.
       #
@@ -279,4 +278,4 @@ data:
         json=true
 
         # MQTT server (e.g. scheme://host:port where scheme is tcp, ssl or ws)
-        server="tcp://mqtt-internal:1883"
+        server="tcp://$MQTT_BROKER_HOST:1883"

@@ -4,6 +4,9 @@ metadata:
   name: chirpstack
   namespace: chirpstack
   annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "8081"
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.chirpstack.host }}
 spec:
   ports:
