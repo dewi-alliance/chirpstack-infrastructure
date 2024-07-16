@@ -207,5 +207,7 @@ module "bastion" {
 module "k8s_deps" {
   source = "./modules/k8s_deps"
 
-  oidc_provider = module.eks.oidc_provider
+  vpc_id            = module.vpc.vpc_id
+  whitelisted_cidrs = var.whitelisted_cidrs
+  oidc_provider     = module.eks.oidc_provider
 }

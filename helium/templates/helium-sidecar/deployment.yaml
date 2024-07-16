@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helium-sidecar
+  namespace: helium
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helium-sidecar
+  template:
+    metadata:
+      labels:
+        app: helium-sidecar
+        security-group: db-access
+    spec:
+      containers:
+        - name: helium-sidecar
+          image: quay.io/{{ .Values.helium.image.repository }}:{{ .Values.helium.image.tag }}
+          imagePullPolicy: IfNotPresent
+          command: ["./chirpstack-helium", "all"]
+          volumeMounts:
+            - name: helium-settings
+              mountPath: /opt/chirpstack-helium/settings.toml
+              subPath: settings.toml
+              readOnly: true
+            - name: helium-keypair
+              mountPath: /opt/chirpstack-helium/keypair.bin # needs to be keypair.bin
+              subPath: keypair.bin
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: helium-settings
+          secret:
+            secretName: helium-settings
+        - name: helium-keypair
+          secret:
+            secretName: helium-keypair

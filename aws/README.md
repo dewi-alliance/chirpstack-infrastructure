@@ -1,5 +1,7 @@
-# chirpstack-aws-infrastructure
-Terraform repository defining AWS infrastructure for a production ChirpStack configuration
+# AWS Infrastructure for Chirpstack
+
+This directory contains a set of Terraform modules for deploying AWS infrastructure underpinning Chirpstack. In particular, this directory defines a three-tier VPC architecture with EKS, RDS Postgres, and Elasticache Redis.
+
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -124,6 +126,7 @@ No resources.
 | <a name="input_vpc_enable_dns_support"></a> [vpc\_enable\_dns\_support](#input\_vpc\_enable\_dns\_support) | Enable DNS support in the VPC? Defaults to true. | `bool` | `true` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC. Defaults to chirpstack-vpc. | `string` | `"chirpstack-vpc"` | no |
 | <a name="input_vpc_tags"></a> [vpc\_tags](#input\_vpc\_tags) | Tags to be applied to all resources in the VPC. | `map(string)` | `{}` | no |
+| <a name="input_whitelisted_cidrs"></a> [whitelisted\_cidrs](#input\_whitelisted\_cidrs) | The IPv4 CIDR blocks for whitelisted IPs accessing Chirpstack, Argo, Grafana, and MQTT | `list(string)` | `[]` | no |
 | <a name="input_with_bastion"></a> [with\_bastion](#input\_with\_bastion) | Should Bastion be created? | `bool` | `false` | no |
 | <a name="input_with_rds_cloudwatch_alarms"></a> [with\_rds\_cloudwatch\_alarms](#input\_with\_rds\_cloudwatch\_alarms) | Deploy Cloudwatch Alarms for RDS? | `bool` | `false` | no |
 | <a name="input_with_rds_read_replica"></a> [with\_rds\_read\_replica](#input\_with\_rds\_read\_replica) | Create read replica of primary DB? | `bool` | `false` | no |

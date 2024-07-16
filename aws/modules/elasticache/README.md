@@ -6,6 +6,7 @@
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.2 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | 5.50.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.6.1 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | 0.11.2 |
 
 ## Providers
 
@@ -13,6 +14,7 @@
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.1 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.11.2 |
 
 ## Modules
 
@@ -28,19 +30,25 @@ No modules.
 | [aws_elasticache_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_subnet_group) | resource |
 | [aws_elasticache_user.chirpstack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user) | resource |
 | [aws_elasticache_user.default](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user) | resource |
+| [aws_elasticache_user.helium](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user) | resource |
 | [aws_elasticache_user_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user_group) | resource |
 | [aws_elasticache_user_group_association.chirpstack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user_group_association) | resource |
+| [aws_elasticache_user_group_association.helium](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/elasticache_user_group_association) | resource |
 | [aws_secretsmanager_secret.redis_chirpstack_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.redis_default_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.redis_helium_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.redis_chirpstack_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_secretsmanager_secret_version.redis_default_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_secretsmanager_secret_version.redis_helium_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.redis_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group.redis_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group_rule.redis_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
 | [random_password.redis_chirpstack_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_password.redis_default_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
+| [random_password.redis_helium_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_string.redis](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [random_string.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
+| [time_sleep.this](https://registry.terraform.io/providers/hashicorp/time/0.11.2/docs/resources/sleep) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
 
 ## Inputs

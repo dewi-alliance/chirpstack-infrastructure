@@ -3,11 +3,6 @@ kind: Deployment
 metadata:
   name: chirpstack
   namespace: chirpstack
-strategy:
-  rollingUpdate:
-    maxSurge: 25%
-    maxUnavailable: 25%
-  type: RollingUpdate
 spec:
   replicas: {{ .Values.chirpstack.replicas }}
   selector:

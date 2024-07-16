@@ -1,0 +1,15 @@
+apiVersion: v2
+name: chirpstack
+description: A Helm chart for deploying a Helium sidecar to ChirpStack
+type: application
+version: 1.0.0
+appVersion: 4
+home: https://www.chirpstack.io/
+keywords:
+  - chirpstack
+  - lora
+  - lorawan
+  - iot
+  - gateway
+  - helium
+icon: https://www.chirpstack.io/img/logo.svg

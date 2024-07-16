@@ -19,6 +19,8 @@ global:
 chirpstack:
   replicas: 1
   host: dashboard.chirpstack.test-helium.com
+  alb:
+    securityGroupId: sg-06b0809a1bd644098 # chirpstack-alb
   image:
     repository: chirpstack/chirpstack
     tag: 4.4
@@ -38,3 +40,5 @@ mosquitto:
   image:
     repository: eclipse-mosquitto
     tag: 2.0
+  nlb:
+    securityGroupId: sg-09e5d12122d36c052 # mqtt-nlb

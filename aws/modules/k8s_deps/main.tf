@@ -547,7 +547,6 @@ resource "aws_iam_role" "grafana_role" {
 
   assume_role_policy = data.aws_iam_policy_document.grafana_assume_role_policy.json
 }
-
 resource "aws_iam_policy" "grafana_iam_policy" {
   name        = "grafana-policy"
   description = "IAM policy used by grafana operating in the EKS cluster to read from Cloudwatch"
@@ -558,4 +557,120 @@ resource "aws_iam_policy" "grafana_iam_policy" {
 resource "aws_iam_role_policy_attachment" "grafana_policy_attachement" {
   role       = aws_iam_role.grafana_role.name
   policy_arn = aws_iam_policy.grafana_iam_policy.arn
+}
+
+# ***************************************
+# Application Load Balancer
+# In front of Chirpstack, Argo, and Grafana dashboards
+# ***************************************
+locals {
+  alb_security_group_rules = {
+    ingress_alb_443 = {
+      description = "443 ingress for restricted CIDRs"
+      protocol    = "tcp"
+      from_port   = 443
+      to_port     = 443
+      type        = "ingress"
+      cidr_blocks = var.whitelisted_cidrs
+    }
+    ingress_alb_80 = {
+      description = "80 ingress for restricted CIDRs"
+      protocol    = "tcp"
+      from_port   = 80
+      to_port     = 80
+      type        = "ingress"
+      cidr_blocks = var.whitelisted_cidrs
+    }
+    egress_all = {
+      description = "Allow all egress"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
+
+resource "aws_security_group" "alb" {
+  name        = "chirpstack-alb"
+  description = "Security group for ALB in front of Chirpstack, Argo, and Grafana"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "chirpstack-alb"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_security_group_rule" "alb" {
+  for_each = { for k, v in merge(
+    local.alb_security_group_rules
+  ) : k => v }
+
+  security_group_id = aws_security_group.alb.id
+
+  protocol    = each.value.protocol
+  from_port   = each.value.from_port
+  to_port     = each.value.to_port
+  type        = each.value.type
+  cidr_blocks = each.value.cidr_blocks
+  description = each.value.description
+}
+
+# ***************************************
+# Network Load Balancer
+# In front of MQTT
+# ***************************************
+locals {
+  mqtt_security_group_rules = {
+    ingress_8883 = {
+      description = "8883 ingress from restricted CIDRs"
+      protocol    = "tcp"
+      from_port   = 8883
+      to_port     = 8883
+      type        = "ingress"
+      cidr_blocks = var.whitelisted_cidrs
+    }
+    egress_all = {
+      description = "Allow all egress"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "egress"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+}
+
+resource "aws_security_group" "nlb_mqtt" {
+  name        = "mqtt-nlb"
+  description = "Security group for NLB in front of MQTT"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "mqtt-nlb"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_security_group_rule" "nlb_mqtt" {
+  for_each = { for k, v in merge(
+    local.mqtt_security_group_rules
+  ) : k => v }
+
+  security_group_id = aws_security_group.nlb_mqtt.id
+
+  protocol    = each.value.protocol
+  from_port   = each.value.from_port
+  to_port     = each.value.to_port
+  type        = each.value.type
+  cidr_blocks = each.value.cidr_blocks
+  description = each.value.description
 }

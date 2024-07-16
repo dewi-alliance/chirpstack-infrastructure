@@ -11,6 +11,18 @@ projects:
     clusterResourceWhitelist:
     - group: '*'
       kind: '*'
+  helium:
+    namespace: argocd
+    description: 'Helium Sidecar'
+    sourceRepos:
+    - '*'
+    destinations:
+    - name: '*'
+      namespace: 'helium'
+      server: '*'
+    clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
 
 applications:
   chirpstack:
@@ -26,6 +38,25 @@ applications:
     destination:
       server: https://kubernetes.default.svc
       namespace: chirpstack
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
+  helium:
+    namespace: argocd
+    project: helium
+    source:
+      repoURL: <add_me_in_helm_release>
+      targetRevision: HEAD
+      path: helium
+      helm:
+        valueFiles:
+          - values.yaml
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: helium
     syncPolicy:
       automated:
         prune: true

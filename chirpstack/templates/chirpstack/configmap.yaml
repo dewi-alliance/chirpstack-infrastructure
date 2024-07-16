@@ -41,7 +41,7 @@ data:
       #  * require - Always SSL (skip verification)
       #  * verify-ca - Always SSL (verify that the certificate presented by the server was signed by a trusted CA)
       #  * verify-full - Always SSL (verify that the certification presented by the server was signed by a trusted CA and the server host name matches the one in the certificate)
-      dsn="postgres://chirpstack_admin:$POSTGRESQL_PASSWORD@$POSTGRESQL_HOST/chirpstack"
+      dsn="postgres://chirpstack:$POSTGRESQL_PASSWORD@$POSTGRESQL_HOST/chirpstack"
 
       # Max open connections.
       #

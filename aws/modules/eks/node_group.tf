@@ -120,7 +120,10 @@ resource "aws_launch_template" "this" {
     enabled = true
   }
 
-  tags = var.eks_tags
+  tags = merge(
+    var.eks_tags,
+    { Name = "eks-node-group" }
+  )
 
   # Prevent premature access of policies by pods that
   # require permissions on create/destroy that depend on nodes

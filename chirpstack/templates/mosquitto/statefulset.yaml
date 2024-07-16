@@ -15,29 +15,58 @@ spec:
         app: mosquitto
     spec:
       terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 1883
+        runAsGroup: 1883
+        fsGroup: 1883
+      initContainers:
+      # Init container to change the file permissions on the mosquitto password file
+        - name: mosquitto-init
+          image: busybox
+          command: ["/bin/sh"]
+          args: ["-c", "cp /tmp/mosquitto/pwfile /mosquitto/data/pwfile && chmod 600 /mosquitto/data/pwfile"]
+          volumeMounts:
+            - name: mqtt-config
+              mountPath: /mosquitto/config
+            - name: mqtt-persistance
+              mountPath: /mosquitto/data
+            - name: mqtt-secrets
+              mountPath: /tmp/mosquitto/pwfile
+              subPath: pwfile
       containers:
-      - name: mosquitto
-        image: {{ .Values.mosquitto.image.repository }}:{{ .Values.mosquitto.image.tag }}
-        imagePullPolicy: IfNotPresent
-        ports:
-          - containerPort: 1883
-            name: mqtt-internal
-          - containerPort: 1884
-            name: mqtt-external
-        livenessProbe:
-          tcpSocket:
-            port: 1883
-          initialDelaySeconds: 5
-          periodSeconds: 15
-        readinessProbe:
-          tcpSocket:
-            port: 1883
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        volumeMounts:
-          - name: config
-            mountPath: /mosquitto/config
+        - name: mosquitto
+          image: {{ .Values.mosquitto.image.repository }}:{{ .Values.mosquitto.image.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 1883
+              name: mqtt-internal
+            - containerPort: 1884
+              name: mqtt-external
+          livenessProbe:
+            tcpSocket:
+              port: 1883
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          readinessProbe:
+            tcpSocket:
+              port: 1883
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          volumeMounts:
+            - name: mqtt-config
+              mountPath: /mosquitto/config
+            - name: mqtt-persistance
+              mountPath: /mosquitto/data
+            - name: mqtt-secrets
+              mountPath: /tmp/mosquitto/pwfile
+              subPath: pwfile
       volumes:
-        - name: config
+        - name: mqtt-config
           configMap:
             name:  mosquitto
+        - name: mqtt-persistance
+          persistentVolumeClaim:
+            claimName: mqtt-persistance
+        - name: mqtt-secrets
+          secret:
+            secretName: mqtt-secrets

@@ -195,6 +195,14 @@ resource "aws_security_group" "redis_access_security_group" {
 # ***************************************
 # Redis Users
 # ***************************************
+resource "time_sleep" "this" {
+  depends_on = [
+    aws_elasticache_user_group_association.chirpstack
+  ]
+
+  create_duration = "30s"
+}
+
 resource "aws_elasticache_user_group" "this" {
   engine        = "REDIS"
   user_group_id = "chirpstack"
@@ -227,7 +235,26 @@ resource "aws_elasticache_user" "chirpstack" {
   tags = var.redis_tags
 }
 
+resource "aws_elasticache_user" "helium" {
+  engine        = "REDIS"
+  access_string = "on ~* +@all -@dangerous -@admin"
+  passwords     = [random_password.redis_helium_password.result]
+  user_id       = "helium-user-id"
+  user_name     = "helium"
+
+  tags = var.redis_tags
+}
+
 resource "aws_elasticache_user_group_association" "chirpstack" {
   user_group_id = aws_elasticache_user_group.this.user_group_id
   user_id       = aws_elasticache_user.chirpstack.user_id
+}
+
+resource "aws_elasticache_user_group_association" "helium" {
+  user_group_id = aws_elasticache_user_group.this.user_group_id
+  user_id       = aws_elasticache_user.helium.user_id
+
+  depends_on = [
+    time_sleep.this
+  ]
 }

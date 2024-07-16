@@ -632,3 +632,12 @@ variable "bastion_tags" {
   type        = map(string)
   default     = {}
 }
+
+# ***************************************
+# K8s deps
+# ***************************************
+variable "whitelisted_cidrs" {
+  description = "The IPv4 CIDR blocks for whitelisted IPs accessing Chirpstack, Argo, Grafana, and MQTT"
+  type        = list(string)
+  default     = []
+}

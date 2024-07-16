@@ -17,6 +17,12 @@ resource "random_password" "redis_chirpstack_password" {
   special = false
 }
 
+resource "random_password" "redis_helium_password" {
+  length  = 40
+  special = false
+}
+
+
 # Initialize AWS Secret Manager entry for the Chirpstack Redis user credentials
 resource "aws_secretsmanager_secret" "redis_default_credentials" {
   name        = "redis-default-credentials-${random_string.secretsmanager.result}"
@@ -26,6 +32,11 @@ resource "aws_secretsmanager_secret" "redis_default_credentials" {
 resource "aws_secretsmanager_secret" "redis_chirpstack_credentials" {
   name        = "redis-chirpstack-credentials-${random_string.secretsmanager.result}"
   description = "Credentials for Redis chirpstack user"
+}
+
+resource "aws_secretsmanager_secret" "redis_helium_credentials" {
+  name        = "redis-helium-credentials-${random_string.secretsmanager.result}"
+  description = "Credentials for Redis helium user"
 }
 
 # Apply the Chirpstack Redis user credentials to the AWS Secret Manager entries
@@ -46,6 +57,17 @@ resource "aws_secretsmanager_secret_version" "redis_chirpstack_vals" {
     {
       "password" : random_password.redis_chirpstack_password.result,
       "username" : "chirpstack",
+      "user_arn" : "arn:aws:elasticache:${var.aws_region}:${data.aws_caller_identity.current.account_id}:user:chirpstack",
+    }
+  )
+}
+
+resource "aws_secretsmanager_secret_version" "redis_helium_vals" {
+  secret_id = aws_secretsmanager_secret.redis_helium_credentials.id
+  secret_string = jsonencode(
+    {
+      "password" : random_password.redis_helium_password.result,
+      "username" : "helium",
       "user_arn" : "arn:aws:elasticache:${var.aws_region}:${data.aws_caller_identity.current.account_id}:user:chirpstack",
     }
   )

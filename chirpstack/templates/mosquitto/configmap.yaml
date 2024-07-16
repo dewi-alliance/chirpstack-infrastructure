@@ -4,12 +4,16 @@ metadata:
   name: mosquitto
   namespace: chirpstack
 data:
-  mosquitto.conf: |
+  mosquitto.conf: |-
     # See https://mosquitto.org/man/mosquitto-conf-5.html for a full
     # configuration example and documentation.
 
     # Global
     per_listener_settings true
+
+    # Data
+    persistence true
+    persistence_location /mosquitto/data/
 
     # Local Listener
     listener 1883
@@ -17,4 +21,5 @@ data:
 
     # External Listener
     listener 1884
-    allow_anonymous true
+    allow_anonymous false
+    password_file /mosquitto/data/pwfile

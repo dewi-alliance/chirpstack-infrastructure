@@ -32,6 +32,10 @@ No modules.
 | [aws_iam_role_policy_attachment.external_dns_policy_attatchment](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.grafana_policy_attachement](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.lbc_policy_attatchment](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_security_group.alb](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.nlb_mqtt](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group_rule.alb](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
+| [aws_security_group_rule.nlb_mqtt](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.cluster_autoscaler_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cluster_autoscaler_policy](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/iam_policy_document) | data source |
@@ -47,6 +51,8 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_oidc_provider"></a> [oidc\_provider](#input\_oidc\_provider) | The OpenID Connect identity provider (issuer URL without leading `https://`) | `string` | `""` | no |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
+| <a name="input_whitelisted_cidrs"></a> [whitelisted\_cidrs](#input\_whitelisted\_cidrs) | The IPv4 CIDR blocks for whitelisted IPs accessing Chirpstack, Argo, Grafana, and MQTT | `list(string)` | `[]` | no |
 
 ## Outputs
 

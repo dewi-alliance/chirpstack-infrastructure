@@ -8,16 +8,34 @@ resource "random_string" "secretsmanager" {
 
 # Generate initial random password for Chirpstack RDS postgres admin user
 resource "random_password" "pg_admin_password" {
-  length           = 40
-  special          = true
-  min_special      = 5
-  override_special = "!#&?"
+  length  = 40
+  special = false
+}
+
+resource "random_password" "pg_chirpstack_password" {
+  length  = 40
+  special = false
+}
+
+resource "random_password" "pg_helium_password" {
+  length  = 40
+  special = false
 }
 
 # Initialize AWS Secret Manager entry for the Chirpstack RDS postgres admin credentials
 resource "aws_secretsmanager_secret" "pg_credentials" {
-  name        = "postgres-chirpstack-admin-credentials-${random_string.secretsmanager.result}"
-  description = "Admin credentials for Chirpstack PostgreSQL database"
+  name        = "postgres-admin-credentials-${random_string.secretsmanager.result}"
+  description = "Credentials for Postgres admin user"
+}
+
+resource "aws_secretsmanager_secret" "pg_chirpstack_credentials" {
+  name        = "postgres-chirpstack-credentials-${random_string.secretsmanager.result}"
+  description = "Credentials for Postgres chirpstack user"
+}
+
+resource "aws_secretsmanager_secret" "pg_helium_credentials" {
+  name        = "postgres-helium-credentials-${random_string.secretsmanager.result}"
+  description = "Credentials for Postgres helium user"
 }
 
 # Apply the Chirpstack RDS postgres admin credentials to the AWS Secret Manager entry
@@ -31,6 +49,34 @@ resource "aws_secretsmanager_secret_version" "pg_credentials_vals" {
       dbname   = aws_db_instance.rds.db_name
       port     = aws_db_instance.rds.port
       password = random_password.pg_admin_password.result
+    }
+  )
+}
+
+resource "aws_secretsmanager_secret_version" "pg_chirpstack_vals" {
+  secret_id = aws_secretsmanager_secret.pg_chirpstack_credentials.id
+  secret_string = jsonencode(
+    {
+      engine   = "postgres"
+      host     = aws_db_instance.rds.address
+      username = "chirpstack"
+      dbname   = aws_db_instance.rds.db_name
+      port     = aws_db_instance.rds.port
+      password = random_password.pg_chirpstack_password.result
+    }
+  )
+}
+
+resource "aws_secretsmanager_secret_version" "pg_helium_vals" {
+  secret_id = aws_secretsmanager_secret.pg_helium_credentials.id
+  secret_string = jsonencode(
+    {
+      engine   = "postgres"
+      host     = aws_db_instance.rds.address
+      username = "helium"
+      dbname   = aws_db_instance.rds.db_name
+      port     = aws_db_instance.rds.port
+      password = random_password.pg_helium_password.result
     }
   )
 }

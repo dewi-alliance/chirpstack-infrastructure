@@ -1,9 +1,3 @@
-variable "with_monitoring" {
-  description = "Deploy monitoring stack (prometheus and grafana)?"
-  type        = bool
-  default     = false
-}
-
 # ***************************************
 #  Argo CD
 # ***************************************
@@ -109,6 +103,12 @@ variable "prometheus_chart_version" {
 # ***************************************
 #  Grafana
 # ***************************************
+variable "with_grafana" {
+  description = "Deploy Grafana?"
+  type        = bool
+  default     = false
+}
+
 variable "grafana_url" {
   description = "Grafana URL"
   type        = string

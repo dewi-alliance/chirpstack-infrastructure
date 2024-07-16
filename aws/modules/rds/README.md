@@ -27,9 +27,13 @@ No modules.
 | [aws_db_instance.rds](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_instance) | resource |
 | [aws_db_instance.rds_read_replica](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_instance) | resource |
 | [aws_db_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/db_parameter_group) | resource |
+| [aws_secretsmanager_secret.pg_chirpstack_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret.pg_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.pg_helium_credentials](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_rotation.rotation](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_rotation) | resource |
+| [aws_secretsmanager_secret_version.pg_chirpstack_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_secretsmanager_secret_version.pg_credentials_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
+| [aws_secretsmanager_secret_version.pg_helium_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.rds_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group.rds_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group.secrets_manager_rotator_lambda_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
@@ -38,6 +42,8 @@ No modules.
 | [aws_serverlessapplicationrepository_cloudformation_stack.rotator_cf_stack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/serverlessapplicationrepository_cloudformation_stack) | resource |
 | [aws_vpc_endpoint.secretsmanager](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/vpc_endpoint) | resource |
 | [random_password.pg_admin_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
+| [random_password.pg_chirpstack_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
+| [random_password.pg_helium_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_string.rds](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [random_string.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/partition) | data source |

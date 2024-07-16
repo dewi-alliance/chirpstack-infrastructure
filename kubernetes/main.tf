@@ -3,17 +3,26 @@ resource "time_sleep" "this" {
     helm_release.lbc
   ]
 
-  create_duration = "300s" # Adjust the duration as needed (e.g., "5m" for 5 minutes)
+  create_duration = "300s"
+}
+
+resource "time_sleep" "chirpstack" {
+
+  depends_on = [
+    helm_release.argocd_apps
+  ]
+
+  create_duration = "300s"
+}
+
+resource "random_string" "this" {
+  length  = 8
+  special = false
 }
 
 # ***************************************
 #  Argo CD
 # ***************************************
-resource "random_string" "argo" {
-  length  = 8
-  special = false
-}
-
 resource "random_password" "argo" {
   length           = 40
   special          = true
@@ -22,8 +31,8 @@ resource "random_password" "argo" {
 }
 
 resource "aws_secretsmanager_secret" "argo" {
-  name        = "argocd-admin-credentials-${random_string.argo.result}"
-  description = "Admin credentials for ArgoCD"
+  name        = "argocd-admin-credentials-${random_string.this.result}"
+  description = "Credentials for ArgoCD admin user"
 }
 
 resource "aws_secretsmanager_secret_version" "argo" {
@@ -82,6 +91,11 @@ resource "helm_release" "argocd_apps" {
 
   set {
     name  = "applications.chirpstack.source.repoURL"
+    value = var.repo_url
+  }
+
+  set {
+    name  = "applications.helium.source.repoURL"
     value = var.repo_url
   }
 
@@ -272,13 +286,10 @@ resource "helm_release" "sealed_secrets" {
   cleanup_on_fail  = true
 }
 
-
 # ***************************************
 #  Prometheus
 # ***************************************
 resource "helm_release" "prometheus" {
-  count = var.with_monitoring ? 1 : 0
-
   repository = "https://prometheus-community.github.io/helm-charts"
   chart      = "prometheus"
   version    = var.prometheus_chart_version
@@ -304,15 +315,8 @@ data "aws_iam_role" "grafana_role" {
   name = "grafana-role"
 }
 
-resource "random_string" "grafana" {
-  count = var.with_monitoring ? 1 : 0
-
-  length  = 8
-  special = false
-}
-
 resource "random_password" "grafana" {
-  count = var.with_monitoring ? 1 : 0
+  count = var.with_grafana ? 1 : 0
 
   length           = 40
   special          = true
@@ -321,14 +325,14 @@ resource "random_password" "grafana" {
 }
 
 resource "aws_secretsmanager_secret" "grafana" {
-  count = var.with_monitoring ? 1 : 0
+  count = var.with_grafana ? 1 : 0
 
-  name        = "grafana-admin-credentials-${random_string.grafana[0].result}"
-  description = "Admin credentials for Grafana"
+  name        = "grafana-admin-credentials-${random_string.this.result}"
+  description = "Credentials for Grafana admin user"
 }
 
 resource "aws_secretsmanager_secret_version" "grafana" {
-  count = var.with_monitoring ? 1 : 0
+  count = var.with_grafana ? 1 : 0
 
   secret_id = aws_secretsmanager_secret.grafana[0].id
   secret_string = jsonencode(
@@ -340,7 +344,7 @@ resource "aws_secretsmanager_secret_version" "grafana" {
 }
 
 resource "helm_release" "grafana" {
-  count = var.with_monitoring ? 1 : 0
+  count = var.with_grafana ? 1 : 0
 
   repository = "https://grafana.github.io/helm-charts"
   chart      = "grafana"
@@ -386,7 +390,7 @@ resource "helm_release" "grafana" {
 }
 
 # ***************************************
-#  Security Groups
+#  Security Group Policy
 # ***************************************
 data "aws_security_group" "rds_access_security_group" {
   name = "rds-access-security-group"
@@ -400,7 +404,7 @@ data "aws_security_group" "chirpstack_cluster_node" {
   name = "chirpstack-cluster-node"
 }
 
-resource "kubernetes_manifest" "this" {
+resource "kubernetes_manifest" "db_chirpstack_access_sg" {
   manifest = yamldecode(<<-EOF
     apiVersion: vpcresources.k8s.aws/v1beta1
     kind: SecurityGroupPolicy
@@ -421,9 +425,35 @@ resource "kubernetes_manifest" "this" {
 
   depends_on = [
     time_sleep.this,
-    helm_release.argocd_apps
+    time_sleep.chirpstack,
   ]
 }
+
+resource "kubernetes_manifest" "db_helium_access_sg" {
+  manifest = yamldecode(<<-EOF
+    apiVersion: vpcresources.k8s.aws/v1beta1
+    kind: SecurityGroupPolicy
+    metadata:
+      name: db-access-security-group-policy
+      namespace: helium
+    spec:
+      podSelector:
+        matchLabels:
+          security-group: db-access
+      securityGroups:
+        groupIds:
+          - "${data.aws_security_group.rds_access_security_group.id}"
+          - "${data.aws_security_group.redis_access_security_group.id}"
+          - "${data.aws_security_group.chirpstack_cluster_node.id}"
+    EOF
+  )
+
+  depends_on = [
+    time_sleep.this,
+    time_sleep.chirpstack,
+  ]
+}
+
 
 # ***************************************
 #  K8s aws-auth configmap
@@ -452,4 +482,29 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
   }
 
   data = local.aws_auth_configmap_data
+}
+
+# ***************************************
+#  Chirpstack dashboard
+# ***************************************
+resource "random_password" "chirpstack" {
+  length           = 40
+  special          = true
+  min_special      = 5
+  override_special = "!#$%?"
+}
+
+resource "aws_secretsmanager_secret" "chirpstack" {
+  name        = "chirpstack-admin-credentials-${random_string.this.result}"
+  description = "Credentials for Chirpstack admin user"
+}
+
+resource "aws_secretsmanager_secret_version" "chirpstack" {
+  secret_id = aws_secretsmanager_secret.chirpstack.id
+  secret_string = jsonencode(
+    {
+      password = random_password.chirpstack.result
+      username = "admin"
+    }
+  )
 }
