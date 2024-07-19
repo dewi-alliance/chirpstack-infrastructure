@@ -41,7 +41,7 @@ resource "aws_secretsmanager_secret_version" "redis_default_vals" {
     {
       "password" : random_password.redis_default_password.result,
       "username" : "default",
-      "user_arn" : "arn:aws:elasticache:${var.aws_region}:${data.aws_caller_identity.current.account_id}:user:default"
+      "host" : aws_elasticache_replication_group.this.primary_endpoint_address
     }
   )
 }
@@ -52,7 +52,7 @@ resource "aws_secretsmanager_secret_version" "redis_chirpstack_vals" {
     {
       "password" : random_password.redis_chirpstack_password.result,
       "username" : "chirpstack",
-      "user_arn" : "arn:aws:elasticache:${var.aws_region}:${data.aws_caller_identity.current.account_id}:user:chirpstack",
+      "host" : aws_elasticache_replication_group.this.primary_endpoint_address
     }
   )
 }
@@ -63,7 +63,7 @@ resource "aws_secretsmanager_secret_version" "redis_helium_vals" {
     {
       "password" : random_password.redis_helium_password.result,
       "username" : "helium",
-      "user_arn" : "arn:aws:elasticache:${var.aws_region}:${data.aws_caller_identity.current.account_id}:user:chirpstack",
+      "host" : aws_elasticache_replication_group.this.primary_endpoint_address
     }
   )
 }

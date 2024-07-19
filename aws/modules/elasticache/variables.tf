@@ -1,12 +1,6 @@
 # ***************************************
 # General
 # ***************************************
-variable "aws_region" {
-  description = "AWS region you're deploying to e.g., us-east-1"
-  type        = string
-  default     = ""
-}
-
 variable "redis_tags" {
   description = "A map of tags to add to all Redis resources"
   type        = map(string)

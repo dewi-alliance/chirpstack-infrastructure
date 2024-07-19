@@ -51,8 +51,9 @@ url = "0.0.0.0:8081"
 [skf]
 
 # Max Copies applied to SKF when there are no settings that take precendent.
-# Device Profile -> Device -> This settings.
 # NOTE: Settings to 0 will use route.max_copies.
+#
+# https://docs.helium.com/iot/run-an-lns/advanced-configuration#max-copies
 default_max_copies = 1
 
 [route]
@@ -64,12 +65,15 @@ host = "gwb.chirpstack.test-helium.com"
 port = 1700
 
 # Default number of copies to buy. Applied at the route level.
+# https://docs.helium.com/iot/run-an-lns/advanced-configuration#max-copies
 max_copies = 1337
 
 # Do not route traffic for DevAddrs with empty SKFs.
 #
 # If you don't plan on running the SKF service, set this to false.
 # All traffic with a devaddr in the prefix will be routed.
+#
+# https://docs.helium.com/iot/run-an-lns/advanced-configuration#session-key-filter
 ignore_empty_skf = true
 
 # DevAddr prefixes
