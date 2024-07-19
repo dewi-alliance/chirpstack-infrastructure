@@ -141,6 +141,12 @@ variable "eks_endpoint_public_access" {
   default     = true
 }
 
+variable "eks_public_access_cidrs" {
+  description = "List of CIDR blocks that can access the Amazon EKS public API server endpoint when enabled"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "eks_tags" {
   description = "Additional tags for all resources related to EKS"
   type        = map(string)
@@ -597,8 +603,8 @@ variable "bastion_ssh_key_name" {
   default     = ""
 }
 
-variable "bastion_whitelisted_access_ips" {
-  description = "The IPs, in CIDR block form (x.x.x.x/32), to whitelist access to the Bastion"
+variable "bastion_whitelisted_access_cidrs" {
+  description = "The CIDR blocks to whitelist access to the Bastion"
   type        = list(string)
   default     = []
 }
@@ -637,7 +643,7 @@ variable "bastion_tags" {
 # K8s deps
 # ***************************************
 variable "whitelisted_cidrs" {
-  description = "The IPv4 CIDR blocks for whitelisted IPs accessing Chirpstack, Argo, Grafana, and MQTT"
+  description = "The IPv4 CIDR blocks for whitelisted access to Chirpstack, Argo, Grafana, and MQTT"
   type        = list(string)
   default     = []
 }

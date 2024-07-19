@@ -37,7 +37,7 @@ No modules.
 | <a name="input_bastion_tags"></a> [bastion\_tags](#input\_bastion\_tags) | Tags to be applied to all for Bastion | `map(string)` | `{}` | no |
 | <a name="input_bastion_volume_size"></a> [bastion\_volume\_size](#input\_bastion\_volume\_size) | EBS volume size for Bastion root volume | `string` | `"20"` | no |
 | <a name="input_bastion_volume_type"></a> [bastion\_volume\_type](#input\_bastion\_volume\_type) | EBS volume type for Bastion root volume | `string` | `"gp2"` | no |
-| <a name="input_bastion_whitelisted_access_ips"></a> [bastion\_whitelisted\_access\_ips](#input\_bastion\_whitelisted\_access\_ips) | The IPs, in CIDR block form (x.x.x.x/32), to whitelist access to the Bastion | `list(string)` | `[]` | no |
+| <a name="input_bastion_whitelisted_access_cidrs"></a> [bastion\_whitelisted\_access\_cidrs](#input\_bastion\_whitelisted\_access\_cidrs) | The IPs, in CIDR block form (x.x.x.x/32), to whitelist access to the Bastion | `list(string)` | `[]` | no |
 | <a name="input_rds_access_security_group_id"></a> [rds\_access\_security\_group\_id](#input\_rds\_access\_security\_group\_id) | The ID of the security group required to access the Chirpstack RDS instance | `string` | `""` | no |
 | <a name="input_redis_access_security_group_id"></a> [redis\_access\_security\_group\_id](#input\_redis\_access\_security\_group\_id) | The ID of the security group required to access the Chirpstack Redis | `string` | `""` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | VPC ID | `string` | `""` | no |
@@ -45,5 +45,7 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_public_ip"></a> [public\_ip](#output\_public\_ip) | Public IP access of the Bastion |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

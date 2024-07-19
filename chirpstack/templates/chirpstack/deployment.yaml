@@ -4,7 +4,7 @@ metadata:
   name: chirpstack
   namespace: chirpstack
 spec:
-  replicas: {{ .Values.chirpstack.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       app: chirpstack
@@ -62,9 +62,9 @@ spec:
                   name: chirpstack-secrets
                   key: CHIRPSTACK_API_SECRET
             - name: REDIS_HOST
-              value: master.chirpstack-redis.sljizd.use1.cache.amazonaws.com:6379
+              value: {{ .Values.chirpstack.redisHost }}
             - name: POSTGRESQL_HOST
-              value: chirpstack-rds.ce647o6j3fka.us-east-1.rds.amazonaws.com
+              value: {{ .Values.chirpstack.postgresHost }}
             - name: MQTT_BROKER_HOST
               value: mqtt-internal
           volumeMounts:

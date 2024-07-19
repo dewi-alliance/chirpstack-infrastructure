@@ -1,7 +1,182 @@
-# AWS Infrastructure for Chirpstack
+# AWS Infrastructure
 
-This directory contains a set of Terraform modules for deploying AWS infrastructure underpinning Chirpstack. In particular, this directory defines a three-tier VPC architecture with EKS, RDS Postgres, and Elasticache Redis.
+This directory contains a set of Terraform modules for deploying AWS infrastructure underpinning Chirpstack and the Helium sidecar applications. In particular, this directory defines a three-tier VPC architecture with EKS, RDS Postgres, and Elasticache Redis as defined by modules in the `./modules` directory. Additionally, this directory contains definitions for an EC2 bastion host and Kubernetes cluster AWS dependencies.
 
+## Infrastructure Overview
+
+A high-level overview of the infrastructure deployed from the `aws` directory is provided below. The overview is framed through each of the modules in the `./modules` directory. It is not intended to be fully encompassing but rather to give a big-picture understanding of the architecture with a focus on high availability, networking, user management, and security considerations.
+
+### Architecture Diagram
+
+![AWS Architecture Diagram](../static/aws-architecture.png)
+
+### Summary
+
+- **VPC**: A three-tier VPC architecture with public, private, and database subnets will be created.
+  - If the `single_nat_gateway` variable is set to `true`, then only one NAT gateway will be created, otherwise a number of NAT gateways will be created for the lesser of the number of `availability_zones` or `private_subnets`.
+  - Other than the default NACL, there are no additional NACLs provided and the VPC routing is configured such that all subnets within the VPC can communicate with each other.
+  - A VPC Endpoint to Secrets Manager is provided (defined in the `rds` module).
+- **RDS**: A Postgres RDS instance will be created in one or more database subnets.
+  - If the `with_rds_read_replica` variable is set to `true`, a read replica instance will also be created. Similarly, if the `rds_multi_az` variable is set to `true`, a high-availability RDS deployment with automatic failover will be created.
+  - By default, RDS storage will be encrypted at rest and SSL will be required to connect to the RDS instance.
+  - Password rotation for the Postgres admin user is configured by default using AWS Lambda with credential storage in Secrets Manager. Credentials for Postgres `chirpstack` and `helium` users are also created and stored in Secrets Manager but there's no automatic password rotation and adding the users to Postgres requires manual intervention (e.g., via the EC2 Bastion).
+  - The RDS instance has the `rds-security-group` security group attached which only allows inbound connections coming from resources with the `rds-access-security-group` or `secrets-manager-access-security-group` security groups.
+- **ElastiCache**: An ElatiCache Redis cluster will be created in one or more database subnets.
+  - If the `redis_single_node_cluster` variable is set to `true`, a single Redis shard with a single node will be deployed in the Redis cluster, otherwise a number of nodes corresponding to the `redis_replicas_per_node_group` variable will be created in a single Redis shard. In a multi-node cluster, if the `redis_multi_az_enabled` variable is set to `true`, a multi-AZ cluster will be created with automatic Primary-to-Read-Replica failover.
+  - By default, Redis storage will be encrypted at rest and in transit.
+  - Credentials for Redis `default`, `chirpstack`, and `helium` users are created and stored in Secrets Manager and the users are added to the cluster.
+  - The Redis cluster is associated with the `redis-security-group` security group which only allows inbound connections coming from resources with the `redis-access-security-group` security group.
+- **EKS**: An EKS cluster will be created in the private subnets.
+  - By default, the AWS EKS public API server endpoint is enabled via the `eks_endpoint_public_access` variable and the `eks_public_access_cidrs` variable allows access to the open internet.
+  - The EKS cluster will encrypt Kubernetes secrets with an AWS KMS key purposed for the created cluster.
+  - The EKS cluster comes configured with IRSA and pod security groups.
+  - The EKS Control Plane gets associated with a security group that only allows ingress from the node security group, and the node security group is configured to allow inter-node communications for a restricted application set.
+- **Bastion**:
+  - If the `with_bastion` variable is set to `true`, an EC2 Bastion host will be created in a public subnet with an internet-facing IP address.
+  - The Bastion will allow SSH access to resources with IP addresses in the range defined by the `bastion_whitelisted_access_cidrs` variable that include an SSH key defined by the `bastion_ssh_key_name` variable.
+  - The Bastion is associated with the `rds-access-security-group` and `redis-access-security-group` security groups and can access the RDS instance and Redis cluster.
+  - The Bastion includes a user-data script that preinstalls `psql` and `redis-cli`.
+- **K8s Dependencies**: This module produces AWS resources used by Kubernetes applications.
+  - In particular, IAM roles and policies are created for applications like AWS Load Balancer Controller, External DNS, Cluster Autoscaler, External Secrets, and Grafana.
+  - Security groups are created for the application and network load balancers created by the AWS Load Balancer Controller which respectively restrict HTTPS access to Chirpstack, ArgoCD, and Grafana dashboards and TCP access to MQTT.
+
+## Usage
+
+In deploying the AWS infrastructure via Terraform, the description provided below assumes that S3 is used as a [Terraform remote backend](https://developer.hashicorp.com/terraform/language/settings/backends/s3). If other Terraform state management methods want to be used, the configuration in `verions.tf` will need to be updated and steps 1-3 from the Prerequisites section can be omitted.
+
+### Prerequisites
+
+1. Create S3 bucket for [Terraform remote backend](https://developer.hashicorp.com/terraform/language/settings/backends/s3)
+2. Create DynamoDB table for [Terraform state locking](https://developer.hashicorp.com/terraform/language/settings/backends/s3#dynamodb-state-locking)
+3. Create `backend.tfvars` file with contents as shown below:
+
+```txt
+bucket         = "<s3_bucket_name>"
+key            = "aws/terraform.tfstate" # or whatever prefix/key structure you want, just can't conflict with that of the kubernetes dir
+region         = "<aws_region>"
+dynamodb_table = "<dynamodb_bucket_name>"
+```
+
+4. Create EC2 SSH key for Bastion host
+5. Create `terraform.tfvars` file. An example file for a deployment aligned with the architecture diagram above is shown below:
+
+```txt
+# VPC
+aws_region             = "us-east-1"
+aws_availability_zones = ["us-east-1a", "us-east-1b"]
+
+vpc_name       = "chirpstack-vpc"
+vpc_cidr_block = "10.0.0.0/16"
+
+public_subnets   = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
+database_subnets = ["10.0.201.0/24", "10.0.202.0/24"]
+
+public_subnet_tags = {
+  "kubernetes.io/cluster/chirpstack-cluster" = "shared" # need to align with cluster name
+  "kubernetes.io/role/elb"                   = 1
+}
+
+private_subnet_tags = {
+  "kubernetes.io/cluster/chirpstack-cluster" = "shared" # need to align with cluster name
+  "kubernetes.io/role/internal-elb"          = 1
+}
+
+# EKS
+eks_cluster_name    = "chirpstack-cluster"
+eks_cluster_version = 1.29
+
+eks_vpc_cni_version    = null
+eks_coredns_version    = null
+eks_kube_proxy_version = null
+eks_ebs_csi_version    = null
+
+node_group_max_size = 6
+
+eks_public_access_cidrs     = ["<insert_whitelisted_access_cidrs>"]
+
+# RDS
+rds_name              = "chirpstack-rds"
+rds_multi_az          = true
+with_rds_read_replica = false
+
+pg_name           = "chirpstack"
+pg_engine_version = "14.10"
+
+# Elasticache
+redis_single_node_cluster         = false
+redis_replicas_per_node_group     = 1
+redis_multi_az_enabled            = true
+redis_preferred_cache_cluster_azs = ["us-east-1a", "us-east-1b"]
+
+redis_cluster_id         = "chirpstack-redis"
+redis_node_type          = "cache.t4g.small"
+redis_apply_immediately  = true
+redis_maintenance_window = "sun:05:00-sun:09:00"
+
+redis_snapshot_window = "01:00-04:00"
+
+parameter_group_family = "redis7"
+parameter_group_parameters = [
+  {
+    name  = "latency-tracking"
+    value = "yes"
+  }
+]
+
+# Bastion
+with_bastion                   = true
+bastion_ssh_key_name           = "<insert_ssh_key_name>"
+bastion_whitelisted_access_cidrs = ["<insert_whitelisted_access_cidrs>"]
+bastion_private_ip             = "10.0.1.5"
+
+# K8s Deps
+whitelisted_cidrs = ["<insert_whitelisted_access_cidrs"]
+```
+
+### Deployment
+
+1. Provide AWS credentials. Please note that the [IAM principal](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html) that runs the deployment (and deploys the EKS cluster) is automatically granted `system:masters` permissions in the cluster's role-based access control (RBAC) configuration in the [Amazon EKS control plane](https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html).
+2. `terraform init --backend-config=backend.tfvars`
+3. `terraform apply`
+
+### Postrequisites
+
+To conclude the AWS infrastructure deployment, `chirpstack` and `helium` users need to be added to the RDS Postgres instance and the `pg_trgm` extension needs to be added. To do so:
+
+1. SSH onto Bastion host
+2. Access `root/postgres-admin-credentials` in Secrets Manager
+3. Access RDS instance by running `psql "host=<rds_hostname> dbname=chirpstack user=chirpstack_admin"` and provide `chirpstack_admin` password
+4. Access `chirpstack/postgres-chirpstack-credentials` and `chirpstack/postgres-helium-credentials` and note `chirpstack` and `helium` user passwords
+5. Execute the following commands to configure Postgres
+
+```txt
+CREATE EXTENSION pg_trgm;
+
+CREATE USER chirpstack WITH PASSWORD '<insert_chirpstack_password_from_secrets_manager>';
+CREATE USER helium WITH PASSWORD '<insert_helium_password_from_secrets_manager>;
+
+GRANT helium TO chirpstack_admin;
+GRANT chirpstack TO chirpstack_admin;
+
+GRANT CONNECT ON DATABASE chirpstack TO chirpstack;
+GRANT CONNECT ON DATABASE chirpstack TO helium;
+
+GRANT ALL PRIVILEGES ON DATABASE chirpstack TO chirpstack;
+
+CREATE DATABASE accounting WITH OWNER helium;
+
+SET ROLE chirpstack;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO helium;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO helium;
+```
+
+Now, onto `./kubernetes`!
+
+## Examples
+
+- [Cost Optimized](https://github.com/dewi-alliance/chirpstack-infrastructure/tree/main/aws/examples/cost-optimized): Cost-optimized AWS infrastructure deployment without redundancies for RDS, ElastiCache, NAT Gateway, etc.
+- [High Availability](https://github.com/dewi-alliance/chirpstack-infrastructure/tree/main/aws/examples/high-availability): High-availability AWS infrastructure with redundancies for RDS, ElastiCache, NAT Gateway, etc.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
@@ -42,7 +217,7 @@ No resources.
 | <a name="input_bastion_tags"></a> [bastion\_tags](#input\_bastion\_tags) | Tags to be applied to all for Bastion | `map(string)` | `{}` | no |
 | <a name="input_bastion_volume_size"></a> [bastion\_volume\_size](#input\_bastion\_volume\_size) | EBS volume size for Bastion root volume | `string` | `"20"` | no |
 | <a name="input_bastion_volume_type"></a> [bastion\_volume\_type](#input\_bastion\_volume\_type) | EBS volume type for Bastion root volume | `string` | `"gp2"` | no |
-| <a name="input_bastion_whitelisted_access_ips"></a> [bastion\_whitelisted\_access\_ips](#input\_bastion\_whitelisted\_access\_ips) | The IPs, in CIDR block form (x.x.x.x/32), to whitelist access to the Bastion | `list(string)` | `[]` | no |
+| <a name="input_bastion_whitelisted_access_cidrs"></a> [bastion\_whitelisted\_access\_cidrs](#input\_bastion\_whitelisted\_access\_cidrs) | The CIDR blocks to whitelist access to the Bastion | `list(string)` | `[]` | no |
 | <a name="input_cloudwatch_alarm_action_arns"></a> [cloudwatch\_alarm\_action\_arns](#input\_cloudwatch\_alarm\_action\_arns) | CloudWatch Alarm Action ARNs to report CloudWatch Alarms | `list(string)` | `[]` | no |
 | <a name="input_cloudwatch_retention_in_days"></a> [cloudwatch\_retention\_in\_days](#input\_cloudwatch\_retention\_in\_days) | Duration to retain EKS control plane logs | `number` | `90` | no |
 | <a name="input_database_subnets"></a> [database\_subnets](#input\_database\_subnets) | A list of IPv4 CIDR blocks for database subnets inside the VPC. | `list(string)` | `[]` | no |
@@ -58,6 +233,7 @@ No resources.
 | <a name="input_eks_endpoint_public_access"></a> [eks\_endpoint\_public\_access](#input\_eks\_endpoint\_public\_access) | Enable the Amazon EKS public API server endpoint? | `bool` | `true` | no |
 | <a name="input_eks_kube_proxy_version"></a> [eks\_kube\_proxy\_version](#input\_eks\_kube\_proxy\_version) | Version of the Kube-Proxy cluster addon | `string` | `null` | no |
 | <a name="input_eks_log_types"></a> [eks\_log\_types](#input\_eks\_log\_types) | A list of the desired control plane logs to enable. For more information, see Amazon EKS Control Plane Logging documentation (https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html) | `list(string)` | <pre>[<br>  "audit",<br>  "api",<br>  "authenticator",<br>  "controllerManager",<br>  "scheduler"<br>]</pre> | no |
+| <a name="input_eks_public_access_cidrs"></a> [eks\_public\_access\_cidrs](#input\_eks\_public\_access\_cidrs) | List of CIDR blocks that can access the Amazon EKS public API server endpoint when enabled | `list(string)` | <pre>[<br>  "0.0.0.0/0"<br>]</pre> | no |
 | <a name="input_eks_tags"></a> [eks\_tags](#input\_eks\_tags) | Additional tags for all resources related to EKS | `map(string)` | `{}` | no |
 | <a name="input_eks_vpc_cni_version"></a> [eks\_vpc\_cni\_version](#input\_eks\_vpc\_cni\_version) | Version of the VPC CNI cluster addon | `string` | `null` | no |
 | <a name="input_kms_enable_key_rotation"></a> [kms\_enable\_key\_rotation](#input\_kms\_enable\_key\_rotation) | Enable KMS key rotation?. For more information, see Rotating KMS Keys (https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) | `bool` | `true` | no |
@@ -126,12 +302,16 @@ No resources.
 | <a name="input_vpc_enable_dns_support"></a> [vpc\_enable\_dns\_support](#input\_vpc\_enable\_dns\_support) | Enable DNS support in the VPC? Defaults to true. | `bool` | `true` | no |
 | <a name="input_vpc_name"></a> [vpc\_name](#input\_vpc\_name) | The name of the VPC. Defaults to chirpstack-vpc. | `string` | `"chirpstack-vpc"` | no |
 | <a name="input_vpc_tags"></a> [vpc\_tags](#input\_vpc\_tags) | Tags to be applied to all resources in the VPC. | `map(string)` | `{}` | no |
-| <a name="input_whitelisted_cidrs"></a> [whitelisted\_cidrs](#input\_whitelisted\_cidrs) | The IPv4 CIDR blocks for whitelisted IPs accessing Chirpstack, Argo, Grafana, and MQTT | `list(string)` | `[]` | no |
+| <a name="input_whitelisted_cidrs"></a> [whitelisted\_cidrs](#input\_whitelisted\_cidrs) | The IPv4 CIDR blocks for whitelisted access to Chirpstack, Argo, Grafana, and MQTT | `list(string)` | `[]` | no |
 | <a name="input_with_bastion"></a> [with\_bastion](#input\_with\_bastion) | Should Bastion be created? | `bool` | `false` | no |
 | <a name="input_with_rds_cloudwatch_alarms"></a> [with\_rds\_cloudwatch\_alarms](#input\_with\_rds\_cloudwatch\_alarms) | Deploy Cloudwatch Alarms for RDS? | `bool` | `false` | no |
 | <a name="input_with_rds_read_replica"></a> [with\_rds\_read\_replica](#input\_with\_rds\_read\_replica) | Create read replica of primary DB? | `bool` | `false` | no |
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_alb_security_group_id"></a> [alb\_security\_group\_id](#output\_alb\_security\_group\_id) | Security Group ID for Application Load Balancer Security Group |
+| <a name="output_bastion_public_ip"></a> [bastion\_public\_ip](#output\_bastion\_public\_ip) | Public IP access of the Bastion |
+| <a name="output_nlb_mqtt_security_group_id"></a> [nlb\_mqtt\_security\_group\_id](#output\_nlb\_mqtt\_security\_group\_id) | Security Group ID for Network Load Balancer Security Group |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

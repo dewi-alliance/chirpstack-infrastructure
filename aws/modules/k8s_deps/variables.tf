@@ -1,3 +1,9 @@
+variable "aws_region" {
+  description = "AWS region for infrastructure."
+  type        = string
+  default     = ""
+}
+
 variable "oidc_provider" {
   description = "The OpenID Connect identity provider (issuer URL without leading `https://`)"
   type        = string

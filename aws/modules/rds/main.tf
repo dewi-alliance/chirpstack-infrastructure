@@ -89,7 +89,7 @@ resource "aws_db_parameter_group" "this" {
 # RDS security group
 # ***************************************
 locals {
-  chirpstack_rds_security_group_rules = {
+  rds_security_group_rules = {
     ingress_rds_access_sg_5432 = {
       type                     = "ingress"
       description              = "Allow access from rds-access-security-group"
@@ -100,11 +100,11 @@ locals {
     }
     ingress_lamba_sg_5432 = {
       type                     = "ingress"
-      description              = "Allow access from secrets-manager-rotator-lambda-security-group"
+      description              = "Allow access from secrets-manager-access-security-group"
       from_port                = 5432
       to_port                  = 5432
       protocol                 = "tcp"
-      source_security_group_id = aws_security_group.secrets_manager_rotator_lambda_security_group.id
+      source_security_group_id = aws_security_group.secrets_manager_access_security_group.id
     }
     egress_all = {
       description = "Allow all egress"
@@ -118,7 +118,7 @@ locals {
 }
 
 resource "aws_security_group" "rds_security_group" {
-  name        = "chirpstack-rds-security-group"
+  name        = "rds-security-group"
   description = "Security group for Chirpstack RDS resource"
   vpc_id      = var.vpc_id
 
@@ -129,7 +129,7 @@ resource "aws_security_group" "rds_security_group" {
 
 resource "aws_security_group_rule" "rds_security_group_rule" {
   for_each = { for k, v in merge(
-    local.chirpstack_rds_security_group_rules,
+    local.rds_security_group_rules,
   ) : k => v }
 
   # Required

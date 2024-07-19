@@ -49,13 +49,19 @@ variable "eks_bootstrap_cluster_creator_admin_permissions" {
 variable "eks_endpoint_private_access" {
   description = "Enable the Amazon EKS private API server endpoint?"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "eks_endpoint_public_access" {
   description = "Enable the Amazon EKS public API server endpoint?"
   type        = bool
   default     = true
+}
+
+variable "eks_public_access_cidrs" {
+  description = "List of CIDR blocks that can access the Amazon EKS public API server endpoint when enabled"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "eks_tags" {

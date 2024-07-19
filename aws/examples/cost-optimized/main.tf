@@ -96,7 +96,7 @@ module "elasticache" {
   database_subnet_ids = module.vpc.database_subnet_ids
 
   # Redis
-  redis_cluster_id              = "chirpstack-ha-redis"
+  redis_cluster_id              = "chirpstack-co-redis"
   redis_single_node_cluster     = true
   redis_node_type               = "cache.t4g.small"
   redis_multi_az_enabled        = false
@@ -115,5 +115,37 @@ module "elasticache" {
 }
 
 # ***************************************
-# Bastion - not included in this example
+# Bastion
 # ***************************************
+module "bastion" {
+  source = "../../modules/bastion"
+
+  # AWS
+  availability_zone = local.availability_zones[0]
+
+  # VPC
+  vpc_id               = module.vpc.vpc_id
+  vpc_public_subnet_id = module.vpc.public_subnets_ids[0]
+
+  # Bastion
+  bastion_ssh_key_name             = "name-of-your-ssh-key" # Create an SSH key and add the name here
+  bastion_whitelisted_access_cidrs = ["0.0.0.0/0"]          # Insert CIDRs relevant to your access patterns
+  bastion_private_ip               = "10.0.1.5"
+
+  # Security Group
+  rds_access_security_group_id   = module.rds.rds_access_security_group_id
+  redis_access_security_group_id = module.elasticache.redis_access_security_group_id
+}
+
+# ***************************************
+# K8s deps
+# ***************************************
+module "k8s_deps" {
+  source = "../../modules/k8s_deps"
+
+  aws_region        = local.aws_region
+  whitelisted_cidrs = ["0.0.0.0/0"]
+
+  vpc_id        = module.vpc.vpc_id
+  oidc_provider = module.eks.oidc_provider
+}

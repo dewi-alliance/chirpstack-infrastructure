@@ -1,3 +1,16 @@
+variable "aws_region" {
+  description = "AWS region for infrastructure."
+  type        = string
+  default     = ""
+}
+
+variable "eks_cluster_name" {
+  description = "Name of the EKS Cluster"
+  type        = string
+  default     = ""
+}
+
+
 # ***************************************
 #  Argo CD
 # ***************************************
@@ -31,12 +44,6 @@ variable "argo_apps_chart_version" {
 # ***************************************
 #  AWS Load Balancer Controller
 # ***************************************
-variable "eks_cluster_name" {
-  description = "Name of the EKS Cluster"
-  type        = string
-  default     = ""
-}
-
 variable "aws_lbc_chart_version" {
   description = "Version of AWS Load Balancer Controller Helm chart"
   type        = string
@@ -48,12 +55,6 @@ variable "aws_lbc_chart_version" {
 # ***************************************
 variable "zone_id" {
   description = "Route53 Zone ID"
-  type        = string
-  default     = ""
-}
-
-variable "aws_region" {
-  description = "AWS region you're deploying to e.g., us-east-1"
   type        = string
   default     = ""
 }
@@ -74,19 +75,25 @@ variable "cluster_autoscaler_chart_version" {
 }
 
 # ***************************************
-#  Metrics Server
+#  External Secrets
 # ***************************************
-variable "metrics_server_chart_version" {
-  description = "Version of Metrics Server Helm chart"
+variable "external_secrets_chart_version" {
+  description = "Version of External Secretes Helm chart"
   type        = string
   default     = ""
 }
 
+variable "deploy_externa_secrets_crd" {
+  description = "Deploy External Secrets ClusterSecretStore?"
+  type        = bool
+  default     = false
+}
+
 # ***************************************
-#  Sealed Secrets
+#  Metrics Server
 # ***************************************
-variable "sealed_secrets_chart_version" {
-  description = "Version of Sealed Secrets Helm chart"
+variable "metrics_server_chart_version" {
+  description = "Version of Metrics Server Helm chart"
   type        = string
   default     = ""
 }
@@ -140,4 +147,13 @@ variable "eks_aws_auth_accounts" {
   description = "List of account maps to add to the aws-auth configmap"
   type        = list(any)
   default     = []
+}
+
+# ***************************************
+#  MQTT
+# ***************************************
+variable "mqtt_user" {
+  description = "Name of the MQTT user"
+  type        = string
+  default     = "default"
 }

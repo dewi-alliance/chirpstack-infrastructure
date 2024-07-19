@@ -14,8 +14,10 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
+| <a name="module_bastion"></a> [bastion](#module\_bastion) | ../../modules/bastion | n/a |
 | <a name="module_eks"></a> [eks](#module\_eks) | ../../modules/eks | n/a |
 | <a name="module_elasticache"></a> [elasticache](#module\_elasticache) | ../../modules/elasticache | n/a |
+| <a name="module_k8s_deps"></a> [k8s\_deps](#module\_k8s\_deps) | ../../modules/k8s_deps | n/a |
 | <a name="module_rds"></a> [rds](#module\_rds) | ../../modules/rds | n/a |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | ../../modules/vpc | n/a |
 

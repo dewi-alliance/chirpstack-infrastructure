@@ -45,6 +45,7 @@ module "eks" {
   eks_bootstrap_cluster_creator_admin_permissions = var.eks_bootstrap_cluster_creator_admin_permissions
   eks_endpoint_private_access                     = var.eks_endpoint_private_access
   eks_endpoint_public_access                      = var.eks_endpoint_public_access
+  eks_public_access_cidrs                         = var.eks_public_access_cidrs
 
   # EKS addons
   eks_addon_preserve                    = var.eks_addon_preserve
@@ -186,12 +187,12 @@ module "bastion" {
   vpc_public_subnet_id = module.vpc.public_subnets_ids[0]
 
   # Bastion
-  bastion_ssh_key_name           = var.bastion_ssh_key_name
-  bastion_whitelisted_access_ips = var.bastion_whitelisted_access_ips
-  bastion_instance_type          = var.bastion_instance_type
-  bastion_private_ip             = var.bastion_private_ip
-  bastion_volume_type            = var.bastion_volume_type
-  bastion_volume_size            = var.bastion_volume_size
+  bastion_ssh_key_name             = var.bastion_ssh_key_name
+  bastion_whitelisted_access_cidrs = var.bastion_whitelisted_access_cidrs
+  bastion_instance_type            = var.bastion_instance_type
+  bastion_private_ip               = var.bastion_private_ip
+  bastion_volume_type              = var.bastion_volume_type
+  bastion_volume_size              = var.bastion_volume_size
 
   # Security Group
   rds_access_security_group_id   = module.rds.rds_access_security_group_id
@@ -207,6 +208,7 @@ module "bastion" {
 module "k8s_deps" {
   source = "./modules/k8s_deps"
 
+  aws_region        = var.aws_region
   vpc_id            = module.vpc.vpc_id
   whitelisted_cidrs = var.whitelisted_cidrs
   oidc_provider     = module.eks.oidc_provider

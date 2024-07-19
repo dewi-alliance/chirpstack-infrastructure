@@ -47,7 +47,6 @@ No modules.
 | [random_password.redis_default_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_password.redis_helium_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_string.redis](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
-| [random_string.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [time_sleep.this](https://registry.terraform.io/providers/hashicorp/time/0.11.2/docs/resources/sleep) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/caller_identity) | data source |
 

@@ -1,12 +1,6 @@
 # ***************************************
 # Node Group
 # ***************************************
-
-# This sleep resource is used to provide a timed gap between the cluster creation and the downstream dependencies
-# that consume the outputs from here. Any of the values that are used as triggers can be used in dependencies
-# to ensure that the downstream resources are created after both the cluster is ready and the sleep time has passed.
-# This was primarily added to give addons that need to be configured BEFORE data plane compute resources
-# enough time to create and configure themselves before the data plane compute resources are created.
 resource "time_sleep" "this" {
   create_duration = "30s"
 
@@ -31,9 +25,8 @@ resource "aws_eks_node_group" "this" {
     desired_size = var.node_group_desired_size
   }
 
-  node_group_name_prefix = "eks-node-group-"
+  node_group_name = "eks-node-group"
 
-  # https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami
   ami_type = var.node_group_ami_type
   version  = var.eks_cluster_version
 
@@ -89,7 +82,6 @@ resource "aws_iam_role" "node_group_role" {
   tags = var.eks_tags
 }
 
-# Policies attached ref https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_node_group
 resource "aws_iam_role_policy_attachment" "node_group_role_attachment" {
   for_each = tomap({
     AmazonEKSWorkerNodePolicy          = "${local.iam_role_policy_prefix}/AmazonEKSWorkerNodePolicy"
@@ -120,10 +112,14 @@ resource "aws_launch_template" "this" {
     enabled = true
   }
 
-  tags = merge(
-    var.eks_tags,
-    { Name = "eks-node-group" }
-  )
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = merge(
+      var.eks_tags,
+      { Name = "eks-node-group" }
+    )
+  }
 
   # Prevent premature access of policies by pods that
   # require permissions on create/destroy that depend on nodes
@@ -138,8 +134,7 @@ resource "aws_launch_template" "this" {
 
 # ***************************************
 # Node Security Group
-# Defaults follow https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
-# Plus NTP/HTTPS (otherwise nodes fail to launch)
+# Generally follows https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html
 # ***************************************
 locals {
   node_sg_name = "${var.eks_cluster_name}-node"
@@ -179,7 +174,7 @@ locals {
     }
   }
 
-  node_security_group_recommended_rules = {
+  node_application_rules = {
     ingress_nodes_ephemeral = {
       description = "Node to node ingress on ephemeral ports"
       protocol    = "tcp"
@@ -188,7 +183,7 @@ locals {
       type        = "ingress"
       self        = true
     }
-    # metrics-server
+    # Metrics Server (for HPA)
     ingress_cluster_4443_webhook = {
       description                   = "Cluster API to node 4443/tcp webhook"
       protocol                      = "tcp"
@@ -197,7 +192,7 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
-    # prometheus-adapter
+    # Prometheus
     ingress_cluster_6443_webhook = {
       description                   = "Cluster API to node 6443/tcp webhook"
       protocol                      = "tcp"
@@ -206,16 +201,7 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
-    # Karpenter
-    ingress_cluster_8443_webhook = {
-      description                   = "Cluster API to node 8443/tcp webhook"
-      protocol                      = "tcp"
-      from_port                     = 8443
-      to_port                       = 8443
-      type                          = "ingress"
-      source_cluster_security_group = true
-    }
-    # ALB controller, NGINX
+    # AWS Load Balancer Controller
     ingress_cluster_9443_webhook = {
       description                   = "Cluster API to node 9443/tcp webhook"
       protocol                      = "tcp"
@@ -224,6 +210,7 @@ locals {
       type                          = "ingress"
       source_cluster_security_group = true
     }
+    # ArgoCD / Chirpstack / Grafana
     ingress_cluster_8080_webhook = {
       description                   = "Cluster API to node 8080/tcp webhook"
       protocol                      = "tcp"
@@ -264,7 +251,7 @@ resource "aws_security_group" "node" {
 resource "aws_security_group_rule" "node" {
   for_each = { for k, v in merge(
     local.node_security_group_rules,
-    local.node_security_group_recommended_rules,
+    local.node_application_rules,
   ) : k => v }
 
   # Required

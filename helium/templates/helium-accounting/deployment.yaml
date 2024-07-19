@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: helium-sidecar
+  name: helium-accounting
   namespace: helium
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: helium-sidecar
+      app: helium-accounting
   template:
     metadata:
       labels:
-        app: helium-sidecar
+        app: helium-accounting
         security-group: db-access
     spec:
       containers:
-        - name: helium-sidecar
+        - name: helium-accounting
           image: quay.io/{{ .Values.helium.image.repository }}:{{ .Values.helium.image.tag }}
           imagePullPolicy: IfNotPresent
           command: ["./chirpstack-helium", "accounting", "watch"]

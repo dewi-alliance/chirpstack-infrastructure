@@ -1,5 +1,14 @@
 global:
-  cert: arn:aws:acm:us-east-1:533916786372:certificate/cd721467-8562-4ecf-8cfa-c031df72ff50
+
+  # Should be the ARN of the AWS Certificate Manager certificate that was created for the Hosted Zone
+  certArn: arn:aws:acm:us-east-1:533916786372:certificate/cd721467-8562-4ecf-8cfa-c031df72ff50
+
+  # LoRaWAN regions enabled in Chirpstack
+  # Each 'name' parameter must match the 'id' field from the corresponding ./chirpstack/files/region-*.toml file
+  # The `labelName`, `file`, and `path` parameters should follow the format provided in the examples below.
+  # The `gateway.port` and `gateway.targetPort` values will respectively become the UDP listening port on the
+  # AWS Network Load Balancer in front of the Chirpstack Gateway Bridge instances and the UDP listening port on the
+  # Chirpstack Gateway Bridge pod(s).
   enabledRegions:
     - name: us915_1
       labelName: us915-1
@@ -17,28 +26,55 @@ global:
         targetPort: 1700
 
 chirpstack:
-  replicas: 1
+
+  # Hostname for the Chirpstack dashboard
   host: dashboard.chirpstack.test-helium.com
+
+  # Hostname for the ElastiCache Redis Cluster
+  redisHost: master.chirpstack-redis.sljizd.use1.cache.amazonaws.com:6379
+
+  # Hostname for the RDS Postgres Instance
+  postgresHost: chirpstack-rds.ce647o6j3fka.us-east-1.rds.amazonaws.com
+
+  # Security Group ID for the chirpstack-alb security group
   alb:
-    securityGroupId: sg-06b0809a1bd644098 # chirpstack-alb
+    securityGroupId: sg-0bc412007f29a50c0 # chirpstack-alb
+
+  # https://hub.docker.com/r/chirpstack/chirpstack/tags
   image:
     repository: chirpstack/chirpstack
     tag: 4.4
+
   config:
+
+    # devAddr(s) purchased from Helium Foundation
+    # https://docs.helium.com/iot/run-an-lns/buy-an-oui#purchasing-oui-and-devaddr-slab
     devAddrPrefixes:
       - prefix: 780000F0/29
+
+    # This is the Helium Net ID. It should not be changed.
     netId: 00003C
 
 gateway:
+
+  # Hostname for the Chirpstack Gateway Bridge instance(s)
   host: gwb.chirpstack.test-helium.com
+
+  # https://hub.docker.com/r/chirpstack/chirpstack-gateway-bridge/tags
   image:
     repository: chirpstack/chirpstack-gateway-bridge
     tag: 4.0
 
 mosquitto:
+
+  # Hostname for the MQTT server
   host: mqtt.chirpstack.test-helium.com
+
+  # https://hub.docker.com/_/eclipse-mosquitto/tags
   image:
     repository: eclipse-mosquitto
     tag: 2.0
+
+  # Security Group ID for the mqtt-alb security group
   nlb:
-    securityGroupId: sg-09e5d12122d36c052 # mqtt-nlb
+    securityGroupId: sg-05af8bc50fe0a981e # mqtt-nlb

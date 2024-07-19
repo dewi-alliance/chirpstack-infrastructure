@@ -1,23 +1,6 @@
-global:
-  enabledRegions:
-    - name: US915 # suitable for route.region_port_mapping? proto region.proto
-      gateway:
-        port: 1700
-    - name: EU868
-      gateway:
-        port: 1701
-
 helium:
+
+  # https://quay.io/repository/team-helium/chirpstack-helium?tab=tags
   image:
     repository: team-helium/chirpstack-helium
     tag: 2024.02.29.1
-  host: gwb.chirpstack.test-helium.com # 3.80.82.206
-  defaultPort: 1700
-  maxCopies: 1337
-  ignoreEmptySkf: true
-  configServiceUrl: "https://config.iot.mainnet.helium.io:6080"
-  chirpstackApiKey:
-  defaultSkfMaxCopies: 1
-  oui: 1548
-  netId: 00003C
-  devAddrPrefixes: '["780000F0/29"]'

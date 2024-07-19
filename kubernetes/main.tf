@@ -15,9 +15,13 @@ resource "time_sleep" "chirpstack" {
   create_duration = "300s"
 }
 
-resource "random_string" "this" {
-  length  = 8
-  special = false
+resource "time_sleep" "external_secrets" {
+
+  depends_on = [
+    helm_release.external_secrets
+  ]
+
+  create_duration = "300s"
 }
 
 # ***************************************
@@ -31,7 +35,7 @@ resource "random_password" "argo" {
 }
 
 resource "aws_secretsmanager_secret" "argo" {
-  name        = "argocd-admin-credentials-${random_string.this.result}"
+  name        = "root/argocd-admin-credentials"
   description = "Credentials for ArgoCD admin user"
 }
 
@@ -273,17 +277,69 @@ resource "helm_release" "metrics_server" {
 }
 
 # ***************************************
-#  Sealed Secrets
+#  External Secrets
 # ***************************************
-resource "helm_release" "sealed_secrets" {
-  repository = "https://bitnami-labs.github.io/sealed-secrets/"
-  chart      = "sealed-secrets"
-  version    = var.sealed_secrets_chart_version
+data "aws_eks_cluster" "chirpstack_cluster" {
+  name = var.eks_cluster_name
+}
 
-  name             = "sealed-secrets-controller"
-  namespace        = "kube-system"
-  create_namespace = true
-  cleanup_on_fail  = true
+data "aws_iam_role" "external_secrets_role" {
+  name = "external-secrets-role"
+}
+
+resource "helm_release" "external_secrets" {
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  version    = var.external_secrets_chart_version
+
+  name            = "external-secrets"
+  namespace       = "kube-system"
+  cleanup_on_fail = true
+
+  set {
+    name  = "clusterEndpoint"
+    value = data.aws_eks_cluster.chirpstack_cluster.endpoint
+  }
+
+  set {
+    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+    value = data.aws_iam_role.external_secrets_role.arn
+  }
+
+  values = [
+    file("${path.module}/config/external-secrets-values.yaml")
+  ]
+
+  depends_on = [
+    time_sleep.this
+  ]
+}
+
+resource "kubernetes_manifest" "external_secrets" {
+  count = var.deploy_externa_secrets_crd ? 1 : 0
+
+  manifest = yamldecode(<<-EOF
+    apiVersion: external-secrets.io/v1beta1
+    kind: ClusterSecretStore
+    metadata:
+      name: external-secrets
+    spec:
+      provider:
+        aws:
+          service: SecretsManager
+          region: ${var.aws_region}
+          auth:
+            jwt:
+              serviceAccountRef:
+                name: external-secrets
+                namespace: kube-system
+    EOF
+  )
+
+  depends_on = [
+    time_sleep.this,
+    time_sleep.external_secrets,
+  ]
 }
 
 # ***************************************
@@ -327,7 +383,7 @@ resource "random_password" "grafana" {
 resource "aws_secretsmanager_secret" "grafana" {
   count = var.with_grafana ? 1 : 0
 
-  name        = "grafana-admin-credentials-${random_string.this.result}"
+  name        = "root/grafana-admin-credentials"
   description = "Credentials for Grafana admin user"
 }
 
@@ -390,8 +446,12 @@ resource "helm_release" "grafana" {
 }
 
 # ***************************************
-#  Security Group Policy
+#  Security Group Policies
 # ***************************************
+data "aws_security_group" "secrets_manager_access_security_group" {
+  name = "secrets-manager-access-security-group"
+}
+
 data "aws_security_group" "rds_access_security_group" {
   name = "rds-access-security-group"
 }
@@ -401,7 +461,30 @@ data "aws_security_group" "redis_access_security_group" {
 }
 
 data "aws_security_group" "chirpstack_cluster_node" {
-  name = "chirpstack-cluster-node"
+  name = "${var.eks_cluster_name}-node"
+}
+
+resource "kubernetes_manifest" "secrets_manager_access_sg" {
+  manifest = yamldecode(<<-EOF
+    apiVersion: vpcresources.k8s.aws/v1beta1
+    kind: SecurityGroupPolicy
+    metadata:
+      name: secrets-manager-access-security-group-policy
+      namespace: kube-system
+    spec:
+      podSelector:
+        matchLabels:
+          security-group: secrets-manager-access
+      securityGroups:
+        groupIds:
+          - "${data.aws_security_group.secrets_manager_access_security_group.id}"
+          - "${data.aws_security_group.chirpstack_cluster_node.id}"
+    EOF
+  )
+
+  depends_on = [
+    time_sleep.this,
+  ]
 }
 
 resource "kubernetes_manifest" "db_chirpstack_access_sg" {
@@ -454,9 +537,9 @@ resource "kubernetes_manifest" "db_helium_access_sg" {
   ]
 }
 
-
 # ***************************************
 #  K8s aws-auth configmap
+# https://docs.aws.amazon.com/eks/latest/userguide/auth-configmap.html
 # ***************************************
 locals {
   manage_aws_auth_configmap = (
@@ -485,26 +568,73 @@ resource "kubernetes_config_map_v1_data" "aws_auth" {
 }
 
 # ***************************************
-#  Chirpstack dashboard
+#  Chirpstack Dashboard Admin Credentials
 # ***************************************
-resource "random_password" "chirpstack" {
+resource "random_password" "chirpstack_dashboard" {
   length           = 40
   special          = true
   min_special      = 5
   override_special = "!#$%?"
 }
 
-resource "aws_secretsmanager_secret" "chirpstack" {
-  name        = "chirpstack-admin-credentials-${random_string.this.result}"
+resource "aws_secretsmanager_secret" "chirpstack_dashboard" {
+  name        = "root/chirpstack-admin-credentials"
   description = "Credentials for Chirpstack admin user"
 }
 
-resource "aws_secretsmanager_secret_version" "chirpstack" {
-  secret_id = aws_secretsmanager_secret.chirpstack.id
+resource "aws_secretsmanager_secret_version" "chirpstack_dashboard" {
+  secret_id = aws_secretsmanager_secret.chirpstack_dashboard.id
   secret_string = jsonencode(
     {
-      password = random_password.chirpstack.result
+      password = random_password.chirpstack_dashboard.result
       username = "admin"
+    }
+  )
+}
+
+# ***************************************
+#  Chirpstack API Secret
+# ***************************************
+resource "random_password" "chirpstack_api_secret" {
+  length           = 40
+  special          = true
+  min_special      = 5
+  override_special = "!#$%?"
+}
+
+resource "aws_secretsmanager_secret" "chirpstack_api_secret" {
+  name        = "chirpstack/chirpstack-api-secret"
+  description = "Chirpstack API secret"
+}
+
+resource "aws_secretsmanager_secret_version" "chirpstack_api_secret" {
+  secret_id = aws_secretsmanager_secret.chirpstack_api_secret.id
+  secret_string = jsonencode(
+    {
+      secret = random_password.chirpstack_api_secret.result
+    }
+  )
+}
+
+# ***************************************
+#  MQTT Credentials
+# ***************************************
+resource "random_password" "mqtt_password" {
+  length  = 40
+  special = false
+}
+
+resource "aws_secretsmanager_secret" "mqtt_secret" {
+  name        = "chirpstack/mqtt-credentials"
+  description = "Credentials for MQTT ${var.mqtt_user}"
+}
+
+resource "aws_secretsmanager_secret_version" "mqtt_secret" {
+  secret_id = aws_secretsmanager_secret.mqtt_secret.id
+  secret_string = jsonencode(
+    {
+      user     = var.mqtt_user
+      password = random_password.mqtt_password.result
     }
   )
 }

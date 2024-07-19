@@ -1,0 +1,103 @@
+# !!! DO NOT COMMIT THIS FILE WITH SECRETS INCLUDED !!!
+
+[chirpstack]
+
+# URL for helium-sidecar to access chirpstack. Should not need to be changed.
+url = "http://chirpstack.chirpstack.svc.cluster.local:8080"
+
+# Provide the Chirpstack API Key created in step 3 the Helium Prequisites
+key = "<insert_chirpstack_api_key>"
+
+[redis]
+
+# Values for password and Redis host can be found in Secrets Manager for the
+# chirpstack/redis-helium-credentials secret
+url = "rediss://helium:<insert_helium_password>@<insert_redis_url_with_port>"
+
+[config_service]
+
+# Don't change
+url = "https://config.iot.mainnet.helium.io:6080"
+
+# OUI purchased from the Helium Foundation
+# https://docs.helium.com/iot/run-an-lns/buy-an-oui
+oui = <insert_helium_oui>
+
+# Don't change
+keypair = "keypair.bin"
+
+[postgres]
+
+# Values for password and Postgres host can be found in Secrets Manager for the
+# chirpstack/postgres-helium-credentials secret.
+url = "postgres://helium:<insert_helium_password>@<insert_postgres_url>/chirpstack" # Note the /chirpstack path for using the chirpstack database
+
+[accounting]
+
+# Same credentials as chirpstack/postgres-helium-credentials secret.
+url = "postgres://helium:<insert_helium_password>@<insert_postgres_url>/accounting" # Note the /accounting path for using the accounting database
+
+# Don't change
+device_report_interval = "5m"
+
+# Don't change
+dc_used_sync_interval = "30s"
+
+[metrics]
+
+# Listen address for metrics requests to the helium-accounting pod
+url = "0.0.0.0:8081"
+
+[skf]
+
+# Max Copies applied to SKF when there are no settings that take precendent.
+# Device Profile -> Device -> This settings.
+# NOTE: Settings to 0 will use route.max_copies.
+default_max_copies = 1
+
+[route]
+
+# Hostname for the Chirpstack Gateway Bridge instance(s) provided via the gateway.host attribute in ./chirpstack/values.yaml
+host = "gwb.chirpstack.test-helium.com"
+
+# Default port to fallback on if GWMP region port mapping is absent
+port = 1700
+
+# Default number of copies to buy. Applied at the route level.
+max_copies = 1337
+
+# Do not route traffic for DevAddrs with empty SKFs.
+#
+# If you don't plan on running the SKF service, set this to false.
+# All traffic with a devaddr in the prefix will be routed.
+ignore_empty_skf = true
+
+# DevAddr prefixes
+#
+# Should be the same as chirpstacks dev_addr_prefix settings.
+# This determines which DevAddrs will be routed.
+# If it does not match with the DevAddrs Chirpstack will assign, traffic may be lost.
+# Prefix is in CIDR notation.
+#
+# https://docs.helium.com/iot/run-an-lns/buy-an-oui#purchasing-oui-and-devaddr-slab
+dev_addr_prefixes = ["<insert_dev_addr_prefixes>"]
+
+# NetID
+#
+# Should be the same as chirpstacks net_id settings
+# Don't change
+net_id = "00003C"
+
+[route.region_port_mapping]
+
+# GWMP region port mapping
+# Unlisted regions will use the route.port as the default.
+#
+# Using the link provided below, match the key values with the ports defined in global.enabledRegions[*].gateway.port in ./chirpstack/values.yaml
+# https://github.com/helium/proto/blob/62e22b2a4fb7de6f2ba7d67f933d77d4ad52a882/src/region.proto#L5
+#
+# Example
+# US915 = 1700
+# EU868 = 1701
+
+<insert_gwmp_region_port_mappings>

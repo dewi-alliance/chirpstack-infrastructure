@@ -27,7 +27,7 @@ metadata:
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: TCP
     service.beta.kubernetes.io/aws-load-balancer-backend-protocol: TCP
     service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "1884"
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.global.cert }}
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: {{ .Values.global.certArn }}
     service.beta.kubernetes.io/aws-load-balancer-security-groups: {{ .Values.mosquitto.nlb.securityGroupId }}
     service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules:  "true"
     external-dns.alpha.kubernetes.io/hostname:  {{ .Values.mosquitto.host }}

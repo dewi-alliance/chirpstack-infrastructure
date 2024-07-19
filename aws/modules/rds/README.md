@@ -36,7 +36,7 @@ No modules.
 | [aws_secretsmanager_secret_version.pg_helium_vals](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.rds_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group.rds_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
-| [aws_security_group.secrets_manager_rotator_lambda_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
+| [aws_security_group.secrets_manager_access_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group.secrets_manager_vpc_endpoint_security_group](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group) | resource |
 | [aws_security_group_rule.rds_security_group_rule](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/security_group_rule) | resource |
 | [aws_serverlessapplicationrepository_cloudformation_stack.rotator_cf_stack](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/resources/serverlessapplicationrepository_cloudformation_stack) | resource |
@@ -45,7 +45,6 @@ No modules.
 | [random_password.pg_chirpstack_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_password.pg_helium_password](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/password) | resource |
 | [random_string.rds](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
-| [random_string.secretsmanager](https://registry.terraform.io/providers/hashicorp/random/3.6.1/docs/resources/string) | resource |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/partition) | data source |
 | [aws_serverlessapplicationrepository_application.rotator](https://registry.terraform.io/providers/hashicorp/aws/5.50.0/docs/data-sources/serverlessapplicationrepository_application) | data source |
 

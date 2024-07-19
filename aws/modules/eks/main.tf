@@ -14,7 +14,6 @@ data "aws_eks_cluster_auth" "eks" {
   depends_on = [aws_eks_cluster.this]
 }
 
-
 # ***************************************
 # EKS Cluster
 # ***************************************
@@ -35,7 +34,7 @@ resource "aws_eks_cluster" "this" {
     subnet_ids              = var.vpc_private_subnet_ids
     endpoint_private_access = var.eks_endpoint_private_access
     endpoint_public_access  = var.eks_endpoint_public_access
-    public_access_cidrs     = ["0.0.0.0/0"]
+    public_access_cidrs     = var.eks_public_access_cidrs
   }
 
   encryption_config {
@@ -295,6 +294,8 @@ locals {
       addon_version     = var.eks_vpc_cni_version
       resolve_conflicts = var.eks_addon_resolve_conflicts_on_update
       preserve          = var.eks_addon_preserve
+
+      # For allowing security groups to be applied to K8s pods - https://docs.aws.amazon.com/eks/latest/userguide/security-groups-for-pods.html
       configuration_values = jsonencode({
         init = {
           env = {

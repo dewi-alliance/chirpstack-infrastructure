@@ -38,7 +38,7 @@ variable "bastion_ssh_key_name" {
   default     = ""
 }
 
-variable "bastion_whitelisted_access_ips" {
+variable "bastion_whitelisted_access_cidrs" {
   description = "The IPs, in CIDR block form (x.x.x.x/32), to whitelist access to the Bastion"
   type        = list(string)
   default     = []

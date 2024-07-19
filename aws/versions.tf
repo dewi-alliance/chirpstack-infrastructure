@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.3.2"
 
   backend "s3" {
-    # See backend.tfvars for full configuration
+    # Provide full configuration in backend.tfvars
     encrypt = true
   }
 

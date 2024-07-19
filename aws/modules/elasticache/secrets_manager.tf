@@ -1,10 +1,6 @@
 # ***************************************
 # Secrets Manager - RDS Credential Storage
 # ***************************************
-resource "random_string" "secretsmanager" {
-  length  = 8
-  special = false
-}
 
 # Generate initial random passwords for Chirpstack Redis users
 resource "random_password" "redis_default_password" {
@@ -22,20 +18,19 @@ resource "random_password" "redis_helium_password" {
   special = false
 }
 
-
 # Initialize AWS Secret Manager entry for the Chirpstack Redis user credentials
 resource "aws_secretsmanager_secret" "redis_default_credentials" {
-  name        = "redis-default-credentials-${random_string.secretsmanager.result}"
+  name        = "root/redis-default-credentials"
   description = "Credentials for Redis default user (e.g., Admin)"
 }
 
 resource "aws_secretsmanager_secret" "redis_chirpstack_credentials" {
-  name        = "redis-chirpstack-credentials-${random_string.secretsmanager.result}"
+  name        = "chirpstack/redis-chirpstack-credentials"
   description = "Credentials for Redis chirpstack user"
 }
 
 resource "aws_secretsmanager_secret" "redis_helium_credentials" {
-  name        = "redis-helium-credentials-${random_string.secretsmanager.result}"
+  name        = "chirpstack/redis-helium-credentials"
   description = "Credentials for Redis helium user"
 }
 
