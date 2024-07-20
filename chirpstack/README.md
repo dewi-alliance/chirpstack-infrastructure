@@ -40,6 +40,8 @@ Everything is now in order for the Chirpstack application to be happily deployed
 
 ![Argo Delete Chirpstack ReplicaSet](../static/argo-3.png)
 
+5. Force a new Mosquitto pod by by clicking the three vertical dots in the chiprstack rs grouping and selecting delete, similar to step 4 above.
+
 ### Post Deployment Notes
 
 At that point, the Chirpstack application will be healthy. Onto making `./helium` happy to close out the deployment!
