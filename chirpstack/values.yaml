@@ -38,7 +38,7 @@ chirpstack:
 
   # Security Group ID for the chirpstack-alb security group
   alb:
-    securityGroupId: sg-0bc412007f29a50c0 # chirpstack-alb
+    securityGroupId: sg-0168d1bb386156011 # chirpstack-alb
 
   # https://hub.docker.com/r/chirpstack/chirpstack/tags
   image:
@@ -77,4 +77,4 @@ mosquitto:
 
   # Security Group ID for the mqtt-alb security group
   nlb:
-    securityGroupId: sg-05af8bc50fe0a981e # mqtt-nlb
+    securityGroupId: sg-0d7e5696dd9f4c449 # mqtt-nlb
