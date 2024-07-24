@@ -14,7 +14,7 @@ The architecture diagram provided below relates to the infrastructure deployed f
 
 ### Cost Estimates
 
-The provided estimates should be considered the **lower bound** of what the infrastructure will cost on AWS. In practice, with actual application usage, the cost will be higher.
+The provided cost estimates should be considered the **lower bound** of what the infrastructure will cost on AWS. In practice with actual application usage, the cost will be higher.
 
 - `high-availability`: ~$350/month
 - `cost-optimized`: ~$260/month
@@ -169,7 +169,7 @@ To conclude the AWS infrastructure deployment, `chirpstack` and `helium` users n
 CREATE EXTENSION pg_trgm;
 
 CREATE USER chirpstack WITH PASSWORD '<insert_chirpstack_password_from_secrets_manager>';
-CREATE USER helium WITH PASSWORD '<insert_helium_password_from_secrets_manager>;
+CREATE USER helium WITH PASSWORD '<insert_helium_password_from_secrets_manager>';
 
 GRANT helium TO chirpstack_admin;
 GRANT chirpstack TO chirpstack_admin;
