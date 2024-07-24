@@ -47,9 +47,9 @@ module "eks" {
   eks_cluster_version = 1.29
 
   # EKS Node Group
-  node_group_min_size     = 2
+  node_group_min_size     = 1
   node_group_max_size     = 6
-  node_group_desired_size = 2
+  node_group_desired_size = 1
 }
 
 # ***************************************
@@ -68,6 +68,8 @@ module "rds" {
 
   # RDS
   rds_name              = "chirpstack-ha-rds"
+  rds_instance_type     = "db.t4g.small"
+  rds_storage_size      = 50
   rds_multi_az          = true
   with_rds_read_replica = true
 
@@ -81,9 +83,6 @@ module "rds" {
 # ***************************************
 module "elasticache" {
   source = "../../modules/elasticache"
-
-  # AWS
-  aws_region = local.aws_region
 
   # VPC
   vpc_id              = module.vpc.vpc_id

@@ -626,7 +626,7 @@ resource "random_password" "mqtt_password" {
 
 resource "aws_secretsmanager_secret" "mqtt_secret" {
   name        = "chirpstack/mqtt-credentials"
-  description = "Credentials for MQTT ${var.mqtt_user}"
+  description = "Credentials for MQTT ${var.mqtt_user} user"
 }
 
 resource "aws_secretsmanager_secret_version" "mqtt_secret" {

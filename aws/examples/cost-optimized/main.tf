@@ -74,8 +74,10 @@ module "rds" {
 
   # RDS
   rds_name              = "chirpstack-co-rds"
+  rds_instance_type     = "db.t4g.small"
+  rds_storage_size      = 50
   rds_multi_az          = false
-  with_rds_read_replica = false
+  with_rds_read_replica = false 
 
   # DB
   pg_name           = "chirpstack"
@@ -88,9 +90,6 @@ module "rds" {
 module "elasticache" {
   source = "../../modules/elasticache"
 
-  # AWS
-  aws_region = local.aws_region
-
   # VPC
   vpc_id              = module.vpc.vpc_id
   database_subnet_ids = module.vpc.database_subnet_ids
@@ -100,7 +99,6 @@ module "elasticache" {
   redis_single_node_cluster     = true
   redis_node_type               = "cache.t4g.small"
   redis_multi_az_enabled        = false
-  redis_replicas_per_node_group = 1
   redis_maintenance_window      = "sun:05:00-sun:09:00"
   redis_snapshot_window         = "01:00-04:00"
 

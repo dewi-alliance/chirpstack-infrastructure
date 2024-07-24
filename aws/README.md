@@ -1,6 +1,6 @@
 # AWS Infrastructure
 
-This directory contains a set of Terraform modules for deploying AWS infrastructure underpinning Chirpstack and the Helium sidecar applications. In particular, this directory defines a three-tier VPC architecture with EKS, RDS Postgres, and Elasticache Redis as defined by modules in the `./modules` directory. Additionally, this directory contains definitions for an EC2 bastion host and Kubernetes cluster AWS dependencies.
+This directory contains a set of Terraform modules for deploying AWS infrastructure underpinning Chirpstack and the Helium sidecar applications. In particular, this directory defines a three-tier VPC architecture with EKS, RDS Postgres, and Elasticache Redis as defined by modules in the `./modules` directory. Additionally, this directory contains definitions for an EC2 bastion host and AWS dependencies for applications operating in the Kubernetes cluster.
 
 ## Infrastructure Overview
 
@@ -8,7 +8,18 @@ A high-level overview of the infrastructure deployed from the `aws` directory is
 
 ### Architecture Diagram
 
+The architecture diagram provided below relates to the infrastructure deployed from the `./examples/high-availability` directory. The infrastructure deployed from the  `./examples/cost-optimized` directory is similar but with no NAT gateway, RDS, or ElastiCache redundancy.
+
 ![AWS Architecture Diagram](../static/aws-architecture.png)
+
+### Cost Estimates
+
+The provided estimates should be considered the **lower bound** of what the infrastructure will cost on AWS. In practice, with actual application usage, the cost will be higher.
+
+- `high-availability`: ~$350/month
+- `cost-optimized`: ~$260/month
+
+Detailed cost estimates generated with [Infracost](https://www.infracost.io/) are provided for the `high-availability` and `cost-optimized` examples respectively at `./examples/high-availability/cost-estimate.html` and `./examples/cost-optimized/cost-estimate.html`.
 
 ### Summary
 
@@ -91,14 +102,18 @@ eks_coredns_version    = null
 eks_kube_proxy_version = null
 eks_ebs_csi_version    = null
 
-node_group_max_size = 6
+node_group_min_size     = 1
+node_group_max_size     = 6
+node_group_desired_size = 1
 
 eks_public_access_cidrs     = ["<insert_whitelisted_access_cidrs>"]
 
 # RDS
 rds_name              = "chirpstack-rds"
+rds_instance_type     = "db.t4g.small"
+rds_storage_size      = 50
 rds_multi_az          = true
-with_rds_read_replica = false
+with_rds_read_replica = true
 
 pg_name           = "chirpstack"
 pg_engine_version = "14.10"
