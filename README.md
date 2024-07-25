@@ -1,6 +1,6 @@
 # Chirpstack-Infrastructure
 
-This repository contains Terraform and Helm definitions for a highly available Chirpstack V4 deployment configured with a Helium Network sidecar on AWS EKS.
+This repository contains Terraform modules and Helm charts for a highly available Chirpstack V4 deployment configured with a Helium Network sidecar on AWS EKS.
 
 The repo is broken down into four directories - `aws`, `kubernetes`,  `chirpstack`, and `helium` - respectively for deploying underlying AWS infrastructure (e.g., EKS, RDS, ElastiCache, etc.), Kubernetes system applications (e.g., ArgoCD, AWS Load Balancer Controller, External DNS, etc.), the Chirpstack application, and the Helium sidecar applications. Each of the directories contains a top-level `README.md` file that provides further information about the resources that get deployed and how to deploy the infrastructure defined in the directory.
 
@@ -19,10 +19,11 @@ While the `aws` and `kubernetes` resources are to be actively deployed with Terr
 ## Application-Level Resources
 
 After deploying:
-- Argo, Grafana, and Chirpstack dashboards will be exposed with custom hostnames behind an AWS application load balancer configured for SSL termination and security group-based whitelisted CIDR access
-- MQTT will be exposed with a custom hostname behind an AWS network load balancer configured for SSL termination with whitelisted CIDR access based on a load balancer security group
-- Chirpstack Gateway Bridge instance(s) will be exposed a custom hostname behind an AWS network load balancer
-- All credentials will be stored in AWS Secrets Manager
+- Argo, Grafana, and Chirpstack dashboards will be exposed with custom hostnames behind an AWS application load balancer configured for SSL termination and security group-based whitelisted CIDR access.
+- MQTT will be exposed with a custom hostname behind an AWS network load balancer configured for SSL termination with whitelisted CIDR access based on a load balancer security group.
+- Chirpstack Gateway Bridge instance(s) will be exposed a custom hostname behind an AWS network load balancer.
+- Helium sidecar applications will be configured to mirror Chirpstack state with the Helium Network.
+- All credentials will be stored in AWS Secrets Manager.
 
 ## Pre-Commit
 

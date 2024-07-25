@@ -1,6 +1,6 @@
 # Chirpstack
 
-This directory contains a set of Helm templates deploying Chirpstack and related applications in the EKS cluster. In particular, this directory includes Helm definitions for:
+This directory contains a set of Helm charts for deploying Chirpstack and related applications in the EKS cluster. In particular, this directory includes Helm charts for:
 
 - [Chirpstack V4](https://www.chirpstack.io/docs/chirpstack/configuration.html)
 - [Chirpstack Gateway Bridge](https://www.chirpstack.io/docs/chirpstack-gateway-bridge/configuration.html)
@@ -16,7 +16,7 @@ The state of the cluster was very sad as we left `./kubernetes` but after a few 
 2. Create `pwfile` for MQTT access
   a. In Secrets Manager, access `chirpstack/mqtt-credentials`
   b. On local device, create a file named `pwfile`
-  c. In the same directory as `pwfile`, run `mosquitto_passwd -b pwfile <user> <password>`, where <user> and <password> are from `chirpstack/mqtt-credentials`
+  c. In the same directory as `pwfile`, run `mosquitto_passwd -b pwfile <user> <password>`, where `<user>` and `<password>` are from `chirpstack/mqtt-credentials`
   d. Create a plaintext Secrets Manager secret titled `chirpstack/mqtt-pwfile` with the contents of `pwfile`
 
 ### Deployment
@@ -32,16 +32,16 @@ Everything is now in order for the Chirpstack application to be happily deployed
 
 ![Argo Dashboard Chirpstack](../static/argo-1.png)
 
-3. In the Chirpstack application, it is likely that the `mqtt-secrets` ExternalSecret and `chirpstack` Ingress. Click the refresh button, as shown in the red circle in the image below, to ensure the latest commit is deployed from the forked Git Repo. After the refresh, `mqtt-secrets` ExternalSecret and `chirpstack` Ingress should become healthy.
+3. In the Chirpstack application, it is likely that the `mqtt-secrets` ExternalSecret and `chirpstack` Ingress need to be refreshed. To do so, click the refresh button, as shown in the red circle in the image below, to ensure the latest commit is deployed from the forked Git Repo. After the refresh, `mqtt-secrets` ExternalSecret and `chirpstack` Ingress should become healthy. 
 
 ![Argo Refresh Chirpstack](../static/argo-2.png)
 
-4. Force a new Chirpstack ReplicaSet by clicking the three vertical dots in the chiprstack rs grouping and selecting delete, as shown in the red circle in the image below. After doing so, a new Chirpstack ReplicaSet will be created and the underlying Chirpstack pod will deploy and eventually become healthy.
+4. Force a new `chirpstack` ReplicaSet by clicking the three vertical dots in the `chiprstack` ReplicaSet grouping and selecting delete, as shown in the red circle in the image below. After doing so, a new `chiprstack` ReplicaSet will be created and the underlying `chiprstack` pod will deploy and eventually become healthy.
 
 ![Argo Delete Chirpstack ReplicaSet](../static/argo-3.png)
 
-5. Force a new Mosquitto pod by by clicking the three vertical dots in the chiprstack rs grouping and selecting delete, similar to step 4 above.
+5. Force a new `mosquitto` pod by clicking the three vertical dots in the `mosquitto` pod and selecting delete, similar to step 4 above.
 
 ### Post Deployment Notes
 
-At that point, the Chirpstack application will be healthy. Onto making `./helium` happy to close out the deployment!
+At this point, the Chirpstack application will be healthy. Onto making `./helium` happy to close out the deployment!

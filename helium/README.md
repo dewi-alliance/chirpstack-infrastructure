@@ -1,6 +1,6 @@
 # Helium
 
-This directory contains a set of Helm templates deploying Helium sidecar applications in the EKS cluster. In particular, this directory includes Helm definitions for:
+This directory contains a set of Helm charts for deploying the Helium sidecar applications in the EKS cluster. In particular, this directory includes Helm charts for:
 
 - Helium Accounting: Tracks uplinks and Helium DC consumption for Chirpstack Tenants.
 - Helium Sidecar: Updates the [Helium IoT Config Service](https://docs.helium.com/iot/run-an-lns#high-level-architecture) based on devices added to Chirpstack
@@ -43,7 +43,7 @@ Getting the Helium application happy is the last remaining hurdle to completing 
 
 Everything is now in order for the Helium application to be happily deployed, but it will take some further massaging to get there.
 
-1. Log into Argo
+1. Log into Argo.
 2. Click the Helium application, as shown in the red box in the image below. It might look "happy" but it's lying to you :D
 
 ![Argo Dashboard Helium](../static/argo-4.png)
@@ -52,15 +52,21 @@ Everything is now in order for the Helium application to be happily deployed, bu
 
 ![Argo Refresh Helium](../static/argo-5.png)
 
-4. Force new helium-sidecar and helium-accounting ReplicaSets by clicking the three vertical dots in the respective helium-sidecar and helium-accounting rs groupings and selecting delete, as shown in the red box in the image below. After doing so, new helium-sidecar and helium-accounting ReplicaSets will be created.
+4. Force new `helium-sidecar` and `helium-accounting` ReplicaSets by clicking the three vertical dots in the respective `helium-sidecar` and `helium-accounting` ReplicaSets groupings and selecting delete, as shown in the red box in the image below. After doing so, new `helium-sidecar` and `helium-accounting` ReplicaSets will be created.
 
 ![Argo Delete Helium ReplicaSets](../static/argo-6.png)
 
-5. Confirm operating state of the helium-sidecar and helium-accounting pods by checking the logs in Argo. The logs should look similar to the ones shown in the images below. In the helium-sidecar logs, expect to see a stream of "INFO chirpstack_helium: skf updates timer skf_count=0, INFO chirpstack_helium: eui updates timer eui_count=0" logs. In the helium-accounting logs, expect to "INFO chirpstack_helium::cmd::accounting: starting devices_per_tenant_report interval=300s" as the last log.
+5. Confirm operating state of the `helium-sidecar` and `helium-accounting` pods by checking the logs in Argo. The logs should look similar to the ones shown in the images below. 
+
+In the `helium-sidecar` logs, expect to see a stream of "INFO chirpstack_helium: skf updates timer skf_count=0, INFO chirpstack_helium: eui updates timer eui_count=0" logs.
+
+![Argo Helium Sidecar Logs](../static/argo-8.png)
+
+In the `helium-accounting` logs, expect to "INFO chirpstack_helium::cmd::accounting: starting devices_per_tenant_report interval=300s" as the last log.
 
 ![Argo Helium Accounting Logs](../static/argo-7.png)
-![Argo Helium Sidecar Logs](../static/argo-8.png)
+
 
 ### Post Deployment Notes
 
-At that point, the Helium application will be healthy. You can now start configuring LoRaWAN devices in Chirpstack and they will be automatically synced to the Helium Network.
+At this point, the Helium application will be healthy. You can now start configuring LoRaWAN devices in Chirpstack and they will be automatically synced to the Helium Network.

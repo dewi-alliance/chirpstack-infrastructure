@@ -30,3 +30,29 @@ datasources:
         type: cloudwatch
         jsonData:
           authType: default
+
+dashboardProviders:
+  dashboardproviders.yaml:
+   apiVersion: 1
+   providers:
+   - name: 'default'
+     orgId: 1
+     folder: 'default'
+     type: file
+     disableDeletion: false
+     editable: true
+     options:
+       path: /var/lib/grafana/dashboards/standard
+
+dashboards:
+  default:
+    # Ref: https://grafana.com/dashboards/969
+    redis:
+      gnetId: 969
+      revision: 5
+      datasource: CloudWatch
+    # https://grafana.com/dashboards/707
+    rds:
+      gnetId: 707
+      revision: 5
+      datasource: CloudWatch
