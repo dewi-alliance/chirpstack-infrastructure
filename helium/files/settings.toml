@@ -83,7 +83,7 @@ ignore_empty_skf = true
 # If it does not match with the DevAddrs Chirpstack will assign, traffic may be lost.
 # Prefix is in CIDR notation.
 #
-# https://docs.helium.com/iot/run-an-lns/buy-an-oui#purchasing-oui-and-devaddr-slab
+# https://docs.helium.com/iot/run-an-lns/configure-chirpstack#gather-helium-devaddr-subnet-information-for-oui
 dev_addr_prefixes = ["<insert_dev_addr_prefixes>"]
 
 # NetID
